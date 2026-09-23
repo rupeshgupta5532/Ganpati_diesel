@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #0B1B2B;
+  --color-brand-secondary: #1C2938;
+  --color-brand-accent: #F5A623;
+  --color-brand-accent-hover: #D98C15;
+  --color-brand-surface: #2A3B4C;
+  --color-brand-text-primary: #F8FAFC;
+  --color-brand-text-secondary: #94A3B8;
+  --color-brand-border: #334155;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+}
+
+.brand-dark-bg {
+  background-color: var(--color-brand-primary);
+  color: var(--color-brand-text-primary);
+}
+
+.brand-secondary-bg {
+  background-color: var(--color-brand-secondary);
+}
+
+.brand-surface {
+  background-color: var(--color-brand-surface);
+}
+
+.text-brand-accent {
+  color: var(--color-brand-accent);
+}
+
+.bg-brand-accent {
+  background-color: var(--color-brand-accent);
+  color: var(--color-brand-primary);
+}
+
+.bg-brand-accent:hover {
+  background-color: var(--color-brand-accent-hover);
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
