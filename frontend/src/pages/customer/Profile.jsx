@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { userApi } from '../../api/services';
 
@@ -12,6 +12,17 @@ export const CustomerProfile = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        phone: user.phone || '',
+        address: user.address || ''
+      });
+    }
+  }, [user]);
+
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -22,7 +33,12 @@ export const CustomerProfile = () => {
     setMessage('');
     
     userApi.updateProfile(formData)
-      .then(() => setMessage('Profile updated successfully!'))
+      .then((res) => {
+        setMessage('Profile updated successfully!');
+        if (res.data?.data || res.data) {
+           setTimeout(() => window.location.reload(), 1500);
+        }
+      })
       .catch(() => setMessage('Failed to update profile.'))
       .finally(() => setSaving(false));
   };

@@ -13,7 +13,7 @@ export const AuthProvider= ({ children }) => {
       if (token) {
         try {
           const profile = await api.get('/auth/profile');
-          setUser(profile.data);
+          setUser(profile.data || profile);
         } catch (error) {
           localStorage.removeItem('accessToken');
         }
@@ -23,9 +23,14 @@ export const AuthProvider= ({ children }) => {
     initAuth();
   }, []);
 
-  const login = (token, userData) => {
+const login = async (token, userData) => {
     localStorage.setItem('accessToken', token);
-    setUser(userData);
+    try {
+      const profile = await api.get('/auth/profile');
+      setUser(profile.data || profile);
+    } catch (e) {
+      setUser(userData);
+    }
   };
 
   const logout = () => {

@@ -20,6 +20,7 @@ import { AdminContent } from '../pages/Admin/Content';
 import { AdminNotifications } from '../pages/Admin/Notifications';
 import { AdminContact } from '../pages/Admin/Contact';
 import { Home } from '../pages/Public/Home';
+import { About } from '../pages/Public/About';
 import { PublicServices } from '../pages/Public/Services';
 import { PublicProducts } from '../pages/Public/Products';
 import { PublicProjects } from '../pages/Public/Projects';
@@ -38,6 +39,7 @@ export const AppRoutes = () => {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
         <Route path="/services" element={<PublicServices />} />
         <Route path="/products" element={<PublicProducts />} />
         <Route path="/projects" element={<PublicProjects />} />

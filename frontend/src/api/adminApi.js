@@ -60,3 +60,7 @@ export const uploadApi = {
     return api.post('/admin/uploads', formData);
   },
 };
+
+export const adminUserApi = {
+  getAll: (search) => api.get('/admin/users' + (search ? '?search=' + search : '')),
+};

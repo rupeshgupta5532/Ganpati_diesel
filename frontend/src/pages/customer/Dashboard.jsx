@@ -65,7 +65,7 @@ export const CustomerDashboard = () => {
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow dark:shadow-none-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
          <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
             <h2 className="text-lg font-bold text-brand-primary dark:text-slate-100">Recent Bookings</h2>
-            {bookings.length > 0 && <Link to="/dashboard/bookings" className="text-sm font-bold text-brand-accent hover:underline">View All</Link>}
+            {bookings.length > 0 && <Link to="/bookings" className="text-sm font-bold text-brand-accent hover:underline">View All</Link>}
          </div>
          {recentBookings.length > 0 ? (
             <div className="overflow-x-auto">

@@ -103,7 +103,7 @@ const ProjectFormInner = () => {
           <div>
             <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Before Image</label>
             <div className="flex items-center space-x-2">
-              <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'before')} className="w-full border rounded p-1 text-sm" disabled={uploading.before} />
+              <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'before')} className="w-full border rounded p-1 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" disabled={uploading.before} />
               {uploading.before && <span className="text-xs text-blue-500 font-bold">Uploading...</span>}
             </div>
             {formData.beforeImage && (
@@ -115,7 +115,7 @@ const ProjectFormInner = () => {
           <div>
             <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">After Image</label>
             <div className="flex items-center space-x-2">
-              <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'after')} className="w-full border rounded p-1 text-sm" disabled={uploading.after} />
+              <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'after')} className="w-full border rounded p-1 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" disabled={uploading.after} />
               {uploading.after && <span className="text-xs text-blue-500 font-bold">Uploading...</span>}
             </div>
             {formData.afterImage && (

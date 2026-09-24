@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Get,
+  Patch,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -46,11 +47,19 @@ export class AuthController {
     return this.authService.adminLogin(loginDto);
   }
 
-  @Get('profile')
+@Get('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user or admin profile' })
   getProfile(@CurrentUser() user: any) {
-    return user;
+    return this.authService.getProfile(user.userId, user.role);
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update current user or admin profile' })
+  updateProfile(@CurrentUser() user: any, @Body() updateData: any) {
+    return this.authService.updateProfile(user.userId, user.role, updateData);
   }
 }

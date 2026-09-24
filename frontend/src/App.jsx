@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import React from 'react';
 import { BrowserRouter } from 'react-router';
 import { AuthProvider } from './context/AuthContext';
@@ -9,6 +10,7 @@ function App() {
     <AuthProvider>
       <SocketProvider>
         <BrowserRouter>
+          <Toaster position="top-right" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white' }} />
           <AppRoutes />
         </BrowserRouter>
       </SocketProvider>

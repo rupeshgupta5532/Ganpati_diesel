@@ -28,8 +28,8 @@ export class UploadsService {
       return {
         success: true,
         data: {
-          url: `http://localhost:5000/uploads/${filename}`,
-          secure_url: `http://localhost:5000/uploads/${filename}`
+          url: `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${filename}`,
+          secure_url: `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${filename}`
         }
       };
     } catch (error) {

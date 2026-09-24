@@ -13,6 +13,7 @@ export const PublicLayout = () => {
   };
 
   const navLinks = [
+    { name: 'About', path: '/about' },
     { name: 'Home', path: '/' },
     { name: 'Services', path: '/services' },
     { name: 'Products', path: '/products' },

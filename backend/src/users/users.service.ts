@@ -27,12 +27,45 @@ export class UsersService {
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
-      this.userModel
-        .find(filter)
-        .skip(skip)
-        .limit(limit)
-        .select('-passwordHash -refreshTokenHash')
-        .exec(),
+      this.userModel.aggregate([
+        { $match: filter },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: Number(limit) },
+        {
+          $lookup: {
+            from: 'bookings',
+            localField: '_id',
+            foreignField: 'userId',
+            as: 'bookings'
+          }
+        },
+        {
+          $project: {
+            passwordHash: 0,
+            refreshTokenHash: 0,
+          }
+        },
+        {
+          $addFields: {
+            totalBookings: { $size: '$bookings' },
+            servicesTaken: {
+              $size: {
+                $filter: {
+                  input: '$bookings',
+                  as: 'booking',
+                  cond: { $eq: ['$booking.status', 'COMPLETED'] }
+                }
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            bookings: 0 // Hide full array to save bandwidth
+          }
+        }
+      ]),
       this.userModel.countDocuments(filter).exec(),
     ]);
 

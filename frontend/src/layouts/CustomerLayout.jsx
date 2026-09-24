@@ -68,7 +68,7 @@ export const CustomerLayout = () => {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white dark:bg-slate-800 shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border-b px-4 md:px-8 py-4 flex justify-between items-center z-10">
           <div className="flex items-center space-x-4">
             <button className="md:hidden text-brand-primary dark:text-slate-100 text-2xl focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
