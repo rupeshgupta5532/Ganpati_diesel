@@ -18,8 +18,14 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   app.enableCors({
-    origin: true,
+    origin: [
+      'https://ganpatidiesel.netlify.app',
+      'http://localhost:5173',
+      'http://localhost:5174',
+          ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
   app.use(helmet());
