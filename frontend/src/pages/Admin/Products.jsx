@@ -40,9 +40,9 @@ export const AdminProducts = () => {
 
       <div className="bg-white dark:bg-slate-800 rounded shadow dark:shadow-none overflow-x-auto">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading products...</div>
+          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading products...</div>
         ) : products.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No products found.</div>
+          <div className="p-8 text-center text-gray-500 dark:text-slate-400">No products found.</div>
         ) : (
           <table className="w-full text-left border-collapse">
             <thead>
@@ -56,7 +56,7 @@ export const AdminProducts = () => {
             </thead>
             <tbody>
               {products.map(product => (
-                <tr key={product._id} className="border-b hover:bg-slate-50 dark:bg-slate-900">
+                <tr key={product._id} className="border-b hover:bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
                   <td className="py-3 px-4">
                     {product.image ? (
                       <img src={product.image} alt={product.name} className="w-12 h-12 rounded object-cover" />

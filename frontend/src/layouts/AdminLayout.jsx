@@ -77,13 +77,14 @@ export const AdminLayout = () => {
         {/* Topbar */}
         <header className="bg-white dark:bg-slate-800 shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border-b px-4 md:px-8 py-4 flex justify-between items-center z-10">
           <div className="flex items-center space-x-4">
-            <button className="md:hidden text-brand-primary text-2xl focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button className="md:hidden text-brand-primary dark:text-slate-100 text-2xl focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               ☰
             </button>
-          </div><h1 className="text-xl font-bold text-brand-primary hidden sm:block">
+          </div><h1 className="text-xl font-bold text-brand-primary dark:text-slate-100 hidden sm:block">
              {navItems.find(item => location.pathname.includes(item.path))?.name || 'Admin Dashboard'}
           </h1>
           <div className="flex items-center space-x-4">
+             <ThemeToggle />
              <Link to="/admin/notifications" className="relative block">
                {unreadCount > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{unreadCount > 9 ? "9+" : unreadCount}</span>}
                <span className="text-xl cursor-pointer">🔔</span>

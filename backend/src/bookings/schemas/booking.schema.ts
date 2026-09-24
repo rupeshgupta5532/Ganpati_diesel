@@ -34,6 +34,9 @@ export class Booking {
   preferredDate: Date;
 
   @Prop()
+  preferredTime: string;
+
+  @Prop()
   message: string;
 
   @Prop({ type: String, enum: BookingStatus, default: BookingStatus.PENDING })

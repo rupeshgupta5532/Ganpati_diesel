@@ -48,7 +48,7 @@ export const PublicProducts = () => {
               
               <div className="p-5 flex-1 flex flex-col relative z-20">
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{product.category || 'Component'}</div>
-                <h2 className="text-xl font-extrabold text-brand-primary mb-1 leading-tight group-hover:text-blue-600 transition-colors">{product.name}</h2>
+                <h2 className="text-xl font-extrabold text-brand-primary dark:text-slate-100 mb-1 leading-tight group-hover:text-blue-600 transition-colors">{product.name}</h2>
                 <div className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4 font-mono bg-slate-50 dark:bg-slate-900 inline-block px-2 py-1 rounded border border-slate-100 dark:border-slate-700 self-start">PN: {product.partNumber || 'N/A'}</div>
                 
                 <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">

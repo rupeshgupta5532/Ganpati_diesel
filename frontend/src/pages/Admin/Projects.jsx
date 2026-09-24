@@ -35,9 +35,9 @@ export const AdminProjects = () => {
 
       <div className="bg-white dark:bg-slate-800 rounded shadow dark:shadow-none overflow-x-auto">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading projects...</div>
+          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading projects...</div>
         ) : projects.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No projects found.</div>
+          <div className="p-8 text-center text-gray-500 dark:text-slate-400">No projects found.</div>
         ) : (
           <table className="w-full text-left border-collapse">
             <thead>
@@ -51,7 +51,7 @@ export const AdminProjects = () => {
             </thead>
             <tbody>
               {projects.map(project => (
-                <tr key={project._id} className="border-b hover:bg-slate-50 dark:bg-slate-900">
+                <tr key={project._id} className="border-b hover:bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
                   <td className="py-3 px-4">
                     {project.afterImage ? (
                       <img src={project.afterImage} alt="After" className="w-16 h-12 rounded object-cover" />

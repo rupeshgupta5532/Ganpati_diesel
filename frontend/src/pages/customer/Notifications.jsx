@@ -11,7 +11,7 @@ export const CustomerNotifications = () => {
     <div className="bg-white dark:bg-slate-800 p-8 rounded shadow dark:shadow-none font-sans max-w-5xl mx-auto border border-brand-border/20 dark:border-brand-border/80">
       <div className="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-brand-primary">My Notifications</h1>
+          <h1 className="text-2xl font-bold text-brand-primary dark:text-slate-100">My Notifications</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">You have {unreadCount} unread alerts.</p>
         </div>
         <div className="flex space-x-3 items-center">

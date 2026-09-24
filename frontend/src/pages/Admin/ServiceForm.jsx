@@ -85,23 +85,23 @@ const ServiceFormInner = () => {
 
   return (
     <div className="max-w-3xl bg-white dark:bg-slate-800 p-8 rounded shadow dark:shadow-none border border-brand-border/20 dark:border-brand-border/80">
-      <h1 className="text-2xl font-bold mb-6 text-brand-primary">{isEdit ? 'Edit Service' : 'Add New Service'}</h1>
+      <h1 className="text-2xl font-bold mb-6 text-brand-primary dark:text-slate-100">{isEdit ? 'Edit Service' : 'Add New Service'}</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold mb-1">Service Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border rounded p-2" required />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Service Name</label>
+            <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" required />
           </div>
           <div>
-            <label className="block text-sm font-bold mb-1">Slug (optional)</label>
-            <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border rounded p-2" />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Slug (optional)</label>
+            <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
         </div>
         
         <div>
-          <label className="block text-sm font-bold mb-1">Service Image</label>
+          <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Service Image</label>
           <div className="flex items-center space-x-2">
-            <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full border rounded p-1 text-sm" disabled={uploading} />
+            <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full border rounded p-1 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" disabled={uploading} />
             {uploading && <span className="text-xs text-blue-500 font-bold">Uploading...</span>}
           </div>
           {formData.image && (
@@ -112,17 +112,17 @@ const ServiceFormInner = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-bold mb-1">Short Description</label>
-          <input type="text" name="shortDescription" value={formData.shortDescription} onChange={handleChange} className="w-full border rounded p-2" required />
+          <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Short Description</label>
+          <input type="text" name="shortDescription" value={formData.shortDescription} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" required />
         </div>
         <div>
-          <label className="block text-sm font-bold mb-1">Detailed Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} rows="4" className="w-full border rounded p-2" required></textarea>
+          <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Detailed Description</label>
+          <textarea name="description" value={formData.description} onChange={handleChange} rows="4" className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" required></textarea>
         </div>
         
         <div className="flex items-center space-x-2 pt-2">
           <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} id="active" />
-          <label htmlFor="active" className="text-sm font-bold">Active / Visible to Public</label>
+          <label htmlFor="active" className="text-sm font-bold text-slate-800 dark:text-slate-200">Active / Visible to Public</label>
         </div>
         
         <div className="pt-4 flex space-x-4">

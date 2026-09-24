@@ -73,7 +73,7 @@ export const BookService = () => {
       <div className="max-w-lg mx-auto mt-20 p-8 bg-green-50 border border-green-200 rounded-lg text-center shadow dark:shadow-none">
         <h2 className="text-2xl font-bold text-green-700 mb-4">Booking Submitted Successfully!</h2>
         <p className="text-green-600">Our engineering team will contact you shortly to confirm your appointment.</p>
-        <p className="text-sm text-gray-500 mt-4">Redirecting to your booking history...</p>
+        <p className="text-sm text-gray-500 dark:text-slate-400 mt-4">Redirecting to your booking history...</p>
       </div>
     );
   }
@@ -90,12 +90,12 @@ export const BookService = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-slate-700 dark:text-slate-200 text-sm font-bold mb-2">Customer Name *</label>
-              <input {...register('customerName')} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input {...register('customerName')} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
               {errors.customerName && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.customerName.message}</p>}
             </div>
             <div>
               <label className="block text-slate-700 dark:text-slate-200 text-sm font-bold mb-2">Phone Number *</label>
-              <input {...register('phone')} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input {...register('phone')} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
               {errors.phone && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.phone.message}</p>}
             </div>
           </div>
@@ -103,25 +103,29 @@ export const BookService = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-slate-700 dark:text-slate-200 text-sm font-bold mb-2">Vehicle Type *</label>
-              <input {...register('vehicleType')} placeholder="e.g. Truck, Tractor, SUV" className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input {...register('vehicleType')} placeholder="e.g. Truck, Tractor, SUV" className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
               {errors.vehicleType && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.vehicleType.message}</p>}
             </div>
             <div>
               <label className="block text-slate-700 dark:text-slate-200 text-sm font-bold mb-2">Vehicle Model *</label>
-              <input {...register('vehicleModel')} placeholder="e.g. Tata 1512, Scorpio" className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input {...register('vehicleModel')} placeholder="e.g. Tata 1512, Scorpio" className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
               {errors.vehicleModel && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.vehicleModel.message}</p>}
             </div>
           </div>
 
           <div>
-            <label className="block text-slate-700 dark:text-slate-200 text-sm font-bold mb-2">Preferred Date *</label>
-            <input type="date" {...register('preferredDate')} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <label htmlFor="preferredDate" className="block text-slate-700 dark:text-slate-200 text-sm font-bold mb-2">Preferred Date *</label>
+            <input type="date" id="preferredDate" {...register('preferredDate')} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700 cursor-pointer" onClick={(e) => { try { e.target.showPicker(); } catch(err) { console.error(err); } }} onKeyDown={(e) => { if(e.key === 'Enter') { try { e.target.showPicker(); } catch(err){} } }} />
             {errors.preferredDate && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.preferredDate.message}</p>}
+          </div>
+          <div>
+            <label htmlFor="preferredTime" className="block text-slate-700 dark:text-slate-200 text-sm font-bold mb-2">Preferred Time</label>
+            <input type="time" id="preferredTime" {...register('preferredTime')} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700 cursor-pointer" onClick={(e) => { try { e.target.showPicker(); } catch(err) { console.error(err); } }} onKeyDown={(e) => { if(e.key === 'Enter') { try { e.target.showPicker(); } catch(err){} } }} />
           </div>
 
           <div>
             <label className="block text-slate-700 dark:text-slate-200 text-sm font-bold mb-2">Problem Description *</label>
-            <textarea {...register('problemDescription')} placeholder="Describe the mechanical issue..." rows={4} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+            <textarea {...register('problemDescription')} placeholder="Describe the mechanical issue..." rows={4} className="w-full border border-slate-300 rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700"></textarea>
             {errors.problemDescription && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.problemDescription.message}</p>}
           </div>
 

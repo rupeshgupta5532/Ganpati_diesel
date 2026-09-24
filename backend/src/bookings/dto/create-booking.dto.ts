@@ -36,6 +36,11 @@ export class CreateBookingDto {
   @IsString()
   preferredDate: string;
 
+  @ApiPropertyOptional({ example: '14:30' })
+  @IsString()
+  @IsOptional()
+  preferredTime?: string;
+
   @ApiPropertyOptional({ example: 'Please arrange for morning checkup.' })
   @IsString()
   @IsOptional()

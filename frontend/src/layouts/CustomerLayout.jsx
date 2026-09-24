@@ -71,10 +71,10 @@ export const CustomerLayout = () => {
       <div className="flex-1 flex flex-col">
         <header className="bg-white dark:bg-slate-800 shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border-b px-4 md:px-8 py-4 flex justify-between items-center z-10">
           <div className="flex items-center space-x-4">
-            <button className="md:hidden text-brand-primary text-2xl focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button className="md:hidden text-brand-primary dark:text-slate-100 text-2xl focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               ☰
             </button>
-          </div><h1 className="text-xl font-bold text-brand-primary hidden sm:block">
+          </div><h1 className="text-xl font-bold text-brand-primary dark:text-slate-100 hidden sm:block">
              {navItems.find(item => location.pathname.includes(item.path))?.name || 'Customer Portal'}
           </h1>
           <div className="flex items-center space-x-6">

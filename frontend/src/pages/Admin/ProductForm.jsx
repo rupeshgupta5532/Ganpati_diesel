@@ -78,39 +78,39 @@ export const ProductForm = () => {
 
   return (
     <div className="max-w-3xl bg-white dark:bg-slate-800 p-8 rounded shadow dark:shadow-none border border-brand-border/20 dark:border-brand-border/80">
-      <h1 className="text-2xl font-bold mb-6 text-brand-primary">{isEdit ? 'Edit Product' : 'Add New Product'}</h1>
+      <h1 className="text-2xl font-bold mb-6 text-brand-primary dark:text-slate-100">{isEdit ? 'Edit Product' : 'Add New Product'}</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold mb-1">Product Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border rounded p-2" required />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Product Name</label>
+            <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" required />
           </div>
           <div>
-            <label className="block text-sm font-bold mb-1">Slug (optional)</label>
-            <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border rounded p-2" />
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold mb-1">Part Number</label>
-            <input type="text" name="partNumber" value={formData.partNumber} onChange={handleChange} className="w-full border rounded p-2" />
-          </div>
-          <div>
-            <label className="block text-sm font-bold mb-1">Category</label>
-            <input type="text" name="category" value={formData.category} onChange={handleChange} className="w-full border rounded p-2" />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Slug (optional)</label>
+            <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
         </div>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold mb-1">Price (NPR)</label>
-            <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full border rounded p-2" />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Part Number</label>
+            <input type="text" name="partNumber" value={formData.partNumber} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
           <div>
-            <label className="block text-sm font-bold mb-1">Product Image</label>
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Category</label>
+            <input type="text" name="category" value={formData.category} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Price (NPR)</label>
+            <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
+          </div>
+          <div>
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Product Image</label>
             <div className="flex items-center space-x-2">
-              <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full border rounded p-1 text-sm" disabled={uploading} />
+              <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full border rounded p-1 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" disabled={uploading} />
               {uploading && <span className="text-xs text-blue-500 font-bold">Uploading...</span>}
             </div>
             {formData.image && (
@@ -122,18 +122,18 @@ export const ProductForm = () => {
         </div>
         
         <div>
-          <label className="block text-sm font-bold mb-1">Detailed Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} rows="4" className="w-full border rounded p-2"></textarea>
+          <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Detailed Description</label>
+          <textarea name="description" value={formData.description} onChange={handleChange} rows="4" className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700"></textarea>
         </div>
         
         <div className="flex space-x-6 pt-2">
           <div className="flex items-center space-x-2">
             <input type="checkbox" name="availability" checked={formData.availability} onChange={handleChange} id="avail" />
-            <label htmlFor="avail" className="text-sm font-bold">In Stock</label>
+            <label htmlFor="avail" className="text-sm font-bold text-slate-800 dark:text-slate-200">In Stock</label>
           </div>
           <div className="flex items-center space-x-2">
             <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} id="active" />
-            <label htmlFor="active" className="text-sm font-bold">Active (Visible)</label>
+            <label htmlFor="active" className="text-sm font-bold text-slate-800 dark:text-slate-200">Active (Visible)</label>
           </div>
         </div>
         

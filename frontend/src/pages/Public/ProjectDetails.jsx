@@ -73,7 +73,7 @@ export const PublicProjectDetails = () => {
              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                <div className="md:col-span-2 space-y-8">
                  <div>
-                   <h3 className="text-2xl font-bold text-brand-primary mb-4 flex items-center">
+                   <h3 className="text-2xl font-bold text-brand-primary dark:text-slate-100 mb-4 flex items-center">
                      <span className="text-brand-accent mr-3">🛠️</span>
                      The Challenge
                    </h3>
@@ -83,7 +83,7 @@ export const PublicProjectDetails = () => {
                  </div>
                  
                  <div>
-                   <h3 className="text-2xl font-bold text-brand-primary mb-4 flex items-center">
+                   <h3 className="text-2xl font-bold text-brand-primary dark:text-slate-100 mb-4 flex items-center">
                      <span className="text-brand-accent mr-3">✅</span>
                      Our Solution
                    </h3>
@@ -94,7 +94,7 @@ export const PublicProjectDetails = () => {
 
                  {project.description && (
                    <div>
-                     <h3 className="text-2xl font-bold text-brand-primary mb-4 border-b pb-2">Detailed Engineering Notes</h3>
+                     <h3 className="text-2xl font-bold text-brand-primary dark:text-slate-100 mb-4 border-b pb-2">Detailed Engineering Notes</h3>
                      <div className="prose max-w-none text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
                        {project.description}
                      </div>

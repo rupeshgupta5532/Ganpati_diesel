@@ -75,33 +75,33 @@ const ProjectFormInner = () => {
 
   return (
     <div className="max-w-4xl bg-white dark:bg-slate-800 p-8 rounded shadow dark:shadow-none border border-brand-border/20 dark:border-brand-border/80">
-      <h1 className="text-2xl font-bold mb-6 text-brand-primary">{isEdit ? 'Edit Case Study' : 'Add New Case Study'}</h1>
+      <h1 className="text-2xl font-bold mb-6 text-brand-primary dark:text-slate-100">{isEdit ? 'Edit Case Study' : 'Add New Case Study'}</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold mb-1">Project Title</label>
-            <input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full border rounded p-2" required />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Project Title</label>
+            <input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" required />
           </div>
           <div>
-            <label className="block text-sm font-bold mb-1">Slug (optional)</label>
-            <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border rounded p-2" />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Slug (optional)</label>
+            <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
         </div>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold mb-1">Vehicle Name</label>
-            <input type="text" name="vehicle" value={formData.vehicle} onChange={handleChange} className="w-full border rounded p-2" placeholder="e.g. Mahindra Scorpio" />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Vehicle Name</label>
+            <input type="text" name="vehicle" value={formData.vehicle} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" placeholder="e.g. Mahindra Scorpio" />
           </div>
           <div>
-            <label className="block text-sm font-bold mb-1">Service Type</label>
-            <input type="text" name="serviceType" value={formData.serviceType} onChange={handleChange} className="w-full border rounded p-2" placeholder="e.g. CRDI Repair" />
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Service Type</label>
+            <input type="text" name="serviceType" value={formData.serviceType} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" placeholder="e.g. CRDI Repair" />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold mb-1">Before Image</label>
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Before Image</label>
             <div className="flex items-center space-x-2">
               <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'before')} className="w-full border rounded p-1 text-sm" disabled={uploading.before} />
               {uploading.before && <span className="text-xs text-blue-500 font-bold">Uploading...</span>}
@@ -113,7 +113,7 @@ const ProjectFormInner = () => {
             )}
           </div>
           <div>
-            <label className="block text-sm font-bold mb-1">After Image</label>
+            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">After Image</label>
             <div className="flex items-center space-x-2">
               <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'after')} className="w-full border rounded p-1 text-sm" disabled={uploading.after} />
               {uploading.after && <span className="text-xs text-blue-500 font-bold">Uploading...</span>}
@@ -127,26 +127,26 @@ const ProjectFormInner = () => {
         </div>
         
         <div>
-          <label className="block text-sm font-bold mb-1">Problem Identified</label>
-          <input type="text" name="problem" value={formData.problem} onChange={handleChange} className="w-full border rounded p-2" />
+          <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Problem Identified</label>
+          <input type="text" name="problem" value={formData.problem} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
         </div>
         <div>
-          <label className="block text-sm font-bold mb-1">Solution Provided</label>
-          <input type="text" name="solution" value={formData.solution} onChange={handleChange} className="w-full border rounded p-2" />
+          <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Solution Provided</label>
+          <input type="text" name="solution" value={formData.solution} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
         </div>
         <div>
-          <label className="block text-sm font-bold mb-1">Detailed Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} rows="4" className="w-full border rounded p-2"></textarea>
+          <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Detailed Description</label>
+          <textarea name="description" value={formData.description} onChange={handleChange} rows="4" className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700"></textarea>
         </div>
         
         <div className="flex space-x-6 pt-2">
           <div className="flex items-center space-x-2">
             <input type="checkbox" name="isFeatured" checked={formData.isFeatured} onChange={handleChange} id="featured" />
-            <label htmlFor="featured" className="text-sm font-bold">Feature on Homepage</label>
+            <label htmlFor="featured" className="text-sm font-bold text-slate-800 dark:text-slate-200">Feature on Homepage</label>
           </div>
           <div className="flex items-center space-x-2">
             <input type="checkbox" name="isPublished" checked={formData.isPublished} onChange={handleChange} id="published" />
-            <label htmlFor="published" className="text-sm font-bold">Published (Visible to public)</label>
+            <label htmlFor="published" className="text-sm font-bold text-slate-800 dark:text-slate-200">Published (Visible to public)</label>
           </div>
         </div>
         

@@ -25,7 +25,7 @@ export const AdminContact = () => {
       .finally(() => setSaving(false));
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading contact settings...</div>;
+  if (loading) return <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading contact settings...</div>;
 
   return (
     <div className="max-w-4xl">
@@ -46,15 +46,15 @@ export const AdminContact = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Primary Phone</label>
-            <input type="text" name="primaryPhone" value={contact?.primaryPhone || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="primaryPhone" value={contact?.primaryPhone || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">WhatsApp Number</label>
-            <input type="text" name="whatsapp" value={contact?.whatsapp || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="whatsapp" value={contact?.whatsapp || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Support Email</label>
-            <input type="email" name="email" value={contact?.email || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="email" name="email" value={contact?.email || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
         </div>
 
@@ -63,16 +63,16 @@ export const AdminContact = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Physical Address</label>
-            <input type="text" name="address" value={contact?.address || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="address" value={contact?.address || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Opening Hours</label>
-            <input type="text" name="openingHours" value={contact?.openingHours || ''} onChange={handleChange} placeholder="e.g. Sun - Fri, 9AM - 6PM" className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="openingHours" value={contact?.openingHours || ''} onChange={handleChange} placeholder="e.g. Sun - Fri, 9AM - 6PM" className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
         </div>
         <div>
            <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Google Maps Embed URL</label>
-           <textarea name="googleMapsUrl" value={contact?.googleMapsUrl || ''} onChange={handleChange} rows="3" className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+           <textarea name="googleMapsUrl" value={contact?.googleMapsUrl || ''} onChange={handleChange} rows="3" className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700"></textarea>
         </div>
       </div>
     </div>

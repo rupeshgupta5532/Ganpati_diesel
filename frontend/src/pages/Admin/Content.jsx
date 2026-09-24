@@ -25,7 +25,7 @@ export const AdminContent = () => {
       .finally(() => setSaving(false));
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading CMS...</div>;
+  if (loading) return <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading CMS...</div>;
 
   return (
     <div className="max-w-4xl">
@@ -46,17 +46,17 @@ export const AdminContent = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Hero Title</label>
-            <input type="text" name="heroTitle" value={content?.heroTitle || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="heroTitle" value={content?.heroTitle || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Hero Subtitle</label>
-            <input type="text" name="heroSubtitle" value={content?.heroSubtitle || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="heroSubtitle" value={content?.heroSubtitle || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
         </div>
         
         <div>
           <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Hero Description</label>
-          <textarea name="heroDescription" value={content?.heroDescription || ''} onChange={handleChange} rows="3" className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+          <textarea name="heroDescription" value={content?.heroDescription || ''} onChange={handleChange} rows="3" className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700"></textarea>
         </div>
 
         <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 border-b pb-2 pt-6">Business Statistics</h2>
@@ -64,15 +64,15 @@ export const AdminContent = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Years Experience</label>
-            <input type="text" name="yearsExperience" value={content?.yearsExperience || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="yearsExperience" value={content?.yearsExperience || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Projects Completed</label>
-            <input type="text" name="projectsCompleted" value={content?.projectsCompleted || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="projectsCompleted" value={content?.projectsCompleted || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Established Year</label>
-            <input type="text" name="establishedYear" value={content?.establishedYear || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="establishedYear" value={content?.establishedYear || ''} onChange={handleChange} className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
         </div>
 
@@ -80,7 +80,7 @@ export const AdminContent = () => {
         
         <div>
           <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">About Section Text</label>
-          <textarea name="aboutContent" value={content?.aboutContent || ''} onChange={handleChange} rows="5" className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+          <textarea name="aboutContent" value={content?.aboutContent || ''} onChange={handleChange} rows="5" className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700"></textarea>
         </div>
       </div>
     </div>

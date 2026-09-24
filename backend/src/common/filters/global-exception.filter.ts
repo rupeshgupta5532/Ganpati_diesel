@@ -32,10 +32,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? (message as any).message || [message]
         : [message];
 
-    this.logger.error(
-      `HTTP ${status} Error on ${request.method} ${request.url}`,
-      exception instanceof Error ? exception.stack : 'Unknown error',
-    );
+    // Only log the full stack trace if it is a 500 Internal Server Error
+    if (status >= 500) {
+      this.logger.error(
+        `HTTP ${status} Error on ${request.method} ${request.url}`,
+        exception instanceof Error ? exception.stack : 'Unknown error',
+      );
+    } else {
+      // For client errors (400, 401, 403, 404), just log a warning without the scary stack trace
+      this.logger.warn(
+        `HTTP ${status} on ${request.method} ${request.url}: ${JSON.stringify(errors)}`,
+      );
+    }
 
     response.status(status).json({
       success: false,

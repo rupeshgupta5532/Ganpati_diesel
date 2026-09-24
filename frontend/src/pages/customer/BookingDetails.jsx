@@ -32,7 +32,7 @@ export const BookingDetails = () => {
       <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow dark:shadow-none-lg border border-slate-100 dark:border-slate-700">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-brand-primary">{booking.vehicleModel} ({booking.vehicleType})</h1>
+            <h1 className="text-3xl font-bold text-brand-primary dark:text-slate-100">{booking.vehicleModel} ({booking.vehicleType})</h1>
             <p className="text-slate-500 dark:text-slate-400 mt-1">Booking ID: {booking._id}</p>
           </div>
           <span className={`px-4 py-2 rounded-full text-sm font-bold tracking-wider
@@ -69,7 +69,7 @@ export const BookingDetails = () => {
                         {isCompleted ? '✓' : index + 1}
                       </div>
                       <div className="ml-6 mt-1">
-                        <h3 className={`font-bold ${isCompleted ? 'text-brand-primary' : 'text-slate-400'}`}>
+                        <h3 className={`font-bold ${isCompleted ? 'text-brand-primary dark:text-slate-100' : 'text-slate-400'}`}>
                           {status.replace('_', ' ')}
                         </h3>
                         {status === 'PENDING' && <p className="text-sm text-slate-500 dark:text-slate-400">Request submitted on {new Date(booking.createdAt).toLocaleDateString()}</p>}

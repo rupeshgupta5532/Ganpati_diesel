@@ -44,3 +44,29 @@
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  
+  html.dark {
+    color-scheme: dark;
+  }
+}
+
+html.dark ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+/* Force calendar icon to be white in dark mode */
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(100%) contrast(100%);
+    opacity: 1;
+    cursor: pointer;
+}
+
+/* For Firefox */
+.dark input[type="date"] {
+    color-scheme: dark;
+}

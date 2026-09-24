@@ -31,20 +31,20 @@ export const ForgotPassword = () => {
         {submitted ? (
            <div className="p-8 text-center space-y-4">
               <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
-              <h3 className="text-xl font-bold text-brand-primary">Check your email</h3>
-              <p className="text-gray-500">We've sent password reset instructions to <strong>{email}</strong>.</p>
+              <h3 className="text-xl font-bold text-brand-primary dark:text-slate-100">Check your email</h3>
+              <p className="text-gray-500 dark:text-slate-400">We've sent password reset instructions to <strong>{email}</strong>.</p>
               <Link to="/login" className="inline-block mt-4 text-brand-accent font-bold hover:underline">Return to Login</Link>
            </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
             <div>
-              <label className="block text-brand-primary text-sm font-bold mb-2 uppercase tracking-wide">Email Address</label>
+              <label className="block text-brand-primary dark:text-slate-200 text-sm font-bold mb-2 uppercase tracking-wide">Email Address</label>
               <input 
                 type="email" 
                 value={email} 
                 onChange={e => setEmail(e.target.value)} 
                 placeholder="Enter your registered email"
-                className="w-full border-2 border-gray-200 p-3 rounded-lg focus:border-brand-accent focus:ring-0 outline-none transition-colors" 
+                className="w-full border-2 border-gray-200 p-3 rounded-lg focus:border-brand-accent focus:ring-0 outline-none transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" 
                 required 
               />
             </div>
@@ -53,8 +53,8 @@ export const ForgotPassword = () => {
               Send Reset Link
             </button>
             
-            <p className="text-center text-sm text-gray-500 mt-6">
-              Remember your password? <Link to="/login" className="text-brand-primary font-bold hover:text-brand-accent transition-colors">Sign In</Link>
+            <p className="text-center text-sm text-gray-500 dark:text-slate-400 mt-6">
+              Remember your password? <Link to="/login" className="text-brand-primary font-bold hover:text-brand-accent transition-colors dark:text-brand-accent">Sign In</Link>
             </p>
           </form>
         )}

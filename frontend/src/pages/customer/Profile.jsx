@@ -52,16 +52,16 @@ export const CustomerProfile = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Full Name</label>
-              <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none" required />
+              <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" required />
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Phone Number</label>
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full border rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full border rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
             </div>
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Address</label>
-            <input type="text" name="address" value={formData.address} onChange={handleChange} className="w-full border rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input type="text" name="address" value={formData.address} onChange={handleChange} className="w-full border rounded p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
           </div>
           
           <div className="pt-4 flex justify-end">

@@ -28,9 +28,9 @@ export const AdminEnquiries = () => {
       <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-6">Enquiries Inbox</h1>
       <div className="space-y-4">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading enquiries...</div>
+          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading enquiries...</div>
         ) : enquiries.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 p-8 text-center text-gray-500 rounded shadow dark:shadow-none">No enquiries found.</div>
+          <div className="bg-white dark:bg-slate-800 p-8 text-center text-gray-500 dark:text-slate-400 rounded shadow dark:shadow-none">No enquiries found.</div>
         ) : (
           enquiries.map(enquiry => (
             <div key={enquiry._id} className="bg-white dark:bg-slate-800 p-6 rounded shadow dark:shadow-none border-l-4 border-blue-500 flex flex-col md:flex-row justify-between">

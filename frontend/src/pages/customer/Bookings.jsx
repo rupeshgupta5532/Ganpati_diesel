@@ -99,7 +99,7 @@ export const CustomerBookings = () => {
     <div className="max-w-6xl mx-auto p-6 mt-8 font-sans">
       <div className="flex justify-between items-end mb-6 border-b border-slate-200 dark:border-slate-600 pb-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-brand-primary">My Bookings History</h1>
+          <h1 className="text-3xl font-extrabold text-brand-primary dark:text-slate-100">My Bookings History</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Track the status of your vehicle repairs and part replacements.</p>
         </div>
         <Link to="/book-service" className="bg-brand-accent text-brand-primary font-bold px-6 py-2.5 rounded shadow dark:shadow-none hover:bg-yellow-400 transition-colors">
@@ -141,7 +141,7 @@ export const CustomerBookings = () => {
                   </span>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 mb-2 font-medium"><span className="font-bold text-slate-800 dark:text-slate-100">Problem:</span> {booking.problemDescription}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-mono bg-slate-50 dark:bg-slate-900 inline-block px-2 py-1 rounded border border-slate-100 dark:border-slate-700">Requested: {new Date(booking.preferredDate).toLocaleDateString()}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-mono bg-slate-50 dark:bg-slate-900 inline-block px-2 py-1 rounded border border-slate-100 dark:border-slate-700">Requested: {new Date(booking.preferredDate).toLocaleDateString()} at {booking.preferredTime || 'N/A'}</p>
               </div>
               <div className="mt-4 md:mt-0 flex flex-col space-y-3 min-w-[140px]">
                 <Link to={`/bookings/${booking._id}`} className="bg-brand-primary text-white px-4 py-2 rounded text-sm font-bold hover:bg-slate-800 text-center tracking-wide transition-colors">

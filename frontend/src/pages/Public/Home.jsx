@@ -82,7 +82,7 @@ export const Home = () => {
            </div>
            <div className="md:w-1/2">
              <h2 className="text-brand-accent font-bold tracking-widest uppercase text-sm mb-2">About Us</h2>
-             <h3 className="text-4xl font-extrabold text-brand-primary mb-6 leading-tight">21 Years of Diesel Engineering Excellence</h3>
+             <h3 className="text-4xl font-extrabold text-brand-primary dark:text-slate-100 mb-6 leading-tight">21 Years of Diesel Engineering Excellence</h3>
              <p className="text-gray-600 mb-6 leading-relaxed">
                Since 2004, New Shree Ganpati Diesel Service has been at the forefront of automotive diesel engineering in Birgunj. We combine decades of traditional mechanical expertise with the latest in digital diagnostic technology.
              </p>
@@ -91,7 +91,7 @@ export const Home = () => {
                <li className="flex items-center text-brand-primary font-semibold"><span className="text-brand-accent mr-3">✓</span> Genuine OEM Parts</li>
                <li className="flex items-center text-brand-primary font-semibold"><span className="text-brand-accent mr-3">✓</span> Precision Calibration</li>
              </ul>
-             <Link to="/about" className="inline-block border-2 border-brand-primary text-brand-primary px-8 py-3 rounded font-bold hover:bg-brand-primary hover:text-white transition-colors">
+             <Link to="/about" className="inline-block border-2 border-brand-primary text-brand-primary px-8 py-3 rounded font-bold hover:bg-brand-primary hover:text-white transition-colors dark:text-brand-accent">
                Learn More About Us
              </Link>
            </div>

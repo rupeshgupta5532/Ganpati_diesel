@@ -71,6 +71,7 @@ export const PublicLayout = () => {
           </nav>
           
           <div className="md:hidden flex items-center space-x-4">
+            <ThemeToggle />
             <button className="text-white text-3xl focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               ☰
             </button>

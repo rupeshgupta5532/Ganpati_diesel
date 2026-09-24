@@ -55,7 +55,7 @@ export const AdminBookings = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-brand-primary">Booking Management</h1>
+        <h1 className="text-3xl font-bold text-brand-primary dark:text-slate-100">Booking Management</h1>
       </div>
 
       {error && <div className="bg-red-50 text-red-700 p-4 rounded mb-6 font-semibold border-l-4 border-red-500">{error}</div>}
@@ -69,7 +69,7 @@ export const AdminBookings = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 dark:bg-slate-900 border-b border-brand-border/10 text-slate-500 dark:text-slate-400 text-sm uppercase tracking-wider">
-                <th className="py-4 px-6 font-semibold">Date</th>
+                <th className="py-4 px-6 font-semibold">Date & Time</th>
                 <th className="py-4 px-6 font-semibold">Customer</th>
                 <th className="py-4 px-6 font-semibold">Vehicle</th>
                 <th className="py-4 px-6 font-semibold">Status</th>
@@ -78,9 +78,9 @@ export const AdminBookings = () => {
             </thead>
             <tbody className="divide-y divide-brand-border/5">
               {bookings.map(booking => (
-                <tr key={booking._id} className="hover:bg-slate-50 dark:bg-slate-900 transition-colors">
+                <tr key={booking._id} className="hover:bg-slate-50 dark:bg-slate-900 transition-colors text-slate-800 dark:text-slate-200">
                   <td className="py-4 px-6 text-slate-700 dark:text-slate-200 whitespace-nowrap font-medium">
-                    {new Date(booking.preferredDate).toLocaleDateString()}
+                    {new Date(booking.preferredDate).toLocaleDateString()}<br/><span className="text-sm text-slate-500">{booking.preferredTime || 'N/A'}</span>
                   </td>
                   <td className="py-4 px-6">
                     <div className="font-bold text-brand-primary">{booking.customerName}</div>
@@ -130,14 +130,14 @@ export const AdminBookings = () => {
             
             <div className="p-6 space-y-4 bg-slate-50 dark:bg-slate-900">
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Customer Issue Description</label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1 text-slate-800 dark:text-slate-200">Customer Issue Description</label>
                 <div className="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
                   {selectedBooking.problemDescription || <span className="italic text-slate-400">No issue described by customer.</span>}
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1 mt-4">Internal Admin Notes</label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1 mt-4 text-slate-800 dark:text-slate-200">Internal Admin Notes</label>
                 <textarea 
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}

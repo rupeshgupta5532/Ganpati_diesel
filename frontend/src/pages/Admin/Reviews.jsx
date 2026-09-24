@@ -29,7 +29,7 @@ export const AdminReviews = () => {
       <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-6">Manage Reviews</h1>
       <div className="bg-white dark:bg-slate-800 rounded shadow dark:shadow-none overflow-x-auto">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading reviews...</div>
+          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading reviews...</div>
         ) : (
           <table className="w-full text-left border-collapse">
             <thead>
@@ -44,7 +44,7 @@ export const AdminReviews = () => {
             </thead>
             <tbody>
               {reviews.map(review => (
-                <tr key={review._id} className="border-b hover:bg-slate-50 dark:bg-slate-900">
+                <tr key={review._id} className="border-b hover:bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
                   <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-300">{new Date(review.createdAt).toLocaleDateString()}</td>
                   <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-100">{review.userId?.name || 'Unknown'}</td>
                   <td className="py-3 px-4 text-yellow-500 font-bold">{review.rating} / 5</td>

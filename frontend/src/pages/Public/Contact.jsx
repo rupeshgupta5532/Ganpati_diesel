@@ -54,7 +54,7 @@ export const PublicContact = () => {
           <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border border-slate-100 dark:border-slate-700 flex items-start space-x-6 hover:shadow dark:shadow-none-md dark:shadow dark:shadow-none-none transition-shadow dark:shadow-none">
             <div className="text-4xl">📍</div>
             <div>
-              <h3 className="text-xl font-bold text-brand-primary mb-2">Visit Our Workshop</h3>
+              <h3 className="text-xl font-bold text-brand-primary dark:text-slate-100 mb-2">Visit Our Workshop</h3>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium">{contactInfo?.address || 'Brahma Chowk, Birgunj, Parsa, Nepal'}</p>
             </div>
           </div>
@@ -62,7 +62,7 @@ export const PublicContact = () => {
           <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border border-slate-100 dark:border-slate-700 flex items-start space-x-6 hover:shadow dark:shadow-none-md dark:shadow dark:shadow-none-none transition-shadow dark:shadow-none">
             <div className="text-4xl">📞</div>
             <div>
-              <h3 className="text-xl font-bold text-brand-primary mb-2">Call Us Directly</h3>
+              <h3 className="text-xl font-bold text-brand-primary dark:text-slate-100 mb-2">Call Us Directly</h3>
               <p className="text-slate-700 dark:text-slate-200 text-lg font-bold">{contactInfo?.primaryPhone || '+977-9800000000'}</p>
               {contactInfo?.whatsapp && <p className="text-brand-accent font-bold text-sm mt-1">WhatsApp Available</p>}
             </div>
@@ -71,7 +71,7 @@ export const PublicContact = () => {
           <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border border-slate-100 dark:border-slate-700 flex items-start space-x-6 hover:shadow dark:shadow-none-md dark:shadow dark:shadow-none-none transition-shadow dark:shadow-none">
             <div className="text-4xl">🕒</div>
             <div>
-              <h3 className="text-xl font-bold text-brand-primary mb-2">Business Hours</h3>
+              <h3 className="text-xl font-bold text-brand-primary dark:text-slate-100 mb-2">Business Hours</h3>
               <p className="text-slate-600 dark:text-slate-300 font-medium">{contactInfo?.openingHours || 'Sunday - Friday: 9:00 AM - 6:00 PM'}</p>
               <p className="text-slate-400 text-sm mt-1 font-bold">Closed on Saturdays</p>
             </div>
@@ -80,7 +80,7 @@ export const PublicContact = () => {
 
         {/* Contact Form */}
         <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow dark:shadow-none-xl border-t-4 border-brand-accent">
-           <h2 className="text-2xl font-bold text-brand-primary mb-6">Send an Enquiry</h2>
+           <h2 className="text-2xl font-bold text-brand-primary dark:text-slate-100 mb-6">Send an Enquiry</h2>
            
            {success && <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded mb-6 font-semibold">Thank you! Your enquiry has been successfully sent to our team.</div>}
            {error && <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6 font-semibold">{error}</div>}
@@ -88,19 +88,19 @@ export const PublicContact = () => {
            <form className="space-y-4" onSubmit={handleSubmit}>
              <div>
                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wider">Full Name</label>
-               <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none transition-colors" required />
+               <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none transition-colors text-slate-900 dark:text-white" required />
              </div>
              <div>
                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wider">Phone Number</label>
-               <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none transition-colors" required />
+               <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none transition-colors text-slate-900 dark:text-white" required />
              </div>
              <div>
                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wider">Subject</label>
-               <input type="text" name="subject" value={formData.subject} onChange={handleChange} placeholder="What is this regarding?" className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none transition-colors" required />
+               <input type="text" name="subject" value={formData.subject} onChange={handleChange} placeholder="What is this regarding?" className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none transition-colors text-slate-900 dark:text-white" required />
              </div>
              <div>
                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wider">Message</label>
-               <textarea rows="4" name="message" value={formData.message} onChange={handleChange} className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none transition-colors min-h-[120px]" required></textarea>
+               <textarea rows="4" name="message" value={formData.message} onChange={handleChange} className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none transition-colors min-h-[120px] text-slate-900 dark:text-white" required></textarea>
              </div>
              <button type="submit" disabled={submitting} className="w-full bg-brand-primary text-brand-accent font-bold py-4 rounded-lg hover:bg-slate-800 transition-colors shadow dark:shadow-none-lg disabled:opacity-50 text-lg uppercase tracking-wider mt-4">
                {submitting ? 'Sending...' : 'Submit Enquiry'}
