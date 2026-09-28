@@ -55,7 +55,7 @@ export const AdminServices = () => {
             </thead>
             <tbody>
               {services.map(service => (
-                <tr key={service._id} className="border-b hover:bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                <tr key={service._id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
                   <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-100">{service.name}</td>
                   <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{service.slug}</td>
                   <td className="py-3 px-4">

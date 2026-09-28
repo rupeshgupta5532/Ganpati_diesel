@@ -112,7 +112,7 @@ export const CustomerBookings = () => {
           <button 
             key={status}
             onClick={() => setFilter(status)}
-            className={`px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors tracking-wide ${filter === status ? 'bg-brand-primary text-white shadow dark:shadow-none-md dark:shadow dark:shadow-none-none' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-900'}`}
+            className={`px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors tracking-wide ${filter === status ? 'bg-brand-primary text-white shadow dark:shadow-none-md dark:shadow dark:shadow-none-none' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900'}`}
           >
             {status.replace('_', ' ')}
           </button>

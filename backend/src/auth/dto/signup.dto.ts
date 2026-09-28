@@ -19,4 +19,9 @@ export class SignupDto {
   @IsString()
   @IsOptional()
   phone?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  otp?: string;
 }

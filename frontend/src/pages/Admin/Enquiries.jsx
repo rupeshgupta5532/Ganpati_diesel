@@ -47,16 +47,16 @@ export const AdminEnquiries = () => {
                  </div>
                </div>
                <div className="mt-4 md:mt-0 md:ml-6 flex flex-col justify-center">
-                 <select 
+                                  <select 
                    value={enquiry.status}
                    onChange={(e) => updateStatus(enquiry._id, e.target.value)}
-                   className="border rounded p-2 text-sm bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
+                   className="border rounded p-2 text-sm bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
                  >
-                   <option value="NEW">NEW</option>
-                   <option value="CONTACTED">CONTACTED</option>
-                   <option value="IN_PROGRESS">IN_PROGRESS</option>
-                   <option value="RESOLVED">RESOLVED</option>
-                   <option value="CLOSED">CLOSED</option>
+                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="NEW">NEW</option>
+                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="CONTACTED">CONTACTED</option>
+                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="IN_PROGRESS">IN_PROGRESS</option>
+                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="RESOLVED">RESOLVED</option>
+                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="CLOSED">CLOSED</option>
                  </select>
                </div>
             </div>

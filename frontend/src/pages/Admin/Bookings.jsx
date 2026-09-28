@@ -78,7 +78,7 @@ export const AdminBookings = () => {
             </thead>
             <tbody className="divide-y divide-brand-border/5">
               {bookings.map(booking => (
-                <tr key={booking._id} className="hover:bg-slate-50 dark:bg-slate-900 transition-colors text-slate-800 dark:text-slate-200">
+                <tr key={booking._id} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 transition-colors text-slate-800 dark:text-slate-200">
                   <td className="py-4 px-6 text-slate-700 dark:text-slate-200 whitespace-nowrap font-medium">
                     {new Date(booking.preferredDate).toLocaleDateString()}<br/><span className="text-sm text-slate-500">{booking.preferredTime || 'N/A'}</span>
                   </td>
@@ -91,17 +91,17 @@ export const AdminBookings = () => {
                     <div className="text-sm text-slate-500 dark:text-slate-400">{booking.vehicleModel}</div>
                   </td>
                   <td className="py-4 px-6">
-                    <select 
+                                        <select 
                       value={booking.status}
                       onChange={(e) => handleStatusChange(booking._id, e.target.value)}
-                      className="border border-slate-200 dark:border-slate-600 rounded p-2 text-sm bg-white dark:bg-slate-800 focus:border-brand-accent focus:ring-0 outline-none font-semibold cursor-pointer shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none"
+                      className="border border-slate-200 dark:border-slate-600 rounded p-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:border-brand-accent focus:ring-0 outline-none font-semibold cursor-pointer shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none"
                     >
-                      <option value="PENDING">PENDING</option>
-                      <option value="CONFIRMED">CONFIRMED</option>
-                      <option value="IN_PROGRESS">IN_PROGRESS</option>
-                      <option value="COMPLETED">COMPLETED</option>
-                      <option value="CANCELLED">CANCELLED</option>
-                      <option value="REJECTED">REJECTED</option>
+                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="PENDING">PENDING</option>
+                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="CONFIRMED">CONFIRMED</option>
+                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="IN_PROGRESS">IN_PROGRESS</option>
+                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="COMPLETED">COMPLETED</option>
+                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="CANCELLED">CANCELLED</option>
+                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="REJECTED">REJECTED</option>
                     </select>
                   </td>
                   <td className="py-4 px-6 whitespace-nowrap">
@@ -150,7 +150,7 @@ export const AdminBookings = () => {
             <div className="px-6 py-4 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 flex justify-end space-x-3">
               <button 
                 onClick={closeNotesModal} 
-                className="px-6 py-2.5 rounded-lg font-bold text-slate-600 dark:text-slate-300 border-2 border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-900 transition-colors"
+                className="px-6 py-2.5 rounded-lg font-bold text-slate-600 dark:text-slate-300 border-2 border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 transition-colors"
               >
                 Cancel
               </button>

@@ -20,8 +20,8 @@ const forgotResetEndpoints = `
 
 if (!code.includes('forgot-password')) {
   code = code.replace(
-    /  @Get\('profile'\)/,
-    `${forgotResetEndpoints}\n\n  @Get('profile')`
+    /@Get\('profile'\)/,
+    `${forgotResetEndpoints}\n\n@Get('profile')`
   );
   fs.writeFileSync(file, code);
 }

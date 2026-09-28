@@ -44,7 +44,7 @@ export const AdminReviews = () => {
             </thead>
             <tbody>
               {reviews.map(review => (
-                <tr key={review._id} className="border-b hover:bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                <tr key={review._id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
                   <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-300">{new Date(review.createdAt).toLocaleDateString()}</td>
                   <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-100">{review.userId?.name || 'Unknown'}</td>
                   <td className="py-3 px-4 text-yellow-500 font-bold">{review.rating} / 5</td>

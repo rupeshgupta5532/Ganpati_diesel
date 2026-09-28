@@ -1,3 +1,9 @@
+const fs = require('fs');
+const file = 'src/features/auth/SignupForm.jsx';
+let code = fs.readFileSync(file, 'utf8');
+
+// I will just completely rewrite the render section properly
+const fullComponent = `
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
@@ -208,3 +214,6 @@ export const SignupForm = () => {
     </div>
   );
 };
+`;
+
+fs.writeFileSync(file, fullComponent.trim());

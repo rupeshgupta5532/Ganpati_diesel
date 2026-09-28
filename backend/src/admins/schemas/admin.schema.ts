@@ -29,6 +29,12 @@ export class Admin {
 
   @Prop({ default: true })
   isActive: boolean;
+
+  @Prop()
+  resetPasswordOtp: string;
+
+  @Prop()
+  resetPasswordExpires: Date;
 }
 
 export const AdminSchema = SchemaFactory.createForClass(Admin);

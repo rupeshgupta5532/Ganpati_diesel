@@ -1,14 +1,42 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import api from '../../api/axios';
+import toast from 'react-hot-toast';
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
-    // Simulate API call
-    setTimeout(() => setSubmitted(true), 1000);
+    setLoading(true);
+    try {
+      await api.post('/auth/forgot-password', { email });
+      toast.success('OTP sent to your email');
+      setStep(2);
+    } catch (error) {
+      toast.error('Failed to send OTP. Check email.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await api.post('/auth/reset-password', { email, otp, newPassword });
+      toast.success('Password reset successfully!');
+      setTimeout(() => navigate('/login'), 1500);
+    } catch (error) {
+      toast.error('Invalid OTP or failed to reset password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -24,19 +52,12 @@ export const ForgotPassword = () => {
           </div>
           <h2 className="text-2xl font-bold tracking-tight">Reset Password</h2>
           <p className="text-sm text-brand-text-secondary mt-2">
-            Enter your email to receive recovery instructions.
+            {step === 1 ? 'Enter your email to receive recovery instructions.' : 'Enter the OTP sent to your email and your new password.'}
           </p>
         </div>
         
-        {submitted ? (
-           <div className="p-8 text-center space-y-4">
-              <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
-              <h3 className="text-xl font-bold text-brand-primary dark:text-slate-100">Check your email</h3>
-              <p className="text-gray-500 dark:text-slate-400">We've sent password reset instructions to <strong>{email}</strong>.</p>
-              <Link to="/login" className="inline-block mt-4 text-brand-accent font-bold hover:underline">Return to Login</Link>
-           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        {step === 1 ? (
+          <form onSubmit={handleSendOtp} className="p-8 space-y-6">
             <div>
               <label className="block text-brand-primary dark:text-slate-200 text-sm font-bold mb-2 uppercase tracking-wide">Email Address</label>
               <input 
@@ -49,13 +70,52 @@ export const ForgotPassword = () => {
               />
             </div>
             
-            <button type="submit" className="w-full bg-brand-accent text-brand-primary py-4 rounded-lg font-bold text-lg shadow dark:shadow-none-lg hover:bg-brand-accent-hover transition-colors">
-              Send Reset Link
+            <button type="submit" disabled={loading} className="w-full bg-brand-accent text-brand-primary py-4 rounded-lg font-bold text-lg shadow dark:shadow-none-lg hover:bg-brand-accent-hover transition-colors disabled:opacity-50">
+              {loading ? 'Sending...' : 'Send Reset OTP'}
             </button>
             
             <p className="text-center text-sm text-gray-500 dark:text-slate-400 mt-6">
               Remember your password? <Link to="/login" className="text-brand-primary font-bold hover:text-brand-accent transition-colors dark:text-brand-accent">Sign In</Link>
             </p>
+          </form>
+        ) : (
+          <form onSubmit={handleResetPassword} className="p-8 space-y-6">
+            <div>
+              <label className="block text-brand-primary dark:text-slate-200 text-sm font-bold mb-2 uppercase tracking-wide">Email Address</label>
+              <input 
+                type="email" 
+                value={email} 
+                disabled
+                className="w-full border-2 border-gray-200 p-3 rounded-lg bg-gray-100 text-gray-500 dark:bg-slate-800 dark:border-slate-700" 
+              />
+            </div>
+            <div>
+              <label className="block text-brand-primary dark:text-slate-200 text-sm font-bold mb-2 uppercase tracking-wide">Enter 6-Digit OTP</label>
+              <input 
+                type="text" 
+                value={otp} 
+                onChange={e => setOtp(e.target.value)} 
+                placeholder="000000"
+                maxLength={6}
+                className="w-full border-2 border-gray-200 p-3 rounded-lg focus:border-brand-accent focus:ring-0 outline-none transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700 text-center tracking-widest text-xl font-bold" 
+                required 
+              />
+            </div>
+            <div>
+              <label className="block text-brand-primary dark:text-slate-200 text-sm font-bold mb-2 uppercase tracking-wide">New Password</label>
+              <input 
+                type="password" 
+                value={newPassword} 
+                onChange={e => setNewPassword(e.target.value)} 
+                placeholder="Enter new password"
+                className="w-full border-2 border-gray-200 p-3 rounded-lg focus:border-brand-accent focus:ring-0 outline-none transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" 
+                required 
+              />
+            </div>
+            
+            <button type="submit" disabled={loading} className="w-full bg-brand-accent text-brand-primary py-4 rounded-lg font-bold text-lg shadow dark:shadow-none-lg hover:bg-brand-accent-hover transition-colors disabled:opacity-50">
+              {loading ? 'Resetting...' : 'Reset Password'}
+            </button>
           </form>
         )}
       </div>

@@ -56,7 +56,7 @@ export const AdminProducts = () => {
             </thead>
             <tbody>
               {products.map(product => (
-                <tr key={product._id} className="border-b hover:bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                <tr key={product._id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
                   <td className="py-3 px-4">
                     {product.image ? (
                       <img src={product.image} alt={product.name} className="w-12 h-12 rounded object-cover" />

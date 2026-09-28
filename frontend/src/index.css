@@ -70,3 +70,10 @@ html.dark ::-webkit-calendar-picker-indicator {
 .dark input[type="date"] {
     color-scheme: dark;
 }
+
+/* Restore native dropdown arrows stripped by Tailwind Preflight */
+select {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  -moz-appearance: auto !important;
+}

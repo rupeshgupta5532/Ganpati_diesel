@@ -51,7 +51,7 @@ export const AdminProjects = () => {
             </thead>
             <tbody>
               {projects.map(project => (
-                <tr key={project._id} className="border-b hover:bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                <tr key={project._id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
                   <td className="py-3 px-4">
                     {project.afterImage ? (
                       <img src={project.afterImage} alt="After" className="w-16 h-12 rounded object-cover" />

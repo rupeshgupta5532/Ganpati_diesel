@@ -5,6 +5,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from './mail.service';
+import { RedisService } from '../redis/redis.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -21,6 +23,8 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Admin.name) private adminModel: Model<AdminDocument>,
     private jwtService: JwtService,
+    private mailService: MailService,
+    private redisService: RedisService,
   ) {}
 
   async userSignup(signupDto: SignupDto) {
@@ -28,6 +32,23 @@ export class AuthService {
       email: signupDto.email,
     });
     if (existingUser) throw new ConflictException('Email already in use');
+
+    if (!signupDto.otp) {
+      // Step 1: Send OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      await this.redisService.set(`signup_otp:${signupDto.email}`, otp, 900); // 15 mins
+      await this.mailService.sendSignupOtp(signupDto.email, otp);
+      return { requiresOtp: true, message: 'OTP sent to email for verification' };
+    }
+
+    // Step 2: Verify OTP
+    const storedOtp = await this.redisService.get(`signup_otp:${signupDto.email}`);
+    if (!storedOtp || storedOtp !== signupDto.otp) {
+      throw new UnauthorizedException('Invalid or expired OTP');
+    }
+
+    // Valid OTP, proceed with registration
+    await this.redisService.del(`signup_otp:${signupDto.email}`);
 
     const passwordHash = await bcrypt.hash(signupDto.password, 10);
     const newUser = new this.userModel({
@@ -97,6 +118,57 @@ export class AuthService {
   }
 
   
+  
+  async forgotPassword(email: string) {
+    let user = await this.userModel.findOne({ email });
+    let isUser = true;
+    if (!user) {
+      user = await this.adminModel.findOne({ email }) as any;
+      isUser = false;
+    }
+    
+    if (!user) {
+      // Return success anyway to prevent email enumeration
+      return { success: true, message: 'If email exists, OTP sent' };
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + 15);
+
+    user.resetPasswordOtp = otp;
+    user.resetPasswordExpires = expires;
+    await user.save();
+
+    await this.mailService.sendPasswordResetOtp(email, otp);
+
+    return { success: true, message: 'If email exists, OTP sent' };
+  }
+
+  async resetPassword(email: string, otp: string, newPassword: string) {
+    let user = await this.userModel.findOne({ email, resetPasswordOtp: otp, resetPasswordExpires: { $gt: new Date() } });
+    let isUser = true;
+    
+    if (!user) {
+      user = await this.adminModel.findOne({ email, resetPasswordOtp: otp, resetPasswordExpires: { $gt: new Date() } }) as any;
+      isUser = false;
+    }
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid or expired OTP');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    user.passwordHash = passwordHash;
+    user.resetPasswordOtp = "" as any;
+    user.resetPasswordExpires = null as any;
+    
+    await user.save();
+    return { success: true, message: 'Password reset successfully' };
+  }
+
+
   async getProfile(userId: string, role: string) {
     if (role === Role.USER) {
       const user = await this.userModel.findById(userId).select('-passwordHash -refreshTokenHash').exec();
