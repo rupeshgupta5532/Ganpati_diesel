@@ -36,7 +36,6 @@ export class ServicesService {
     if (cached) {
       return JSON.parse(cached);
     }
-
     const services = await this.serviceModel
       .find({ isActive: true })
       .sort({ displayOrder: 1 })
@@ -49,7 +48,7 @@ export class ServicesService {
   async findAllAdmin() {
     return this.serviceModel.find().sort({ displayOrder: 1 }).exec();
   }
-
+  
   async findOneBySlug(slug: string) {
     const service = await this.serviceModel
       .findOne({ slug, isActive: true })

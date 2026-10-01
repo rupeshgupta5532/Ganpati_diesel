@@ -15,7 +15,6 @@ export class ContactService {
   async getContact() {
     const cached = await this.redisService.get('cms:contact');
     if (cached) return JSON.parse(cached);
-
     const contact = await this.contactModel.findOne({ key: 'main' }).exec();
     if (!contact) return {};
 

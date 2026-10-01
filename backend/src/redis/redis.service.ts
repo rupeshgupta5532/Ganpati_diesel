@@ -10,7 +10,7 @@ export class RedisService implements OnModuleDestroy {
 
   constructor(private configService: ConfigService) {
     const url =
-      this.configService.get<string>('REDIS_URL') || 'redis://localhost:6379';
+      this.configService.get<string>('REDIS_URI') || this.configService.get<string>('REDIS_URI') || 'redis://localhost:6379';
     this.client = new Redis(url);
     this.pubClient = new Redis(url);
     this.subClient = new Redis(url);
@@ -20,15 +20,25 @@ export class RedisService implements OnModuleDestroy {
     this.subClient.on('error', (err) => {});
   }
 
-  async get(key: string): Promise<string | null> {
-    return this.client.get(key);
+    async get(key: string): Promise<string | null> {
+    try {
+      return await this.client.get(key);
+    } catch (error) {
+      console.error('Redis GET error:', error.message);
+      return null;
+    }
   }
 
-  async set(key: string, value: string, ttlSeconds?: number): Promise<'OK'> {
-    if (ttlSeconds) {
-      return this.client.set(key, value, 'EX', ttlSeconds);
+    async set(key: string, value: string, ttlSeconds?: number): Promise<'OK' | null> {
+    try {
+      if (ttlSeconds) {
+        return await this.client.set(key, value, 'EX', ttlSeconds);
+      }
+      return await this.client.set(key, value);
+    } catch (error) {
+      console.error('Redis SET error:', error.message);
+      return null;
     }
-    return this.client.set(key, value);
   }
 
   async del(key: string): Promise<number> {
