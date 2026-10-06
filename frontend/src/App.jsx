@@ -8,6 +8,7 @@ import { Services } from './pages/Services';
 import { Products } from './pages/Products';
 import { Projects } from './pages/Projects';
 import { Reviews } from './pages/Reviews';
+import { ContactPage } from './pages/ContactPage';
 import { BookService } from './pages/BookService';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { AuthProvider } from './context/AuthContext';
@@ -25,6 +26,7 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/reviews" element={<Reviews />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/book-service" element={<BookService />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/profile" element={<Profile />} />

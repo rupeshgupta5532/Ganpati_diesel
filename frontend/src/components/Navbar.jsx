@@ -18,7 +18,7 @@ const Navbar = () => {
     { name: 'Products', path: '/products' },
     { name: 'Projects', path: '/projects' },
     { name: 'Reviews', path: '/reviews' },
-    { name: 'Contact', path: '/#contact' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   const { isAuthenticated } = useAuth();

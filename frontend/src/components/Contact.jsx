@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, ArrowRight } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, ArrowRight, MessageCircle } from 'lucide-react';
 
 const Contact = () => {
   return (
@@ -105,6 +105,15 @@ const Contact = () => {
                 <p className="text-white text-sm font-medium">Uptime Schedule</p>
                 <p className="text-gray-500 text-sm font-light">Node: Mon-Fri 7AM-6PM | Mobile: 24/7</p>
               </div>
+            </div>
+
+            <div className="pt-4 flex flex-col sm:flex-row gap-4">
+              <a href="tel:+918969364937" className="flex-1 bg-white/10 hover:bg-white/20 border border-white/10 text-white py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg">
+                <Phone className="w-5 h-5 text-primary" /> Initiate Call
+              </a>
+              <a href="https://wa.me/918969364937" target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#25D366]/20 hover:bg-[#25D366]/30 border border-[#25D366]/50 text-white py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg">
+                <MessageCircle className="w-5 h-5 text-[#25D366]" /> Chat with Admin
+              </a>
             </div>
           </motion.div>
 
