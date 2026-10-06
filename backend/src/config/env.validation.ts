@@ -6,7 +6,7 @@ export const envValidationSchema = Joi.object({
     .default('development'),
   PORT: Joi.number().default(5000),
   API_PREFIX: Joi.string().default('/api/v1'),
-  CORS_ORIGIN: Joi.string().default('http://localhost:5173'),
+  FRONTEND_URL: Joi.string().default('http://localhost:5173'),
   MONGODB_URI: Joi.string().uri().required(),
   REDIS_URI: Joi.string().uri().required(),
 });

@@ -36,11 +36,11 @@ export class AuthController {
   async googleCallback(@Req() req:any, @Res() res:any){
     try {
       const authData = await this.authService.googleLogin(req.user);
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://ganpatidiesel.netlify.app' : 'http://localhost:5173');
       const redirectUrl = `${frontendUrl}/oauth-callback?accessToken=${authData.accessToken}&user=${encodeURIComponent(JSON.stringify(authData.user))}`;
       res.redirect(redirectUrl);
     } catch (error) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://ganpatidiesel.netlify.app' : 'http://localhost:5173');
       res.redirect(`${frontendUrl}/login?error=Google_Auth_Failed`);
     }
   }
@@ -58,11 +58,11 @@ export class AuthController {
   async githubCallback(@Req() req: any, @Res() res: any) {
     try {
       const authData = await this.authService.githubLogin(req.user);
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://ganpatidiesel.netlify.app' : 'http://localhost:5173');
       const redirectUrl = `${frontendUrl}/oauth-callback?accessToken=${authData.accessToken}&user=${encodeURIComponent(JSON.stringify(authData.user))}`;
       res.redirect(redirectUrl);
     } catch (error) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://ganpatidiesel.netlify.app' : 'http://localhost:5173');
       res.redirect(`${frontendUrl}/login?error=GitHub_Auth_Failed`);
     }
   }
