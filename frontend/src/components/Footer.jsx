@@ -33,7 +33,7 @@ const Footer = () => {
             <p className="text-gray-500 mb-6 text-sm font-light leading-relaxed">
               Network failure? Our mobile nodes deploy 24/7.
             </p>
-            <a href="tel:+1234567890" className="inline-block bg-white/10 hover:bg-white/20 text-white font-medium text-sm px-5 py-2.5 rounded-full transition-colors border border-white/10">
+            <a href="tel:+918969364937" className="inline-block bg-white/10 hover:bg-white/20 text-white font-medium text-sm px-5 py-2.5 rounded-full transition-colors border border-white/10">
               Initialize Call
             </a>
           </div>

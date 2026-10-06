@@ -4,8 +4,20 @@ import Footer from '../components/Footer';
 import DeleteButton from '../components/DeleteButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Mail, Phone, Truck, MapPin, Navigation, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export const BookService = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isLoading, isAuthenticated, navigate]);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -71,6 +83,10 @@ export const BookService = () => {
   const handleDelete = (id) => {
     setBookings(prev => prev.filter(b => b.id !== id));
   };
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-darker flex items-center justify-center text-primary">Loading...</div>;
+  }
 
   return (
     <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-x-hidden flex flex-col">

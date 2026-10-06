@@ -1,82 +1,232 @@
-import React from 'react';
-import { Link } from 'react-router';
-import { ArrowRight, Lock, Mail } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { useNavigate, Link } from 'react-router';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 export const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/user/login', { email, password });
+      const responseData = response.data || response;
+      if (responseData && responseData.accessToken) {
+        await login(responseData.accessToken, responseData.user);
+        toast.success('Login successful!');
+        navigate('/book-service');
+      }
+    } catch (err) {
+      // Toast handles error automatically via interceptor, or we could handle it here
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="font-sans bg-darker text-gray-100 min-h-screen flex items-center justify-center relative overflow-hidden px-4">
-      {/* Background blobs */}
-      <div className="blob blob-1"></div>
-      <div className="blob blob-2"></div>
+    <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-x-hidden flex flex-col">
+      <div className="blob blob-1 fixed"></div>
+      <div className="blob blob-2 fixed"></div>
       
-      {/* Grid */}
-      <div className="absolute inset-0 z-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wMyIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTAgNjBoNjBNNjAgMGYtNjAgNjAiLz48L2c+PC9zdmc+')] opacity-50 pointer-events-none"></div>
-
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md relative z-10"
-      >
-        <Link to="/" className="flex items-center justify-center gap-3 mb-8 cursor-pointer group">
-          <img src="/logo.png" alt="Ganpati Diesel" className="h-12 w-12 rounded-full border border-white/20 group-hover:border-primary transition-colors" />
-          <span className="font-semibold text-2xl tracking-tight text-white group-hover:text-primary transition-colors">
-            Ganpati<span className="text-gray-400 font-light group-hover:text-white transition-colors">Diesel</span>
-          </span>
-        </Link>
-
-        <div className="glass-card rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden">
-          {/* Subtle inner glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-
-          <h2 className="text-2xl font-bold mb-2 text-white">Welcome Back</h2>
-          <p className="text-gray-400 text-sm mb-8">Enter your credentials to access your portal</p>
-
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Email Address</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
-                  <Mail className="h-4 w-4" />
-                </div>
-                <input 
-                  type="email" 
-                  placeholder="name@company.com" 
-                  className="w-full bg-dark/50 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                />
+      <Navbar />
+      
+      <main className="flex-grow flex items-center justify-center relative z-10 pt-32 pb-20 px-4">
+        <StyledWrapper>
+          <div className="container">
+            <div className="heading">Login</div>
+            <form onSubmit={handleLogin} className="form">
+              <input required className="input" type="email" name="email" id="email" placeholder="E-mail" />
+              <input required className="input" type="password" name="password" id="password" placeholder="Password" />
+              <span className="forgot-password"><a href="#">Forgot Password ?</a></span>
+              <input className="login-button" type="submit" value={loading ? "Logging in..." : "Login"} disabled={loading} />
+            </form>
+            <div className="social-account-container">
+              <span className="title">Or Sign in with</span>
+              <div className="social-accounts">
+                <button className="social-button google">
+                  <svg className="svg" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 488 512">
+                    <path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" />
+                  </svg>
+                </button>
+                <button className="social-button apple">
+                  <svg className="svg" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+                  </svg>
+                </button>
+                <button className="social-button twitter">
+                  <svg className="svg" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+                    <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+                  </svg>
+                </button>
               </div>
             </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">Password</label>
-                <a href="#" className="text-xs text-primary hover:text-primary-hover transition-colors">Forgot password?</a>
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
-                  <Lock className="h-4 w-4" />
-                </div>
-                <input 
-                  type="password" 
-                  placeholder="••••••••" 
-                  className="w-full bg-dark/50 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                />
-              </div>
-            </div>
-
-            <button type="submit" className="w-full bg-primary hover:bg-primary-hover text-black font-semibold rounded-xl py-3 text-sm flex justify-center items-center gap-2 transition-all group mt-2">
-              Sign In <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-primary hover:text-primary-hover font-medium transition-colors">
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </motion.div>
+            <span className="agreement">Don't have an account? <Link to="/signup">Sign up</Link></span>
+          </div>
+        </StyledWrapper>
+      </main>
+      
+      <Footer />
     </div>
   );
-};
+}
+
+const StyledWrapper = styled.div`
+  .container {
+    width: 350px;
+    background: #15131e;
+    border-radius: 35px;
+    padding: 35px 30px;
+    border: none;
+    box-shadow: 0px 30px 40px -20px rgba(0,0,0,0.7);
+    margin: 20px;
+  }
+
+  .heading {
+    text-align: center;
+    font-weight: 800;
+    font-size: 28px;
+    color: #ffffff;
+    margin-bottom: 25px;
+  }
+
+  .form {
+    margin-top: 10px;
+  }
+
+  .form .input {
+    width: 100%;
+    background: #1c1929;
+    color: white;
+    border: none;
+    padding: 16px 20px;
+    border-radius: 14px;
+    margin-top: 15px;
+    box-shadow: none;
+    border-inline: 2px solid transparent;
+  }
+
+  .form .input::-moz-placeholder {
+    color: #8b8a9b;
+  }
+
+  .form .input::placeholder {
+    color: #8b8a9b;
+  }
+
+  .form .input:focus {
+    outline: none;
+    border-inline: 2px solid #6b66ff;
+  }
+
+  .form .forgot-password {
+    display: block;
+    margin-top: 15px;
+    margin-left: 5px;
+  }
+
+  .form .forgot-password a {
+    font-size: 12px;
+    color: #6b66ff;
+    text-decoration: none;
+  }
+
+  .form .login-button {
+    display: block;
+    width: 100%;
+    font-weight: 600;
+    font-size: 16px;
+    background: linear-gradient(90deg, #6b66ff 0%, #15e0a6 100%);
+    color: black;
+    padding-block: 16px;
+    margin: 30px auto 20px;
+    border-radius: 16px;
+    box-shadow: 0px 10px 20px -5px rgba(21, 224, 166, 0.2);
+    border: none;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .form .login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 15px 20px -5px rgba(21, 224, 166, 0.3);
+  }
+
+  .form .login-button:active {
+    transform: translateY(1px);
+    box-shadow: 0px 5px 10px -5px rgba(21, 224, 166, 0.2);
+  }
+
+  .social-account-container {
+    margin-top: 25px;
+  }
+
+  .social-account-container .title {
+    display: block;
+    text-align: center;
+    font-size: 10px;
+    color: rgb(170, 170, 170);
+  }
+
+  .social-account-container .social-accounts {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 5px;
+  }
+
+  .social-account-container .social-accounts .social-button {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 5px;
+    border-radius: 50%;
+    width: 40px;
+    aspect-ratio: 1;
+    display: grid;
+    place-content: center;
+    box-shadow: rgba(0,0,0,0.5) 0px 12px 10px -8px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .social-account-container .social-accounts .social-button .svg {
+    fill: white;
+    margin: auto;
+  }
+
+  .social-account-container .social-accounts .social-button:hover {
+    transform: scale(1.2);
+    background: rgba(255,255,255,0.1);
+  }
+
+  .social-account-container .social-accounts .social-button:active {
+    transform: scale(0.9);
+  }
+
+  .agreement {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 11px;
+    color: gray;
+  }
+
+  .agreement a {
+    text-decoration: none;
+    color: #7b61ff;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 5px;
+  }
+`;
