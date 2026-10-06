@@ -9,6 +9,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { RedisModule } from '../redis/redis.module';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { Admin, AdminSchema } from '../admins/schemas/admin.schema';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { GithubStrategy } from './strategies/github.strategy';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { Admin, AdminSchema } from '../admins/schemas/admin.schema';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, MailService],
+  providers: [AuthService, JwtStrategy, MailService,GoogleStrategy, GithubStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

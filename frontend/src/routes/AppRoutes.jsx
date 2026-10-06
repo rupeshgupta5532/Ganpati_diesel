@@ -6,6 +6,7 @@ import { CustomerLayout } from '../layouts/CustomerLayout';
 import { LoginForm } from '../features/auth/LoginForm';
 import { SignupForm } from '../features/auth/SignupForm';
 import { ForgotPassword } from '../features/auth/ForgotPassword';
+import { OAuthCallback } from '../features/auth/OAuthCallback';
 import { AdminDashboard } from '../pages/Admin/Dashboard';
 import { AdminServices } from '../pages/Admin/Services';
 import { ServiceForm } from '../pages/Admin/ServiceForm';
@@ -55,6 +56,7 @@ export const AppRoutes = () => {
         <Route path="/admin/login" element={<LoginForm isAdmin={true} />} />
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/oauth-callback" element={<OAuthCallback />} />
       </Route>
 
       <Route element={<CustomerLayout />}>

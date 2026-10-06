@@ -1,19 +1,24 @@
 const fs = require('fs');
-const file = 'src/features/auth/SignupForm.jsx';
+const file = 'src/features/auth/LoginForm.jsx';
 let code = fs.readFileSync(file, 'utf8');
 
 const googleBtn = `
-            <button type="submit" disabled={loading} className="w-full bg-brand-accent text-brand-primary dark:text-slate-300 py-3.5 rounded-lg font-bold text-lg shadow dark:shadow-none-lg hover:bg-brand-accent-hover transition-colors disabled:opacity-50 mt-4">
-              {loading ? 'Processing...' : 'Create Account'}
-            </button>
-            
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-brand-accent text-brand-primary dark:text-slate-300 py-4 rounded-lg font-bold text-lg shadow hover:bg-brand-accent-hover transition-colors disabled:opacity-50 mt-4"
+          >
+            {loading ? 'Authenticating...' : 'Secure Login'}
+          </button>
+          
+          {!isAdmin && (
             <div className="mt-4">
               <div className="relative flex items-center justify-center mb-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300 dark:border-slate-700"></div>
                 </div>
                 <div className="relative px-4 bg-white dark:bg-slate-800 text-sm text-gray-500">
-                  Or sign up with
+                  Or continue with
                 </div>
               </div>
               
@@ -34,11 +39,12 @@ const googleBtn = `
                 <span>Google</span>
               </button>
             </div>
+          )}
 `;
 
-if (!code.includes('Or sign up with')) {
+if (!code.includes('Or continue with')) {
   code = code.replace(
-    /<button type="submit" disabled=\{loading\} className="w-full bg-brand-accent text-brand-primary dark:text-slate-300 py-3\.5 rounded-lg font-bold text-lg shadow dark:shadow-none-lg hover:bg-brand-accent-hover transition-colors disabled:opacity-50 mt-4">\n\s*\{loading \? 'Processing\.\.\.' : 'Create Account'\}\n\s*<\/button>/,
+    /<button \n\s*type="submit" \n\s*disabled=\{loading\}\n\s*className="w-full bg-brand-accent text-brand-primary dark:text-slate-300 py-4 rounded-lg font-bold text-lg shadow dark:shadow-none-lg hover:bg-brand-accent-hover transition-colors disabled:opacity-50 mt-4"\n\s*>\n\s*\{loading \? 'Authenticating\.\.\.' : 'Secure Login'\}\n\s*<\/button>/,
     googleBtn.trim()
   );
   fs.writeFileSync(file, code);

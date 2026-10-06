@@ -2,16 +2,16 @@ const fs = require('fs');
 const file = 'src/users/schemas/user.schema.ts';
 let code = fs.readFileSync(file, 'utf8');
 
-code = code.replace(
-  /@Prop\(\{ default: true \}\)\n  isActive: boolean;/,
-  `@Prop({ default: true })\n  isActive: boolean;\n\n  @Prop()\n  resetPasswordOtp: string;\n\n  @Prop()\n  resetPasswordExpires: Date;`
-);
-fs.writeFileSync(file, code);
-
-const adminFile = 'src/admins/schemas/admin.schema.ts';
-let adminCode = fs.readFileSync(adminFile, 'utf8');
-adminCode = adminCode.replace(
-  /@Prop\(\{ default: true \}\)\n  isActive: boolean;/,
-  `@Prop({ default: true })\n  isActive: boolean;\n\n  @Prop()\n  resetPasswordOtp: string;\n\n  @Prop()\n  resetPasswordExpires: Date;`
-);
-fs.writeFileSync(adminFile, adminCode);
+if (!code.includes('githubId')) {
+  code = code.replace(
+    /@Prop\(\{ unique: true, sparse: true \}\)\n  googleId\?: string;/,
+    "@Prop({ unique: true, sparse: true })\n  googleId?: string;\n\n  @Prop({ unique: true, sparse: true })\n  githubId?: string;"
+  );
+  
+  code = code.replace(
+    /enum: \['local', 'google'\],/,
+    "enum: ['local', 'google', 'github'],"
+  );
+  
+  fs.writeFileSync(file, code);
+}

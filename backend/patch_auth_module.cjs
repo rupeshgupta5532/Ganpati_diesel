@@ -2,14 +2,15 @@ const fs = require('fs');
 const file = 'src/auth/auth.module.ts';
 let code = fs.readFileSync(file, 'utf8');
 
-if (!code.includes('RedisModule')) {
+if (!code.includes('GithubStrategy')) {
   code = code.replace(
-    /import \{ JwtStrategy \} from '\.\/strategies\/jwt\.strategy';/,
-    "import { JwtStrategy } from './strategies/jwt.strategy';\nimport { RedisModule } from '../redis/redis.module';"
+    /import \{ GoogleStrategy \} from '\.\/strategies\/google\.strategy';/,
+    "import { GoogleStrategy } from './strategies/google.strategy';\nimport { GithubStrategy } from './strategies/github.strategy';"
   );
+  
   code = code.replace(
-    /PassportModule,/,
-    "PassportModule,\n    RedisModule,"
+    /GoogleStrategy\]/,
+    "GoogleStrategy, GithubStrategy]"
   );
   fs.writeFileSync(file, code);
 }

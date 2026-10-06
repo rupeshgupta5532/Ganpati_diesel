@@ -15,8 +15,21 @@ export class User {
   @Prop()
   phone: string;
 
-  @Prop({ required: true })
-  passwordHash: string;
+  @Prop()
+  passwordHash?: string;
+
+
+  @Prop({ unique: true, sparse: true })
+  googleId?: string;
+
+  @Prop({ unique: true, sparse: true })
+  githubId?: string;
+
+  @Prop({
+    enum: ['local', 'google', 'github'],
+    default: 'local',
+  })
+  authProvider: string;
 
   @Prop({ type: String, enum: Role, default: Role.USER })
   role: Role;

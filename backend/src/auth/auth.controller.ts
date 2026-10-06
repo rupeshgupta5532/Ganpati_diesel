@@ -15,11 +15,57 @@ import { AdminSignupDto } from './dto/admin-signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-
+import { Req, Res } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({summary:'Login with Google'})
+  googleLogin(){
+    // Handled by passport
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({summary:'Google OAuth callback'})
+  async googleCallback(@Req() req:any, @Res() res:any){
+    try {
+      const authData = await this.authService.googleLogin(req.user);
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const redirectUrl = `${frontendUrl}/oauth-callback?accessToken=${authData.accessToken}&user=${encodeURIComponent(JSON.stringify(authData.user))}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      res.redirect(`${frontendUrl}/login?error=Google_Auth_Failed`);
+    }
+  }
+
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  @ApiOperation({ summary: 'Login with GitHub' })
+  githubLogin() {
+    // Handled by passport
+  }
+
+  @Get('github/callback')
+  @UseGuards(AuthGuard('github'))
+  @ApiOperation({ summary: 'GitHub OAuth callback' })
+  async githubCallback(@Req() req: any, @Res() res: any) {
+    try {
+      const authData = await this.authService.githubLogin(req.user);
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const redirectUrl = `${frontendUrl}/oauth-callback?accessToken=${authData.accessToken}&user=${encodeURIComponent(JSON.stringify(authData.user))}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      res.redirect(`${frontendUrl}/login?error=GitHub_Auth_Failed`);
+    }
+  }
 
   @Post('user/signup')
   @ApiOperation({ summary: 'Register a new user' })
