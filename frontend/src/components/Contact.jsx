@@ -112,7 +112,7 @@ const Contact = () => {
                 <Phone className="w-5 h-5 text-primary" /> Initiate Call
               </a>
               <a href="https://wa.me/918969364937" target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#25D366]/20 hover:bg-[#25D366]/30 border border-[#25D366]/50 text-white py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg">
-                <MessageCircle className="w-5 h-5 text-[#25D366]" /> Chat with Us
+                <MessageCircle className="w-5 h-5 text-[#25D366]" /> Chat with Uss
               </a>
             </div>
           </motion.div>
