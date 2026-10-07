@@ -19,16 +19,22 @@ export const Login = () => {
     
     setLoading(true);
     try {
-      const response = await api.post('/auth/user/login', { email, password });
+      // Unified login checks both users and admins
+      const response = await api.post('/auth/login', { email, password });
       const responseData = response.data || response;
       if (responseData && responseData.accessToken) {
         await login(responseData.accessToken, responseData.user);
         toast.success('Login successful!');
-        navigate('/book-service');
+        
+        // Redirect based on role
+        if (responseData.user.role === 'admin' || responseData.user.role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/book-service');
+        }
       }
     } catch (err) {
-      // Toast handles error automatically via interceptor, or we could handle it here
-      console.error(err);
+      console.error('Login failed:', err);
     } finally {
       setLoading(false);
     }

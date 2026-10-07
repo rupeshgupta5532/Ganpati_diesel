@@ -47,6 +47,13 @@ export class AuthController {
     return this.authService.adminLogin(loginDto);
   }
 
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Unified Login for user or admin' })
+  login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
+  }
+
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
