@@ -1,0 +1,248 @@
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { useNavigate, Link } from 'react-router';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
+
+export const Signup = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({});
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    const firstName = e.target.firstName.value;
+    const lastName = e.target.lastName.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const confirmPassword = e.target.confirmPassword.value;
+    
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const name = `${firstName} ${lastName}`.trim();
+      const response = await api.post('/auth/user/signup', { name, email, password });
+      
+      const responseData = response.data || response;
+      
+      if (responseData && responseData.requiresOtp) {
+        toast.success('OTP sent to your email!');
+        // Navigate to the new page, passing the form data securely in state
+        navigate('/verify-otp', { state: { name, email, password } });
+      } else if (responseData && responseData.accessToken) {
+         await login(responseData.accessToken, responseData.user);
+         toast.success('Account created successfully!');
+         navigate('/book-service');
+      } else {
+         toast.error('Unexpected response from server');
+         console.error('Unexpected response:', response);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-x-hidden flex flex-col">
+      <div className="blob blob-1 fixed"></div>
+      <div className="blob blob-2 fixed"></div>
+      
+      <Navbar />
+      
+      <main className="flex-grow flex items-center justify-center relative z-10 pt-32 pb-20 px-4">
+        <StyledWrapper>
+          <div className="container">
+            <div className="heading">Sign Up</div>
+            <form onSubmit={handleSignup} className="form">
+              <div className="name-group">
+                <input required className="input" type="text" name="firstName" id="firstName" placeholder="First Name" />
+                <input required className="input" type="text" name="lastName" id="lastName" placeholder="Last Name" />
+              </div>
+              <input required className="input" type="email" name="email" id="email" placeholder="E-mail" />
+              <input required className="input" type="password" name="password" id="password" placeholder="Password" />
+              <input required className="input" type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" />
+              <input className="login-button" type="submit" value={loading ? "Sending OTP..." : "Sign Up"} disabled={loading} />
+            </form>
+            <div className="social-account-container">
+              <span className="title">Or Sign up with</span>
+              <div className="social-accounts">
+                <button className="social-button google">
+                  <svg className="svg" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 488 512">
+                    <path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" />
+                  </svg>
+                </button>
+                <button className="social-button apple">
+                  <svg className="svg" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+                  </svg>
+                </button>
+                <button className="social-button twitter">
+                  <svg className="svg" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+                    <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <span className="agreement">Already have an account? <Link to="/login">Sign in</Link></span>
+          </div>
+        </StyledWrapper>
+      </main>
+      
+      <Footer />
+    </div>
+  );
+}
+
+const StyledWrapper = styled.div`
+  .container {
+    width: 350px;
+    background: #15131e;
+    border-radius: 35px;
+    padding: 35px 30px;
+    border: none;
+    box-shadow: 0px 30px 40px -20px rgba(0,0,0,0.7);
+    margin: 20px;
+  }
+
+  .heading {
+    text-align: center;
+    font-weight: 800;
+    font-size: 28px;
+    color: #ffffff;
+    margin-bottom: 25px;
+  }
+
+  .form {
+    margin-top: 10px;
+  }
+
+  .name-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .form .input {
+    width: 100%;
+    background: #1c1929;
+    color: white;
+    border: none;
+    padding: 16px 20px;
+    border-radius: 14px;
+    margin-top: 15px;
+    box-shadow: none;
+    border-inline: 2px solid transparent;
+  }
+
+  .form .input::-moz-placeholder {
+    color: #8b8a9b;
+  }
+
+  .form .input::placeholder {
+    color: #8b8a9b;
+  }
+
+  .form .input:focus {
+    outline: none;
+    border-inline: 2px solid #6b66ff;
+  }
+
+  .form .login-button {
+    display: block;
+    width: 100%;
+    font-weight: 600;
+    font-size: 16px;
+    background: linear-gradient(90deg, #6b66ff 0%, #15e0a6 100%);
+    color: black;
+    padding-block: 16px;
+    margin: 30px auto 20px;
+    border-radius: 16px;
+    box-shadow: 0px 10px 20px -5px rgba(21, 224, 166, 0.2);
+    border: none;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .form .login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 15px 20px -5px rgba(21, 224, 166, 0.3);
+  }
+
+  .form .login-button:active {
+    transform: translateY(1px);
+    box-shadow: 0px 5px 10px -5px rgba(21, 224, 166, 0.2);
+  }
+
+  .social-account-container {
+    margin-top: 25px;
+  }
+
+  .social-account-container .title {
+    display: block;
+    text-align: center;
+    font-size: 10px;
+    color: rgb(170, 170, 170);
+  }
+
+  .social-account-container .social-accounts {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 5px;
+  }
+
+  .social-account-container .social-accounts .social-button {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 5px;
+    border-radius: 50%;
+    width: 40px;
+    aspect-ratio: 1;
+    display: grid;
+    place-content: center;
+    box-shadow: rgba(0,0,0,0.5) 0px 12px 10px -8px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .social-account-container .social-accounts .social-button .svg {
+    fill: white;
+    margin: auto;
+  }
+
+  .social-account-container .social-accounts .social-button:hover {
+    transform: scale(1.2);
+    background: rgba(255,255,255,0.1);
+  }
+
+  .social-account-container .social-accounts .social-button:active {
+    transform: scale(0.9);
+  }
+
+  .agreement {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 11px;
+    color: gray;
+  }
+
+  .agreement a {
+    text-decoration: none;
+    color: #7b61ff;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 5px;
+  }
+`;

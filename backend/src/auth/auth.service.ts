@@ -218,6 +218,31 @@ export class AuthService {
     return this.generateTokens(admin._id.toString(), admin.email, admin.role);
   }
 
+  async login(loginDto: LoginDto) {
+    // 1. Try to find the user
+    const user = await this.userModel.findOne({ email: loginDto.email });
+    if (user) {
+      const isMatch = await bcrypt.compare(loginDto.password, user.passwordHash);
+      if (isMatch) {
+        if (!user.isActive) throw new UnauthorizedException('User is deactivated');
+        return this.generateTokens(user._id.toString(), user.email, user.role);
+      }
+    }
+
+    // 2. If no user found or password didn't match, try admin
+    const admin = await this.adminModel.findOne({ email: loginDto.email });
+    if (admin) {
+      const isMatch = await bcrypt.compare(loginDto.password, admin.passwordHash);
+      if (isMatch) {
+        if (!admin.isActive) throw new UnauthorizedException('Admin is deactivated');
+        return this.generateTokens(admin._id.toString(), admin.email, admin.role);
+      }
+    }
+
+    // 3. If neither worked
+    throw new UnauthorizedException('Invalid credentials');
+  }
+
   
   
   async forgotPassword(email: string) {
