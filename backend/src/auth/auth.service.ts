@@ -142,7 +142,144 @@ export class AuthService {
     throw new UnauthorizedException('Invalid credentials');
   }
 
-  
+  async processGoogleLogin(code: string) {
+    const clientId = process.env.GOOGLE_CLIENT_ID || process.env.CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET || process.env.CLIENT_SECRET;
+    const redirectUri = 'http://localhost:5000/api/v1/auth/google/callback';
+
+    const bodyParams: Record<string, string> = {
+      client_id: clientId || '',
+      client_secret: clientSecret || '',
+      code: code || '',
+      grant_type: 'authorization_code',
+      redirect_uri: redirectUri,
+    };
+
+    // 1. Exchange code for access token
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(bodyParams),
+    });
+
+    const tokenData = await tokenResponse.json();
+    if (!tokenResponse.ok) {
+      throw new Error(`Google token error: ${tokenData.error_description || tokenData.error}`);
+    }
+
+    // 2. Get user info from Google
+    const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+
+    const userInfo = await userResponse.json();
+    if (!userResponse.ok) {
+      throw new Error('Failed to fetch user info from Google');
+    }
+
+    const email = userInfo.email;
+    const name = userInfo.name || email.split('@')[0];
+
+    // 3. Check if user exists
+    let user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      // Create new user (Generate a random password since passwordHash is required)
+      const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+      const passwordHash = await bcrypt.hash(randomPassword, 10);
+      
+      user = new this.userModel({
+        name,
+        email,
+        passwordHash,
+        role: Role.USER,
+        isActive: true,
+      });
+      await user.save();
+    }
+
+    return this.generateTokens(user._id.toString(), user.email, user.role);
+  }
+
+  async processGithubLogin(code: string) {
+    const clientId = process.env.GITHUB_CLIENT_ID;
+    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+    const redirectUri = process.env.GITHUB_CALLBACK_URL || 'http://localhost:5000/api/v1/auth/github/callback';
+
+    // 1. Exchange code for access token
+    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json' 
+      },
+      body: JSON.stringify({
+        client_id: clientId || '',
+        client_secret: clientSecret || '',
+        code: code || '',
+        redirect_uri: redirectUri,
+      }),
+    });
+
+    const tokenData = await tokenResponse.json();
+    if (tokenData.error) {
+      throw new Error(`Github token error: ${tokenData.error_description || tokenData.error}`);
+    }
+
+    // 2. Get user info from Github
+    const userResponse = await fetch('https://api.github.com/user', {
+      headers: { 
+        Authorization: `Bearer ${tokenData.access_token}`,
+        Accept: 'application/vnd.github.v3+json'
+      },
+    });
+
+    const userInfo = await userResponse.json();
+    if (!userResponse.ok) {
+      throw new Error('Failed to fetch user info from Github');
+    }
+
+    // 3. Get user emails (primary)
+    const emailResponse = await fetch('https://api.github.com/user/emails', {
+      headers: { 
+        Authorization: `Bearer ${tokenData.access_token}`,
+        Accept: 'application/vnd.github.v3+json'
+      },
+    });
+    
+    const emails = await emailResponse.json();
+    if (!emailResponse.ok) {
+      throw new Error('Failed to fetch user emails from Github');
+    }
+
+    const primaryEmailObj = emails.find((e: any) => e.primary) || emails[0];
+    if (!primaryEmailObj) {
+      throw new Error('No email found linked to Github account');
+    }
+
+    const email = primaryEmailObj.email;
+    const name = userInfo.name || userInfo.login || email.split('@')[0];
+
+    // 4. Find or Create User
+    let user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+      const passwordHash = await bcrypt.hash(randomPassword, 10);
+      
+      user = new this.userModel({
+        name,
+        email,
+        passwordHash,
+        role: Role.USER,
+        isActive: true,
+      });
+      await user.save();
+    }
+
+    return this.generateTokens(user._id.toString(), user.email, user.role);
+  }
+
   
   async forgotPassword(email: string) {
     let user = await this.userModel.findOne({ email });
@@ -153,8 +290,7 @@ export class AuthService {
     }
     
     if (!user) {
-      // Return success anyway to prevent email enumeration
-      return { success: true, message: 'If email exists, OTP sent' };
+      throw new UnauthorizedException('No account found with that email address.');
     }
 
     // Generate 6-digit OTP
@@ -169,6 +305,20 @@ export class AuthService {
     await this.mailService.sendPasswordResetOtp(email, otp);
 
     return { success: true, message: 'If email exists, OTP sent' };
+  }
+
+  async verifyResetOtp(email: string, otp: string) {
+    let user = await this.userModel.findOne({ email, resetPasswordOtp: otp, resetPasswordExpires: { $gt: new Date() } });
+    
+    if (!user) {
+      user = await this.adminModel.findOne({ email, resetPasswordOtp: otp, resetPasswordExpires: { $gt: new Date() } }) as any;
+    }
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid or expired OTP');
+    }
+
+    return { success: true, message: 'OTP verified successfully' };
   }
 
   async resetPassword(email: string, otp: string, newPassword: string) {

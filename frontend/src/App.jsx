@@ -9,6 +9,8 @@ import { Products } from './pages/Products';
 import { Projects } from './pages/Projects';
 import { Reviews } from './pages/Reviews';
 import { ContactPage } from './pages/ContactPage';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { OAuthCallback } from './pages/OAuthCallback';
 import { BookService } from './pages/BookService';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { AuthProvider } from './context/AuthContext';
@@ -34,6 +36,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
