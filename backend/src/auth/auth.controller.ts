@@ -8,7 +8,8 @@ import {
   UseGuards,
   Patch,
   Query,
-  Res,
+  Req,
+  Res
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -17,7 +18,6 @@ import { AdminSignupDto } from './dto/admin-signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { Req, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 @ApiTags('Auth')
 @Controller('auth')
