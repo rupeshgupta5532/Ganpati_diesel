@@ -8,6 +8,7 @@ import { SignupForm } from '../features/auth/SignupForm';
 import { ForgotPassword } from '../features/auth/ForgotPassword';
 import { OAuthCallback } from '../features/auth/OAuthCallback';
 import { AdminDashboard } from '../pages/Admin/Dashboard';
+import { AdminAuditLogs } from '../pages/Admin/AuditLogs';
 import { AdminServices } from '../pages/Admin/Services';
 import { ServiceForm } from '../pages/Admin/ServiceForm';
 import { AdminBookings } from '../pages/Admin/Bookings';
@@ -65,6 +66,7 @@ export const AppRoutes = () => {
 
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="audit-logs" element={<AdminAuditLogs />} />
         <Route path="services" element={<AdminServices />} />
         <Route path="services/create" element={<ServiceForm />} />
         <Route path="services/:id/edit" element={<ServiceForm />} />

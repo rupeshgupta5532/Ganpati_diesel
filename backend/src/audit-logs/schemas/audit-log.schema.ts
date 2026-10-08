@@ -5,15 +5,19 @@ export type AuditLogDocument = AuditLog & Document;
 
 @Schema({ timestamps: true })
 export class AuditLog {
-  @Prop({ type: MongooseSchema.Types.ObjectId, required: true })
-  actorId: string;
-  @Prop({ required: true }) actorRole: string;
+  @Prop() logId: string;
+  @Prop({ type: MongooseSchema.Types.ObjectId, required: false }) userId: string;
+  @Prop({ required: false }) userEmail: string;
+  @Prop({ required: false }) userRole: string;
   @Prop({ required: true }) action: string;
-  @Prop({ required: true }) module: string;
+  @Prop({ required: true }) resource: string;
   @Prop() resourceId: string;
-  @Prop({ type: Object }) metadata: any;
-  @Prop() ip: string;
-  @Prop() userAgent: string;
+  @Prop() description: string;
+  @Prop({ required: true }) status: string;
+  @Prop() errorMessage: string;
+    @Prop() method: string;
+  @Prop() endpoint: string;
+    @Prop() userAgent: string;
 }
 
 export const AuditLogSchema = SchemaFactory.createForClass(AuditLog);

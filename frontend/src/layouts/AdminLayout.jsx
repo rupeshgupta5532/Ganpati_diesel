@@ -26,6 +26,7 @@ export const AdminLayout = () => {
     { name: 'Reviews', path: '/admin/reviews', icon: '⭐' },
     { name: 'Website Content', path: '/admin/content', icon: '📝' },
     { name: 'Contact Details', path: '/admin/contact', icon: '📞' },
+    { name: 'Audit Logs', path: '/admin/audit-logs', icon: '📋' },
   ];
 
   return (

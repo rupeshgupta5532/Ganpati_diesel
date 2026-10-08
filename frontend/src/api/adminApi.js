@@ -41,12 +41,12 @@ export const adminEnquiryApi = {
 
 export const adminContentApi = {
   getHomepage: () => api.get('/website-content'),
-  updateHomepage: (data) => api.patch('/admin/website-content', data),
+  updateHomepage: (data) => api.patch('/website-content', data),
 };
 
 export const adminContactApi = {
   getContact: () => api.get('/contact'),
-  updateContact: (data) => api.patch('/admin/contact', data),
+  updateContact: (data) => api.patch('/contact', data),
 };
 
 export const dashboardApi = {
@@ -63,4 +63,8 @@ export const uploadApi = {
 
 export const adminUserApi = {
   getAll: (search) => api.get('/admin/users' + (search ? '?search=' + search : '')),
+};
+
+export const auditLogsApi = {
+  getLogs: (page = 1, limit = 50) => api.get(`/admin/audit-logs?page=${page}&limit=${limit}`),
 };

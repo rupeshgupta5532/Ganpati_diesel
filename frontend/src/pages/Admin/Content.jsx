@@ -19,7 +19,14 @@ export const AdminContent = () => {
 
   const handleSave = () => {
     setSaving(true);
-    adminContentApi.updateHomepage(content)
+    const { _id, __v, createdAt, updatedAt, key, ...updateData } = content || {};
+    
+    // Ensure numerical fields are parsed properly for the NestJS API
+    if (updateData.yearsExperience) updateData.yearsExperience = Number(updateData.yearsExperience);
+    if (updateData.projectsCompleted) updateData.projectsCompleted = Number(updateData.projectsCompleted);
+    if (updateData.establishedYear) updateData.establishedYear = Number(updateData.establishedYear);
+    
+    adminContentApi.updateHomepage(updateData)
       .then(() => alert('Website content updated successfully!'))
       .catch(err => alert('Failed to update content.'))
       .finally(() => setSaving(false));

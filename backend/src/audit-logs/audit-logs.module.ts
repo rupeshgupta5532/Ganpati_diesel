@@ -1,6 +1,10 @@
 import { Module, Global } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuditLog, AuditLogSchema } from './schemas/audit-log.schema';
+import { AuditLogsService } from './audit-logs.service';
+import { AuditLogsController } from './audit-logs.controller';
+import { AuditInterceptor } from './interceptors/audit.interceptor';
 
 @Global()
 @Module({
@@ -9,6 +13,14 @@ import { AuditLog, AuditLogSchema } from './schemas/audit-log.schema';
       { name: AuditLog.name, schema: AuditLogSchema },
     ]),
   ],
-  exports: [MongooseModule],
+  controllers: [AuditLogsController],
+  providers: [
+    AuditLogsService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
+    },
+  ],
+  exports: [MongooseModule, AuditLogsService],
 })
 export class AuditLogsModule {}

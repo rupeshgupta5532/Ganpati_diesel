@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Outlet, Link } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { contactApi } from '../api/services';
 
 export const PublicLayout = () => {
   const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [contact, setContact] = useState(null);
+
+  useEffect(() => {
+    contactApi.getContact()
+      .then(res => setContact(res.data))
+      .catch(err => console.error("Failed to fetch contact details:", err));
+  }, []);
 
   const getDashboardLink = () => {
     if (!user) return '/login';
@@ -28,8 +36,8 @@ export const PublicLayout = () => {
       <div className="bg-brand-primary text-brand-text-secondary text-xs py-2 hidden md:block border-b border-brand-border">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex space-x-6">
-            <span>📍 Brahma Chowk, Birgunj, Parsa, Nepal</span>
-            <span>📞 +977-9800000000</span>
+            <span>📍 {contact?.address || 'Brahma Chowk, Birgunj, Parsa, Nepal'}</span>
+            <span>📞 {contact?.primaryPhone || '+977-9800000000'}</span>
           </div>
           <div className="flex space-x-4">
             <Link to={getDashboardLink()} className="hover:text-brand-accent transition-colors">
@@ -111,10 +119,10 @@ export const PublicLayout = () => {
 
       {/* Floating Action Buttons */}
       <div className="fixed bottom-6 right-6 flex flex-col space-y-3 z-40">
-         <a href="https://wa.me/9779800000000" target="_blank" rel="noreferrer" className="w-12 h-12 bg-green-500 rounded-full shadow dark:shadow-none-xl flex items-center justify-center text-white hover:scale-110 transition-transform">
+         <a href={`https://wa.me/${contact?.whatsapp || '9779800000000'}`} target="_blank" rel="noreferrer" className="w-12 h-12 bg-green-500 rounded-full shadow dark:shadow-none-xl flex items-center justify-center text-white hover:scale-110 transition-transform">
            W
          </a>
-         <a href="tel:+9779800000000" className="w-12 h-12 bg-blue-600 rounded-full shadow dark:shadow-none-xl flex items-center justify-center text-white hover:scale-110 transition-transform">
+         <a href={`tel:${contact?.primaryPhone || '+9779800000000'}`} className="w-12 h-12 bg-blue-600 rounded-full shadow dark:shadow-none-xl flex items-center justify-center text-white hover:scale-110 transition-transform">
            📞
          </a>
       </div>
@@ -159,10 +167,10 @@ export const PublicLayout = () => {
           <div>
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">Contact Info</h4>
             <ul className="space-y-2 text-sm">
-              <li>📍 Brahma Chowk, Birgunj, Nepal</li>
-              <li>📞 +977-9800000000</li>
+              <li>📍 {contact?.address || 'Brahma Chowk, Birgunj, Nepal'}</li>
+              <li>📞 {contact?.primaryPhone || '+977-9800000000'}</li>
               <li>💬 WhatsApp Available</li>
-              <li>📧 info@ganpatidiesel.com</li>
+              <li>📧 {contact?.email || 'info@ganpatidiesel.com'}</li>
             </ul>
           </div>
         </div>

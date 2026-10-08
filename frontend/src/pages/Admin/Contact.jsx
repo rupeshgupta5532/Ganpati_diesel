@@ -19,7 +19,8 @@ export const AdminContact = () => {
 
   const handleSave = () => {
     setSaving(true);
-    adminContactApi.updateContact(contact)
+    const { _id, __v, createdAt, updatedAt, key, ...updateData } = contact || {};
+    adminContactApi.updateContact(updateData)
       .then(() => alert('Contact information updated successfully!'))
       .catch(err => alert('Failed to update contact info.'))
       .finally(() => setSaving(false));
