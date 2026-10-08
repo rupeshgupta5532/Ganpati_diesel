@@ -45,9 +45,25 @@ export const Products = () => {
     }
   };
 
-  const processCheckout = (e) => {
+  const processCheckout = async (e) => {
     e.preventDefault();
     setCheckoutStep(2); // processing
+    
+    try {
+      const { default: api } = await import('../api/axios');
+      // Extract user info from auth token or context if available. 
+      // As a fallback, we just say "A user".
+      const userName = JSON.parse(localStorage.getItem('user'))?.name || 'A user';
+      
+      await api.post('/notifications/admin', {
+        title: 'New Product Order',
+        message: `${userName} has ordered ${cart.length} product(s) worth $${cartTotal.toFixed(2)}.`,
+        type: 'NEW_ORDER'
+      });
+    } catch (err) {
+      console.error('Failed to notify admin:', err);
+    }
+
     setTimeout(() => {
       setCheckoutStep(3); // success
       setCart([]); // clear cart

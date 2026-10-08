@@ -18,6 +18,7 @@ export const adminBookingApi = {
   getAll: () => api.get('/admin/bookings'),
   updateStatus: (id, status) => api.patch(`/admin/bookings/${id}/status`, { status }),
   updateNotes: (id, notes) => api.patch(`/admin/bookings/${id}/notes`, { adminNotes: notes }),
+  delete: (id) => api.delete(`/admin/bookings/${id}`),
 };
 
 export const adminProjectApi = {

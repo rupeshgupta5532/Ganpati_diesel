@@ -31,6 +31,16 @@ export const AdminBookings = () => {
     }
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this booking request? This action cannot be undone.')) {
+      adminBookingApi.delete(id)
+        .then(() => {
+          setBookings(bookings.filter(b => b._id !== id));
+        })
+        .catch(err => alert('Failed to delete booking'));
+    }
+  };
+
   const openNotesModal = (booking) => {
     setSelectedBooking(booking);
     setAdminNotes(booking.adminNotes || '');
@@ -105,12 +115,20 @@ export const AdminBookings = () => {
                     </select>
                   </td>
                   <td className="py-4 px-6 whitespace-nowrap">
-                    <button 
-                      onClick={() => openNotesModal(booking)}
-                      className="text-brand-accent font-bold hover:text-brand-accent-hover hover:underline transition-colors"
-                    >
-                      View Notes
-                    </button>
+                    <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => openNotesModal(booking)}
+                        className="text-brand-accent font-bold hover:text-brand-accent-hover hover:underline transition-colors"
+                      >
+                        View Notes
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(booking._id)}
+                        className="text-red-500 font-bold hover:text-red-700 hover:underline transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

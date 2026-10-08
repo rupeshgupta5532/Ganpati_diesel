@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Menu, X, ArrowRight, User } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { Menu, X, ArrowRight, User, Bell } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { Link, useLocation } from 'react-router';
 import BookButton from './BookButton';
@@ -10,6 +10,9 @@ import { useAuth } from '../context/AuthContext';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const navLinks = [
     { name: 'About', path: '/about' },
@@ -22,6 +25,22 @@ const Navbar = () => {
   ];
 
   const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    let interval;
+    if (isAuthenticated) {
+      import('../api/axios').then(({ default: api }) => {
+        const fetchNotifs = () => {
+          api.get('/notifications')
+             .then(res => setNotifications(Array.isArray(res) ? res : (res.data?.data || res.data || [])))
+             .catch(console.error);
+        };
+        fetchNotifs();
+        interval = setInterval(fetchNotifs, 30000); // refresh every 30s
+      });
+    }
+    return () => clearInterval(interval);
+  }, [isAuthenticated, location.pathname]); // refetch on route change
 
   return (
     <nav className="fixed w-full z-50 top-0 pt-6 px-4 sm:px-6 lg:px-8">
@@ -59,9 +78,82 @@ const Navbar = () => {
         <div className="hidden lg:flex items-center gap-4">
           <ThemeSwitch />
           {isAuthenticated ? (
-            <Link to="/profile" className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all" title="My Profile">
-              <User className="h-5 w-5" />
-            </Link>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all relative"
+                >
+                  <Bell className="h-5 w-5" />
+                  {notifications.filter(n => !n.isRead).length > 0 && (
+                    <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-black/50"></span>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {showNotifications && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-2xl bg-[#111827] border border-[#374151] shadow-2xl z-50 custom-scrollbar"
+                      >
+                        <div className="p-4 border-b border-[#374151] sticky top-0 bg-[#111827]/90 backdrop-blur-md flex justify-between items-center z-10">
+                          <h3 className="font-bold text-[#e5e7eb]">Notifications</h3>
+                          {notifications.length > 0 && (
+                            <button 
+                              onClick={async () => {
+                                try {
+                                  const { default: api } = await import('../api/axios');
+                                  await api.patch('/notifications/read-all');
+                                  setNotifications(notifications.map(n => ({...n, isRead: true})));
+                                } catch(e) {}
+                              }}
+                              className="text-xs text-primary hover:underline"
+                            >
+                              Mark all read
+                            </button>
+                          )}
+                        </div>
+                        <div className="p-2 flex flex-col gap-1">
+                          {notifications.length === 0 ? (
+                            <div className="p-4 text-center text-sm text-[#9ca3af]">No notifications yet</div>
+                          ) : (
+                            notifications.map((notif) => (
+                              <div 
+                                key={notif._id} 
+                                className={`p-3 rounded-xl transition-colors cursor-pointer ${notif.isRead ? 'opacity-70 hover:bg-white/5' : 'bg-primary/5 border border-primary/10 hover:bg-primary/10'}`}
+                                onClick={async () => {
+                                  if(!notif.isRead) {
+                                    try {
+                                      const { default: api } = await import('../api/axios');
+                                      await api.patch(`/notifications/${notif._id}/read`);
+                                      setNotifications(notifications.map(n => n._id === notif._id ? {...n, isRead: true} : n));
+                                    } catch(e) {}
+                                  }
+                                }}
+                              >
+                                <div className="flex items-start justify-between gap-2">
+                                  <h4 className={`text-sm font-bold ${notif.isRead ? 'text-[#d1d5db]' : 'text-[#ffffff]'}`}>{notif.title}</h4>
+                                  <span className="text-[10px] text-[#6b7280] whitespace-nowrap">{new Date(notif.createdAt).toLocaleDateString()}</span>
+                                </div>
+                                <p className={`text-xs mt-1 ${notif.isRead ? 'text-[#9ca3af]' : 'text-[#d1d5db]'}`}>{notif.message}</p>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <Link to="/profile" className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all" title="My Profile">
+                <User className="h-5 w-5" />
+              </Link>
+            </div>
           ) : (
             <Link to="/login" className="text-sm font-medium text-white hover:text-primary transition-colors">
               Login

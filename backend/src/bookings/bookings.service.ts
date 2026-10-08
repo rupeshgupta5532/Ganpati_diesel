@@ -85,14 +85,22 @@ export class BookingsService {
 
     if (!booking) throw new NotFoundException('Booking not found');
 
-    await this.notificationsService.notify(
-      booking.userId.toString(),
-      'Booking Status Updated',
-      `Your booking status is now: ${updateDto.status}`,
-      'BOOKING_UPDATE',
-      booking._id.toString(),
-    );
+    if (booking.userId) {
+      await this.notificationsService.notify(
+        booking.userId.toString(),
+        'Booking Status Updated',
+        `Your booking status is now: ${updateDto.status}`,
+        'BOOKING_UPDATE',
+        booking._id.toString(),
+      );
+    }
 
     return booking;
+  }
+
+  async deleteAdmin(bookingId: string) {
+    const booking = await this.bookingModel.findByIdAndDelete(bookingId).exec();
+    if (!booking) throw new NotFoundException('Booking not found');
+    return { message: 'Booking deleted successfully' };
   }
 }

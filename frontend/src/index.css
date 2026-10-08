@@ -64,11 +64,11 @@ body {
   --color-primary-hover: #b45309 !important;
   --color-secondary: #ea580c !important;
   --color-dark: #ffffff !important; /* white cards */
-  --color-darker: #FFDBB0 !important; /* Requested Background */
+  --color-darker: #FFF3E0 !important; /* Lighter Peach Background */
 }
 
 body.light-mode {
-  background-color: #FFDBB0 !important; /* Requested Background */
+  background-color: #FFF3E0 !important; /* Lighter Peach Background */
   color: #292524 !important; /* Dark warm text */
 }
 
@@ -87,9 +87,9 @@ body.light-mode {
 
 
 /* Backgrounds Overrides */
-.light-mode .bg-darker { background-color: #FFDBB0 !important; }
-.light-mode .bg-dark { background-color: #FFF0D4 !important; } /* Lighter shade of peach */
-.light-mode footer.bg-dark { background-color: #FFDBB0 !important; } /* Match main peach bg */
+.light-mode .bg-darker { background-color: #FFF3E0 !important; }
+.light-mode .bg-dark { background-color: #ffffff !important; } /* Pure white for contrast against light peach */
+.light-mode footer.bg-dark { background-color: #FFF3E0 !important; } /* Match main peach bg */
 .light-mode .bg-dark\/50 { background-color: rgba(255, 240, 212, 0.7) !important; }
 .light-mode .bg-white\/5 { background-color: rgba(0, 0, 0, 0.03) !important; }
 .light-mode .bg-white\/10 { background-color: rgba(0, 0, 0, 0.06) !important; }

@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -10,6 +10,13 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 @ApiBearerAuth()
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
+
+  @Post('admin')
+  @ApiOperation({ summary: 'Create an admin notification' })
+  async createAdminNotification(@Body() body: { title: string; message: string; type: string }) {
+    await this.notificationsService.notifyAdmin(body.title, body.message, body.type);
+    return { success: true };
+  }
 
   @Get()
   @ApiOperation({ summary: 'Get all notifications for current user/admin' })
