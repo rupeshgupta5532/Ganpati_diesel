@@ -1,23 +1,91 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { motion } from 'framer-motion';
-import { Search, ShoppingCart, Filter } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, ShoppingCart, Filter, X, CheckCircle, Loader2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router';
 
 export const Products = () => {
-  const [filter, setFilter] = useState('All');
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-  const products = [
+  const [filter, setFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [notifiedQueries, setNotifiedQueries] = useState([]);
+  
+  const [cart, setCart] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState(1);
+
+  const addToCart = (product) => {
+    setCart([...cart, product]);
+    // Optional: could auto-open cart here
+    // setIsCartOpen(true);
+  };
+
+  const removeFromCart = (indexToRemove) => {
+    setCart(cart.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const cartTotal = cart.reduce((sum, item) => {
+    const priceStr = item.price ? item.price.toString().replace(/[^0-9.]/g, '') : '0';
+    return sum + (parseFloat(priceStr) || 0);
+  }, 0);
+
+  const handleCheckoutClick = () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    } else {
+      setIsCartOpen(false);
+      setIsCheckoutOpen(true);
+      setCheckoutStep(1);
+    }
+  };
+
+  const processCheckout = (e) => {
+    e.preventDefault();
+    setCheckoutStep(2); // processing
+    setTimeout(() => {
+      setCheckoutStep(3); // success
+      setCart([]); // clear cart
+      setTimeout(() => {
+        setIsCheckoutOpen(false);
+      }, 3000);
+    }, 2000);
+  };
+
+  const [products, setProducts] = useState([
     { name: 'BOSCH CRDI Injector 0445120123', category: 'Injectors', price: '$250', image: 'https://images.unsplash.com/photo-1635393222380-5a3d00d23829?auto=format&fit=crop&q=80&w=400' },
     { name: 'Delphi High Pressure Pump', category: 'Pumps', price: '$850', image: 'https://images.unsplash.com/photo-1589139886737-25eaf2105193?auto=format&fit=crop&q=80&w=400' },
     { name: 'Cummins ISX Filter Kit', category: 'Filters', price: '$85', image: 'https://images.unsplash.com/photo-1620050858102-140cce43a755?auto=format&fit=crop&q=80&w=400' },
     { name: 'Denso Common Rail Sensor', category: 'Electronics', price: '$120', image: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&q=80&w=400' },
     { name: 'CAT C15 Injector Assembly', category: 'Injectors', price: '$320', image: 'https://images.unsplash.com/photo-1635393222380-5a3d00d23829?auto=format&fit=crop&q=80&w=400' },
     { name: 'Fuel Line Connector Kit', category: 'Accessories', price: '$45', image: 'https://images.unsplash.com/photo-1589139886737-25eaf2105193?auto=format&fit=crop&q=80&w=400' },
-  ];
+  ]);
+
+  React.useEffect(() => {
+    import('../api/axios').then(({ default: api }) => {
+      api.get('/products')
+        .then(res => {
+          const data = Array.isArray(res) ? res : (res.data || []);
+          if (data && data.length > 0) {
+            setProducts(data);
+          }
+        })
+        .catch(err => console.error("Error fetching products:", err));
+    });
+  }, []);
 
   const categories = ['All', 'Injectors', 'Pumps', 'Filters', 'Electronics', 'Accessories'];
-  const filteredProducts = filter === 'All' ? products : products.filter(p => p.category === filter);
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = filter === 'All' || p.category === filter;
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          p.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-hidden flex flex-col">
@@ -45,12 +113,17 @@ export const Products = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
               <input 
                 type="text" 
-                placeholder="Search part number..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search part number or name..." 
                 className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-primary w-full"
               />
             </div>
-            <button className="bg-primary text-black px-4 py-2 rounded-full font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary-hover transition-colors">
-              <ShoppingCart className="w-4 h-4" /> Cart (0)
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="bg-primary text-black px-4 py-2 rounded-full font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary-hover transition-colors"
+            >
+              <ShoppingCart className="w-4 h-4" /> Cart ({cart.length})
             </button>
           </div>
         </div>
@@ -72,40 +145,219 @@ export const Products = () => {
           ))}
         </div>
 
-        {/* Product Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product, i) => (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.05 }}
-              key={i}
-              className="glass-card rounded-2xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all group"
-            >
-              <div className="h-48 overflow-hidden relative">
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10"></div>
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110" />
-                <span className="absolute top-3 right-3 z-20 bg-black/80 backdrop-blur-md text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">
-                  {product.category}
-                </span>
-              </div>
-              <div className="p-5">
-                <h3 className="text-lg font-bold text-white mb-2">{product.name}</h3>
-                <div className="flex items-center justify-between mt-4">
-                  <span className="text-xl font-mono text-primary font-bold">{product.price}</span>
-                  <button className="text-xs uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full transition-colors">
-                    Add to Cart
-                  </button>
+        {/* Product Grid or Out of Stock */}
+        {filteredProducts.length > 0 ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product, i) => (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.05 }}
+                key={i}
+                className="glass-card rounded-2xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all group"
+              >
+                <div className="h-48 overflow-hidden relative">
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10"></div>
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110" />
+                  <span className="absolute top-3 right-3 z-20 bg-black/80 backdrop-blur-md text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">
+                    {product.category}
+                  </span>
                 </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-white mb-2">{product.name}</h3>
+                  <div className="flex items-center justify-between mt-4">
+                    <span className="text-xl font-mono text-primary font-bold">{product.price}</span>
+                    <button 
+                      onClick={() => addToCart(product)}
+                      className="text-xs uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full transition-colors"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center py-20 text-center glass-card rounded-3xl border border-white/10"
+          >
+            <Search className="w-16 h-16 text-gray-500 mb-4 opacity-50" />
+            <h2 className="text-2xl font-bold text-white mb-2">Out of Stock</h2>
+            <p className="text-gray-400 mb-8 max-w-md">
+              We currently don't have any parts matching "{searchQuery}" in our active inventory.
+            </p>
+            {notifiedQueries.includes(searchQuery.toLowerCase()) ? (
+              <div className="flex items-center gap-2 text-green-400 bg-green-400/10 px-6 py-3 rounded-full border border-green-400/20 font-medium">
+                <CheckCircle className="w-5 h-5" /> We will notify you when it's back!
               </div>
-            </motion.div>
-          ))}
-        </div>
+            ) : (
+              <button 
+                onClick={() => setNotifiedQueries([...notifiedQueries, searchQuery.toLowerCase()])}
+                className="bg-primary text-black px-8 py-3 rounded-full font-bold hover:bg-primary-hover transition-colors shadow-[0_0_20px_rgba(217,119,6,0.2)]"
+              >
+                Notify me when in stock
+              </button>
+            )}
+          </motion.div>
+        )}
       </main>
       
       <div className="relative z-10">
         <Footer />
       </div>
+
+      {/* Cart Sidebar Modal */}
+      <AnimatePresence>
+        {isCartOpen && (
+          <div className="fixed inset-0 z-[100] flex justify-end">
+            <div 
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+              onClick={() => setIsCartOpen(false)}
+            ></div>
+            <motion.div 
+              initial={{ x: '100%' }} 
+              animate={{ x: 0 }} 
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="w-full max-w-md bg-darker border-l border-white/10 h-full relative z-10 flex flex-col"
+            >
+              <div className="p-6 border-b border-white/10 flex justify-between items-center bg-dark">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <ShoppingCart className="text-primary" /> Your Cart
+                </h2>
+                <button 
+                  onClick={() => setIsCartOpen(false)} 
+                  className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
+                >
+                  <X />
+                </button>
+              </div>
+              
+              <div className="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                    <ShoppingCart className="w-16 h-16 mb-4 opacity-20" />
+                    <p className="text-lg font-medium">Your cart is empty.</p>
+                    <p className="text-sm mt-2">Add some spare parts to get started.</p>
+                  </div>
+                ) : (
+                  cart.map((item, idx) => (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      key={idx} 
+                      className="flex gap-4 items-center bg-white/5 p-4 rounded-xl border border-white/5 relative group"
+                    >
+                      <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg bg-black/20" />
+                      <div className="flex-grow pr-8">
+                        <h4 className="text-white font-semibold text-sm leading-tight mb-1">{item.name}</h4>
+                        <p className="text-gray-400 text-xs mb-2">{item.category}</p>
+                        <p className="text-primary font-mono font-bold">{item.price}</p>
+                      </div>
+                      <button 
+                        onClick={() => removeFromCart(idx)} 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-400 p-2 transition-colors rounded-full hover:bg-red-400/10"
+                        title="Remove Item"
+                      >
+                        <X size={18} />
+                      </button>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+              
+              {cart.length > 0 && (
+                <div className="p-6 border-t border-white/10 bg-dark shadow-[0_-10px_30px_rgba(0,0,0,0.1)]">
+                  <div className="flex justify-between items-center mb-4 text-white">
+                    <span className="font-medium text-gray-300">Total Items ({cart.length})</span>
+                    <span className="font-bold text-xl text-primary">${cartTotal.toFixed(2)}</span>
+                  </div>
+                  <button 
+                    onClick={handleCheckoutClick}
+                    className="w-full bg-primary text-black py-4 rounded-xl font-bold text-lg hover:bg-primary-hover transition-colors shadow-[0_0_20px_rgba(217,119,6,0.2)]"
+                  >
+                    Proceed to Checkout
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Checkout Modal */}
+      <AnimatePresence>
+        {isCheckoutOpen && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => checkoutStep !== 2 && setIsCheckoutOpen(false)}></div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-md glass-card rounded-3xl p-8 relative z-10 border border-white/10"
+            >
+              {checkoutStep === 1 && (
+                <form onSubmit={processCheckout}>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-white">Secure Checkout</h2>
+                    <button type="button" onClick={() => setIsCheckoutOpen(false)} className="text-gray-400 hover:text-white">
+                      <X />
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4 mb-8">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Shipping Address</label>
+                      <textarea required className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-primary" rows="3" placeholder="Enter your full address"></textarea>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
+                      <input required type="tel" className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-primary" placeholder="+1 (555) 000-0000" />
+                    </div>
+                    
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/5 mt-4 flex justify-between items-center text-white">
+                      <span>Order Total</span>
+                      <span className="font-bold text-xl text-primary">${cartTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  
+                  <button type="submit" className="w-full bg-primary text-black py-4 rounded-xl font-bold text-lg hover:bg-primary-hover transition-colors">
+                    Confirm Order
+                  </button>
+                </form>
+              )}
+
+              {checkoutStep === 2 && (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <Loader2 className="w-16 h-16 text-primary animate-spin mb-6" />
+                  <h2 className="text-2xl font-bold text-white mb-2">Processing Order</h2>
+                  <p className="text-gray-400">Please wait while we secure your parts...</p>
+                </div>
+              )}
+
+              {checkoutStep === 3 && (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", bounce: 0.5 }}
+                  >
+                    <CheckCircle className="w-20 h-20 text-green-500 mb-6" />
+                  </motion.div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Order Confirmed!</h2>
+                  <p className="text-gray-400 mb-8">Your spare parts are being prepared for dispatch.</p>
+                  <button onClick={() => setIsCheckoutOpen(false)} className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-colors border border-white/10">
+                    Back to Products
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

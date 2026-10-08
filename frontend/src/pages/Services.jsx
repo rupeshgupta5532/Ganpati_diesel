@@ -6,7 +6,7 @@ import { Settings, Hammer, Cpu, Droplet, Gauge, Zap } from 'lucide-react';
 import { Link } from 'react-router';
 
 export const Services = () => {
-  const servicesList = [
+  const [servicesList, setServicesList] = React.useState([
     {
       icon: <Settings size={40} className="text-primary mb-4" />,
       title: 'Injector Calibration',
@@ -43,7 +43,27 @@ export const Services = () => {
       desc: 'Rapid response mobile tuning and diagnostics for fleet vehicles stuck on the highway.',
       price: 'Variable'
     }
-  ];
+  ]);
+
+  React.useEffect(() => {
+    import('../api/axios').then(({ default: api }) => {
+      api.get('/services')
+        .then(res => {
+          const data = Array.isArray(res) ? res : (res.data || []);
+          if (data && data.length > 0) {
+            // Map the backend data to match the expected format (title, desc, price)
+            const mappedData = data.map(backendSvc => ({
+              icon: <Settings size={40} className="text-primary mb-4" />, // Fallback icon
+              title: backendSvc.name || backendSvc.title,
+              desc: backendSvc.shortDescription || backendSvc.description || backendSvc.desc,
+              price: backendSvc.price || 'Contact for price'
+            }));
+            setServicesList(mappedData);
+          }
+        })
+        .catch(err => console.error("Error fetching services:", err));
+    });
+  }, []);
 
   return (
     <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-hidden flex flex-col">

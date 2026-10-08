@@ -5,14 +5,27 @@ import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 
 export const Reviews = () => {
-  const reviews = [
+  const [reviews, setReviews] = React.useState([
     { name: 'Rajesh Sharma', company: 'Sharma Transport', rating: 5, text: 'The only place I trust with my Tata fleet. Their calibration bench is top-notch and they saved me from buying new injectors.' },
     { name: 'Vikram Singh', company: 'Independent Operator', rating: 5, text: 'Had a major breakdown on the highway. Their emergency team reached out within hours and fixed the high-pressure pump on the spot.' },
     { name: 'Amit Patel', company: 'Patel Logistics', rating: 4, text: 'Excellent service and genuine spare parts. A bit pricey compared to local garages, but the peace of mind is worth every penny.' },
     { name: 'Gurpreet Singh', company: 'Punjab Freight', rating: 5, text: 'Ganpati Diesel knows diesel engines inside out. Brought in a smoking truck that 3 other mechanics couldn\'t fix. They diagnosed it in 10 minutes.' },
     { name: 'Suresh Kumar', company: 'SK Earthmovers', rating: 5, text: 'Best JCB and excavator pump repair facility in the state. Highly recommend their services to anyone in heavy machinery.' },
     { name: 'Manoj Tiwari', company: 'Tiwari Construction', rating: 4, text: 'Very professional setup. The workshop is incredibly clean for a diesel repair shop. They deliver what they promise.' },
-  ];
+  ]);
+
+  React.useEffect(() => {
+    import('../api/axios').then(({ default: api }) => {
+      api.get('/reviews')
+        .then(res => {
+          const data = Array.isArray(res) ? res : (res.data || []);
+          if (data && data.length > 0) {
+            setReviews(data);
+          }
+        })
+        .catch(err => console.error("Error fetching reviews:", err));
+    });
+  }, []);
 
   return (
     <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-hidden flex flex-col">

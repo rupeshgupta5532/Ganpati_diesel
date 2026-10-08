@@ -99,46 +99,68 @@ export const Profile = () => {
             </StyledCard>
           </div>
 
-          {/* Order History */}
+          {/* Right Section (Order History for Users, Admin Panel Link for Admins) */}
           <div className="lg:col-span-2">
             <StyledCard>
               <div className="card-inner h-full flex flex-col">
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                  <Calendar className="text-primary" /> Order History
-                </h2>
-                
-                <div className="flex-grow space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                  {loadingBookings ? (
-                    <p className="text-gray-400">Loading your history...</p>
-                  ) : bookings.length === 0 ? (
-                    <div className="text-center py-10">
-                      <p className="text-gray-500">You haven't booked any services yet.</p>
-                      <button onClick={() => navigate('/book-service')} className="mt-4 text-primary hover:underline">Book a service now</button>
+                {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') ? (
+                  // Admin View
+                  <div className="flex flex-col items-center justify-center h-full py-10 text-center">
+                    <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-6 border border-primary/30">
+                      <User className="h-10 w-10 text-primary" />
                     </div>
-                  ) : (
-                    Array.isArray(bookings) && bookings.map((booking) => (
-                      <div key={booking._id} className="bg-dark/50 border border-white/10 rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4 transition-all hover:bg-white/5">
-                        <div>
-                          <h3 className="font-semibold text-lg text-white flex items-center gap-2">
-                            <Truck className="h-4 w-4 text-primary" /> {booking.vehicleModel} ({booking.vehicleType})
-                          </h3>
-                          <p className="text-sm text-gray-400 mt-1">Issue: {booking.problemDescription}</p>
-                          <p className="text-xs text-gray-500 mt-2">Date: {new Date(booking.preferredDate || booking.createdAt).toLocaleDateString()}</p>
+                    <h2 className="text-2xl font-bold text-white mb-2">Admin Account</h2>
+                    <p className="text-gray-400 mb-8 max-w-sm mx-auto">
+                      You are logged in as an administrator. Access the control panel to manage all system bookings and users.
+                    </p>
+                    <button 
+                      onClick={() => navigate('/admin/dashboard')} 
+                      className="bg-primary text-black font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform"
+                    >
+                      Go to Admin Dashboard
+                    </button>
+                  </div>
+                ) : (
+                  // User View
+                  <>
+                    <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                      <Calendar className="text-primary" /> Order History
+                    </h2>
+                    
+                    <div className="flex-grow space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                      {loadingBookings ? (
+                        <p className="text-gray-400">Loading your history...</p>
+                      ) : bookings.length === 0 ? (
+                        <div className="text-center py-10">
+                          <p className="text-gray-500">You haven't booked any services yet.</p>
+                          <button onClick={() => navigate('/book-service')} className="mt-4 text-primary hover:underline">Book a service now</button>
                         </div>
-                        <div className="flex flex-col items-end justify-between">
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            booking.status === 'COMPLETED' ? 'bg-green-500/20 text-green-400' :
-                            booking.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-blue-500/20 text-blue-400'
-                          } flex items-center gap-1`}>
-                            {booking.status === 'COMPLETED' ? <CheckCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                            {booking.status || 'PENDING'}
-                          </span>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                      ) : (
+                        Array.isArray(bookings) && bookings.map((booking) => (
+                          <div key={booking._id} className="bg-dark/50 border border-white/10 rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4 transition-all hover:bg-white/5">
+                            <div>
+                              <h3 className="font-semibold text-lg text-white flex items-center gap-2">
+                                <Truck className="h-4 w-4 text-primary" /> {booking.vehicleModel} ({booking.vehicleType})
+                              </h3>
+                              <p className="text-sm text-gray-400 mt-1">Issue: {booking.problemDescription}</p>
+                              <p className="text-xs text-gray-500 mt-2">Date: {new Date(booking.preferredDate || booking.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <div className="flex flex-col items-end justify-between">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                booking.status === 'COMPLETED' ? 'bg-green-500/20 text-green-400' :
+                                booking.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400' :
+                                'bg-blue-500/20 text-blue-400'
+                              } flex items-center gap-1`}>
+                                {booking.status === 'COMPLETED' ? <CheckCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                                {booking.status || 'PENDING'}
+                              </span>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </StyledCard>
           </div>

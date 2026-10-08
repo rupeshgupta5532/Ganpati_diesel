@@ -1,30 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Navigation, MapPin, Phone, Mail, Truck } from 'lucide-react';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 export const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('bookings');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const [bookings, setBookings] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for Bookings
-  const mockBookings = [
-    { id: '101', name: 'John Doe', phone: '+1 (555) 123-4567', vehicle: '2022 Volvo FH16', location: 'Lat: 40.7128, Lng: -74.0060', date: '2026-10-01', status: 'Completed' },
-    { id: '102', name: 'Sarah Smith', phone: '+1 (555) 987-6543', vehicle: '2019 Scania R500', location: 'Lat: 34.0522, Lng: -118.2437', date: '2026-10-04', status: 'Pending' },
-    { id: '103', name: 'Mike Johnson', phone: '+1 (555) 555-5555', vehicle: '2020 Mercedes Actros', location: 'Lat: 41.8781, Lng: -87.6298', date: '2026-10-05', status: 'In Progress' },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [bookingsRes, usersRes] = await Promise.all([
+          api.get('/admin/bookings'),
+          api.get('/admin/users')
+        ]);
+        setBookings(Array.isArray(bookingsRes) ? bookingsRes : (bookingsRes.data || []));
+        // /admin/users might return paginated data e.g. { data: [...], total: ... }
+        setUsers(Array.isArray(usersRes) ? usersRes : (usersRes.data?.data || usersRes.data || []));
+      } catch (err) {
+        console.error('Error fetching admin data:', err);
+        toast.error('Failed to load admin data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
-  // Mock data for Users
-  const mockUsers = [
-    { id: 'U01', name: 'John Doe', email: 'john@example.com', phone: '+1 (555) 123-4567', joined: '2025-01-15', totalBookings: 12, role: 'User' },
-    { id: 'U02', name: 'Sarah Smith', email: 'sarah@example.com', phone: '+1 (555) 987-6543', joined: '2026-03-22', totalBookings: 3, role: 'User' },
-    { id: 'U03', name: 'Mike Johnson', email: 'mike@example.com', phone: '+1 (555) 555-5555', joined: '2026-08-10', totalBookings: 1, role: 'User' },
-    { id: 'U04', name: 'Admin One', email: 'admin@diesel.com', phone: '+1 (555) 000-0000', joined: '2024-12-01', totalBookings: 0, role: 'Admin' },
-  ];
-
-  const filteredBookings = mockBookings.filter(b => b.name.toLowerCase().includes(searchTerm.toLowerCase()) || b.vehicle.toLowerCase().includes(searchTerm.toLowerCase()));
-  const filteredUsers = mockUsers.filter(u => u.name.toLowerCase().includes(searchTerm.toLowerCase()) || u.email.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredBookings = bookings.filter(b => 
+    (b.customerName || b.userId?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (b.vehicleModel || b.vehicleType || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const filteredUsers = users.filter(u => 
+    (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (u.email || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-x-hidden flex flex-col">
@@ -100,22 +120,24 @@ export const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredBookings.length > 0 ? filteredBookings.map((booking) => (
-                      <tr key={booking.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                        <td className="px-4 py-4 font-medium text-white">#{booking.id}</td>
+                    {loading ? (
+                      <tr><td colSpan="6" className="text-center py-8 text-gray-500">Loading bookings...</td></tr>
+                    ) : filteredBookings.length > 0 ? filteredBookings.map((booking) => (
+                      <tr key={booking._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td className="px-4 py-4 font-medium text-white">#{booking._id.substring(booking._id.length - 6)}</td>
                         <td className="px-4 py-4">
                           <div className="flex flex-col">
-                            <span className="text-white">{booking.name}</span>
-                            <span className="text-xs text-gray-500 flex items-center gap-1 mt-0.5"><Phone className="h-3 w-3" />{booking.phone}</span>
+                            <span className="text-white">{booking.customerName || booking.userId?.name}</span>
+                            <span className="text-xs text-gray-500 flex items-center gap-1 mt-0.5"><Phone className="h-3 w-3" />{booking.phone || booking.userId?.phone || 'N/A'}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-4"><span className="flex items-center gap-1.5"><Truck className="h-4 w-4 text-primary/70"/> {booking.vehicle}</span></td>
-                        <td className="px-4 py-4"><span className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary/70"/> {booking.location.length > 25 ? booking.location.substring(0, 25) + '...' : booking.location}</span></td>
-                        <td className="px-4 py-4"><span className="flex items-center gap-1.5"><Navigation className="h-4 w-4 text-primary/70"/> {booking.date}</span></td>
+                        <td className="px-4 py-4"><span className="flex items-center gap-1.5"><Truck className="h-4 w-4 text-primary/70"/> {booking.vehicleModel || booking.vehicleType || 'N/A'}</span></td>
+                        <td className="px-4 py-4"><span className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary/70"/> {booking.problemDescription ? (booking.problemDescription.length > 25 ? booking.problemDescription.substring(0, 25) + '...' : booking.problemDescription) : 'N/A'}</span></td>
+                        <td className="px-4 py-4"><span className="flex items-center gap-1.5"><Navigation className="h-4 w-4 text-primary/70"/> {new Date(booking.preferredDate || booking.createdAt).toLocaleDateString()}</span></td>
                         <td className="px-4 py-4">
                           <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                            booking.status === 'Completed' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
-                            booking.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 
+                            booking.status === 'COMPLETED' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
+                            booking.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 
                             'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                           }`}>
                             {booking.status}
@@ -152,36 +174,38 @@ export const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredUsers.length > 0 ? filteredUsers.map((user) => (
-                      <tr key={user.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    {loading ? (
+                      <tr><td colSpan="5" className="text-center py-8 text-gray-500">Loading users...</td></tr>
+                    ) : filteredUsers.length > 0 ? filteredUsers.map((user) => (
+                      <tr key={user._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20">
-                              {user.name.charAt(0)}
+                              {(user.name || '?').charAt(0).toUpperCase()}
                             </div>
                             <div>
                               <div className="font-medium text-white">{user.name}</div>
-                              <div className="text-xs text-gray-500">ID: {user.id}</div>
+                              <div className="text-xs text-gray-500">ID: {user._id.substring(user._id.length - 6)}</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex flex-col gap-1">
                             <span className="text-xs flex items-center gap-1.5"><Mail className="h-3 w-3" />{user.email}</span>
-                            <span className="text-xs flex items-center gap-1.5"><Phone className="h-3 w-3" />{user.phone}</span>
+                            <span className="text-xs flex items-center gap-1.5"><Phone className="h-3 w-3" />{user.phone || 'N/A'}</span>
                           </div>
                         </td>
                         <td className="px-4 py-4">
                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                            user.role === 'Admin' ? 'bg-secondary/10 text-secondary border border-secondary/20' : 
+                            (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? 'bg-secondary/10 text-secondary border border-secondary/20' : 
                             'bg-gray-500/10 text-gray-400 border border-gray-500/20'
                           }`}>
                             {user.role}
                           </span>
                         </td>
-                        <td className="px-4 py-4"><span className="flex items-center gap-1.5"><Navigation className="h-4 w-4 text-primary/70"/> {user.joined}</span></td>
+                        <td className="px-4 py-4"><span className="flex items-center gap-1.5"><Navigation className="h-4 w-4 text-primary/70"/> {new Date(user.createdAt || user.joined).toLocaleDateString()}</span></td>
                         <td className="px-4 py-4 text-center font-semibold text-white">
-                          {user.totalBookings}
+                          {user.totalBookings !== undefined ? user.totalBookings : '-'}
                         </td>
                       </tr>
                     )) : (
