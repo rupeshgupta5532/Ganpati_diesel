@@ -154,7 +154,7 @@ const ProjectFormInner = () => {
           <button type="submit" disabled={loading} className="bg-brand-accent text-brand-primary px-6 py-2 rounded font-bold hover:bg-brand-accent-hover">
             {loading ? 'Saving...' : 'Save Project'}
           </button>
-          <button type="button" onClick={() => navigate('/admin/projects')} className="px-6 py-2 rounded font-bold border hover:bg-gray-50 dark:bg-slate-900">
+          <button type="button" onClick={() => navigate('/admin/projects')} className="px-6 py-2 rounded font-bold border border-slate-300 dark:border-slate-600 hover:bg-gray-50 dark:bg-slate-700 dark:text-slate-200 transition-colors">
             Cancel
           </button>
         </div>

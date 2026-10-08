@@ -63,7 +63,7 @@ export const Home = () => {
                {content?.heroTitle ? content.heroTitle.split(' ').map((word, i, arr) => i >= arr.length - 2 ? <span key={i} className="text-brand-accent">{word} </span> : word + ' ') : <React.Fragment>NEW SHREE GANPATI <br /> <span className="text-brand-accent">DIESEL SERVICE</span></React.Fragment>}
              </h1>
              <p className="text-2xl md:text-3xl text-slate-100 mb-6 font-light drop-shadow-lg max-w-2xl">
-               {content?.heroSubtitle || '21+ Years of Diesel Engineering Excellence'}
+               {content?.heroSubtitle || `${content?.yearsExperience || 21}+ Years of Diesel Engineering Excellence`}
              </p>
              <p className="text-base md:text-lg text-slate-300 mb-10 max-w-xl leading-relaxed font-medium drop-shadow-md">
                {content?.heroDescription || 'Advanced Fuel Pump • Injector • CRDI • Diagnostics. We combine traditional mechanical expertise with modern automotive technology.'}
@@ -125,16 +125,16 @@ export const Home = () => {
            </div>
            <div className="md:w-1/2">
              <h2 className="text-brand-accent font-bold tracking-widest uppercase text-sm mb-2">About Us</h2>
-             <h3 className="text-4xl font-extrabold text-brand-primary dark:text-slate-100 mb-6 leading-tight">{content?.heroSubtitle || '21 Years of Diesel Engineering Excellence'}</h3>
+             <h3 className="text-4xl font-extrabold text-brand-primary dark:text-slate-100 mb-6 leading-tight">{content?.heroSubtitle || `${content?.yearsExperience || 21}+ Years of Diesel Engineering Excellence`}</h3>
              <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                {content?.aboutContent || 'Since 2004, New Shree Ganpati Diesel Service has been at the forefront of automotive diesel engineering in Birgunj. We combine decades of traditional mechanical expertise with the latest in digital diagnostic technology.'}
              </p>
              <ul className="space-y-3 mb-8">
-               <li className="flex items-center text-brand-primary font-semibold"><span className="text-brand-accent mr-3">✓</span> Advanced Diagnostics</li>
-               <li className="flex items-center text-brand-primary font-semibold"><span className="text-brand-accent mr-3">✓</span> Genuine OEM Parts</li>
-               <li className="flex items-center text-brand-primary font-semibold"><span className="text-brand-accent mr-3">✓</span> Precision Calibration</li>
+               <li className="flex items-center text-brand-primary dark:text-slate-200 font-semibold"><span className="text-brand-accent mr-3">✓</span> Advanced Diagnostics</li>
+               <li className="flex items-center text-brand-primary dark:text-slate-200 font-semibold"><span className="text-brand-accent mr-3">✓</span> Genuine OEM Parts</li>
+               <li className="flex items-center text-brand-primary dark:text-slate-200 font-semibold"><span className="text-brand-accent mr-3">✓</span> Precision Calibration</li>
              </ul>
-             <Link to="/about" className="inline-block border-2 border-brand-primary text-brand-primary px-8 py-3 rounded font-bold hover:bg-brand-primary hover:text-white transition-colors dark:text-brand-accent">
+             <Link to="/about" className="inline-block border-2 border-brand-primary dark:border-brand-accent text-brand-primary px-8 py-3 rounded font-bold hover:bg-brand-primary dark:hover:bg-brand-accent hover:text-white dark:hover:text-brand-primary transition-colors dark:text-brand-accent">
                Learn More About Us
              </Link>
            </div>

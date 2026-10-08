@@ -15,7 +15,7 @@ export const AdminNotifications = () => {
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">You have {unreadCount} unread alerts.</p>
         </div>
         <div className="flex space-x-3 items-center">
-          <label className="flex items-center space-x-2 text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded border cursor-pointer">
+          <label className="flex items-center space-x-2 text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 cursor-pointer">
             <input 
               type="checkbox" 
               checked={showUnreadOnly} 
@@ -27,7 +27,7 @@ export const AdminNotifications = () => {
           <button 
             onClick={markAllAsRead} 
             disabled={unreadCount === 0}
-            className="text-sm font-bold text-brand-primary hover:text-brand-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="text-sm font-bold text-brand-primary dark:text-slate-200 hover:text-brand-accent dark:hover:text-brand-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Mark All as Read
           </button>
@@ -44,10 +44,10 @@ export const AdminNotifications = () => {
             <div 
               key={notification._id || Math.random()} 
               className={`p-4 rounded border-l-4 transition-colors flex justify-between items-start 
-                ${!notification.isRead ? 'border-brand-accent bg-brand-surface/30' : 'border-slate-300 bg-slate-50 dark:bg-slate-900 opacity-75'}`}
+                ${!notification.isRead ? 'border-brand-accent bg-brand-surface/10 dark:bg-slate-700/50' : 'border-slate-300 bg-slate-50 dark:bg-slate-900 opacity-75'}`}
             >
               <div>
-                <p className={`font-bold ${!notification.isRead ? 'text-brand-primary' : 'text-slate-600 dark:text-slate-300'}`}>
+                <p className={`font-bold ${!notification.isRead ? 'text-brand-primary dark:text-slate-100' : 'text-slate-600 dark:text-slate-300'}`}>
                   {notification.title}
                 </p>
                 <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">{notification.message}</p>
@@ -58,7 +58,7 @@ export const AdminNotifications = () => {
               {!notification.isRead && (
                 <button 
                   onClick={() => markAsRead(notification._id)}
-                  className="text-xs font-bold text-brand-primary hover:text-blue-600 bg-white dark:bg-slate-800 px-3 py-1 rounded shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border border-slate-200 dark:border-slate-600"
+                  className="text-xs font-bold text-brand-primary dark:text-slate-200 hover:text-blue-600 dark:hover:text-brand-accent bg-white dark:bg-slate-700 px-3 py-1 rounded shadow dark:shadow-none border border-slate-200 dark:border-slate-600"
                 >
                   Mark Read
                 </button>

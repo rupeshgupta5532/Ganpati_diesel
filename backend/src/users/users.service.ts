@@ -26,8 +26,9 @@ export class UsersService {
 
     const skip = (page - 1) * limit;
 
-    const [data, total] = await Promise.all([
+    const [data, totalAgg] = await Promise.all([
       this.userModel.aggregate([
+        { $unionWith: { coll: 'admins' } },
         { $match: filter },
         { $sort: { createdAt: -1 } },
         { $skip: skip },
@@ -66,7 +67,11 @@ export class UsersService {
           }
         }
       ]),
-      this.userModel.countDocuments(filter).exec(),
+      this.userModel.aggregate([
+        { $unionWith: { coll: 'admins' } },
+        { $match: filter },
+        { $count: 'total' }
+      ]),
     ]);
 
     return {
@@ -76,8 +81,8 @@ export class UsersService {
       meta: {
         page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        total: totalAgg[0]?.total || 0,
+        totalPages: Math.ceil((totalAgg[0]?.total || 0) / limit),
       },
     };
   }

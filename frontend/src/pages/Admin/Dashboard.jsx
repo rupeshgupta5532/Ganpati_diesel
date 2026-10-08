@@ -40,7 +40,11 @@ export const AdminDashboard = () => {
     fetchUsers(e.target.value);
   };
 
-  const filteredUsers = users.filter(u => roleFilter === 'ALL' || u.role === roleFilter);
+  const filteredUsers = users.filter(u => {
+    if (roleFilter === 'ALL') return true;
+    if (roleFilter === 'ADMIN') return u.role === 'ADMIN' || u.role === 'SUPER_ADMIN';
+    return u.role === roleFilter;
+  });
 
   
 
@@ -82,11 +86,11 @@ export const AdminDashboard = () => {
                  { name: 'Total Enquiries', count: stats.totalEnquiries },
                  { name: 'Pending Reviews', count: stats.pendingReviews },
                ]}
-               margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+               margin={{ top: 20, right: 30, left: 0, bottom: 40 }}
              >
                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-               <XAxis dataKey="name" tick={{fill: '#64748b'}} tickMargin={10} />
-               <YAxis tick={{fill: '#64748b'}} allowDecimals={false} />
+               <XAxis dataKey="name" tickMargin={15} height={60} />
+               <YAxis  allowDecimals={false} />
                <Tooltip 
                  cursor={{fill: 'transparent'}}
                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} 

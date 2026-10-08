@@ -62,7 +62,7 @@ export const uploadApi = {
 };
 
 export const adminUserApi = {
-  getAll: (search) => api.get('/admin/users' + (search ? '?search=' + search : '')),
+  getAll: (search) => api.get('/admin/users' + (search ? '?search=' + search + '&limit=100' : '?limit=100')),
 };
 
 export const auditLogsApi = {

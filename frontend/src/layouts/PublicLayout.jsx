@@ -2,17 +2,22 @@ import React, { useState,useEffect } from 'react';
 import { Outlet, Link } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { contactApi } from '../api/services';
+import { contactApi, websiteContentApi } from '../api/services';
 
 export const PublicLayout = () => {
   const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [contact, setContact] = useState(null);
+  const [content, setContent] = useState(null);
 
   useEffect(() => {
     contactApi.getContact()
       .then(res => setContact(res.data))
-      .catch(err => console.error("Failed to fetch contact details:", err));
+      .catch(console.error);
+      
+    websiteContentApi.getHomepage()
+      .then(res => setContent(res.data))
+      .catch(console.error);
   }, []);
 
   const getDashboardLink = () => {
@@ -143,8 +148,8 @@ export const PublicLayout = () => {
                 <p className="text-[9px] uppercase tracking-wider">Diesel Service</p>
               </div>
             </div>
-            <p className="text-sm mb-4">21 Years of Diesel Engineering Excellence. Advanced Fuel Pump, Injector, and CRDI Diagnostics.</p>
-            <p className="text-xs">Estd. 2004 A.D. | Birgunj, Nepal</p>
+            <p className="text-sm mb-4">{content?.heroSubtitle || `${content?.yearsExperience || 21}+ Years of Diesel Engineering Excellence.`} {content?.heroDescription || "Advanced Fuel Pump, Injector, and CRDI Diagnostics."}</p>
+            <p className="text-xs">Estd. {content?.establishedYear || "2004"} A.D. | {contact?.address || "Birgunj, Nepal"}</p>
           </div>
           <div>
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">Quick Links</h4>

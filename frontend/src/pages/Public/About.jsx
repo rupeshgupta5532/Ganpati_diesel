@@ -1,7 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { useState, useEffect } from 'react';
+import { websiteContentApi } from '../../api/services';
 
 export const About = () => {
+  const [content, setContent] = useState(null);
+  
+  useEffect(() => {
+    websiteContentApi.getHomepage()
+      .then(res => setContent(res.data))
+      .catch(console.error);
+  }, []);
   return (
     <div className="font-sans bg-gray-50 dark:bg-slate-900">
       {/* Hero Section */}
@@ -16,7 +25,7 @@ export const About = () => {
             Driving Diesel <span className="text-brand-accent">Excellence</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto font-light leading-relaxed">
-            Since 2004, New Shree Ganpati Diesel Service has been the premier destination for diesel engineering, fuel pump calibration, and advanced diagnostics in Birgunj, Nepal.
+            Since {content?.establishedYear || '2004'}, {content?.heroTitle || 'New Shree Ganpati Diesel Service'} has been the premier destination for diesel engineering, fuel pump calibration, and advanced diagnostics in Birgunj, Nepal.
           </p>
         </div>
       </section>
@@ -37,11 +46,11 @@ export const About = () => {
             <div className="md:w-1/2">
               <h2 className="text-brand-accent font-bold tracking-widest uppercase text-sm mb-3">Our Legacy</h2>
               <h3 className="text-3xl md:text-5xl font-extrabold text-brand-primary dark:text-slate-100 mb-6 leading-tight">
-                21+ Years of Relentless Mechanical Precision
+                {content?.yearsExperience || '21'}+ Years of Relentless Mechanical Precision
               </h3>
               <div className="space-y-6 text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
                 <p>
-                  What started over two decades ago as a modest workshop in Brahma Chowk has evolved into Nepal's leading diesel diagnostics facility. We specialize in bringing life back to heavily used commercial trucks, agricultural tractors, and industrial generators.
+                  {content?.aboutText || "What started over two decades ago as a modest workshop in Brahma Chowk has evolved into Nepal's leading diesel diagnostics facility. We specialize in bringing life back to heavily used commercial trucks, agricultural tractors, and industrial generators."}
                 </p>
                 <p>
                   As engines evolved from traditional mechanical fuel injection to complex Common Rail Direct Injection (CRDI) systems, so did we. We have heavily invested in computerized diagnostic scanners and advanced calibration test benches to bridge the gap between traditional mechanical grit and modern software diagnostics.

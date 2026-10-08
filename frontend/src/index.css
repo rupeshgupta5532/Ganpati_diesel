@@ -77,3 +77,28 @@ select {
   -webkit-appearance: auto !important;
   -moz-appearance: auto !important;
 }
+
+/* Recharts Overrides for Dark Mode & Stroke Bug */
+.recharts-text {
+  stroke: none !important; /* Fix text getting crossed out by stray SVG strokes */
+}
+
+.dark .recharts-text {
+  fill: #e2e8f0 !important; /* slate-200 for dark mode */
+}
+.dark .recharts-cartesian-axis-line, 
+.dark .recharts-cartesian-axis-tick-line,
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: #475569 !important; /* slate-600 */
+}
+
+/* Dark Mode Tooltip for Recharts */
+.dark .recharts-default-tooltip {
+  background-color: #1e293b !important; /* slate-800 */
+  border: 1px solid #334155 !important; /* slate-700 */
+  color: #f1f5f9 !important; /* slate-100 */
+}
+.dark .recharts-tooltip-item {
+  color: #f1f5f9 !important;
+}
