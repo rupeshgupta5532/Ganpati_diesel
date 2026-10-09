@@ -60,7 +60,7 @@ export class NotificationsService {
       return { userId, ...extra };
     }
     return {
-      $or: [{ userId: { $exists: false } }, { userId: null }, { userId: '' }],
+      $or: [{ userId: { $exists: false } }, { userId: null }],
       ...extra,
     };
   }
