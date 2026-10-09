@@ -7,6 +7,7 @@ import { User, Navigation, MapPin, Phone, Mail, Truck, ChevronDown, Bell, Trash2
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { NotificationDetailModal } from '../components/NotificationDetailModal';
 
 import { AdminDashboardOverview } from './Admin/Dashboard';
 import { AdminProducts } from './Admin/Products';
@@ -53,6 +54,7 @@ export const AdminDashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [selectedNotif, setSelectedNotif] = useState(null);
 
   const STATUS_OPTIONS = [
     { value: 'PENDING', label: 'PENDING', colorClass: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' },
@@ -218,6 +220,8 @@ export const AdminDashboard = () => {
                                 key={notif._id} 
                                 className={`p-3 rounded-xl transition-colors cursor-pointer group relative ${notif.isRead ? 'opacity-70 hover:bg-white/5' : 'bg-primary/5 border border-primary/10 hover:bg-primary/10'}`}
                                 onClick={async () => {
+                                  setShowNotifications(false);
+                                  setSelectedNotif(notif);
                                   if(!notif.isRead) {
                                     try {
                                       await api.patch(`/notifications/${notif._id}/read`);
@@ -654,6 +658,14 @@ export const AdminDashboard = () => {
       <div className="relative z-10">
         <Footer />
       </div>
+
+      <NotificationDetailModal 
+        notification={selectedNotif} 
+        onClose={() => setSelectedNotif(null)} 
+        onStatusUpdate={(id, newStatus) => {
+          setBookings(prev => prev.map(b => b._id === id ? { ...b, status: newStatus } : b));
+        }}
+      />
     </div>
   );
 };

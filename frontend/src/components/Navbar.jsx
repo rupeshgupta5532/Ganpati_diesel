@@ -6,6 +6,7 @@ import { Link, useLocation } from 'react-router';
 import BookButton from './BookButton';
 import ThemeSwitch from './ThemeSwitch';
 import { useAuth } from '../context/AuthContext';
+import { NotificationDetailModal } from './NotificationDetailModal';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ const Navbar = () => {
 
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [selectedNotif, setSelectedNotif] = useState(null);
 
   const navLinks = [
     { name: 'About', path: '/about' },
@@ -152,6 +154,8 @@ const Navbar = () => {
                                 key={notif._id} 
                                 className={`p-3 rounded-xl transition-colors cursor-pointer group relative ${notif.isRead ? 'opacity-70 hover:bg-white/5' : 'bg-primary/5 border border-primary/10 hover:bg-primary/10'}`}
                                 onClick={async () => {
+                                  setShowNotifications(false);
+                                  setSelectedNotif(notif);
                                   if(!notif.isRead) {
                                     try {
                                       const { default: api } = await import('../api/axios');
@@ -272,6 +276,11 @@ const Navbar = () => {
           </div>
         </motion.div>
       )}
+
+      <NotificationDetailModal 
+        notification={selectedNotif} 
+        onClose={() => setSelectedNotif(null)} 
+      />
     </nav>
   );
 };
