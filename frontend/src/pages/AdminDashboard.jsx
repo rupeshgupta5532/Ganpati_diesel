@@ -1,13 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ThemeSwitch from '../components/ThemeSwitch';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Navigation, MapPin, Phone, Mail, Truck, ChevronDown, Bell } from 'lucide-react';
+import { User, Navigation, MapPin, Phone, Mail, Truck, ChevronDown, Bell, Trash2, Package, Wrench, FolderGit2, Star, MessageSquare, Globe, PhoneCall, LayoutDashboard, LogOut, Shield } from 'lucide-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
+
+import { AdminDashboardOverview } from './Admin/Dashboard';
+import { AdminProducts } from './Admin/Products';
+import { AdminServices } from './Admin/Services';
+import { AdminProjects } from './Admin/Projects';
+import { AdminReviews } from './Admin/Reviews';
+import { AdminEnquiries } from './Admin/Enquiries';
+import { AdminContent } from './Admin/Content';
+import { AdminContact } from './Admin/Contact';
+import { AdminAuditLogs } from './Admin/AuditLogs';
 
 export const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('bookings');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user: authUser, logout } = useAuth();
+
+  const getInitialTab = () => {
+    const pathSegment = location.pathname.split('/')[2];
+    if (['dashboard', 'bookings', 'products', 'services', 'projects', 'reviews', 'enquiries', 'users', 'content', 'contact', 'audit-logs', 'audit'].includes(pathSegment)) {
+      return pathSegment === 'audit' ? 'audit-logs' : pathSegment;
+    }
+    return 'dashboard';
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+
+  useEffect(() => {
+    const pathSegment = location.pathname.split('/')[2];
+    if (pathSegment && ['dashboard', 'bookings', 'products', 'services', 'projects', 'reviews', 'enquiries', 'users', 'content', 'contact', 'audit-logs', 'audit'].includes(pathSegment)) {
+      setActiveTab(pathSegment === 'audit' ? 'audit-logs' : pathSegment);
+    }
+  }, [location.pathname]);
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+    navigate(`/admin/${tabName}`);
+  };
   const [searchTerm, setSearchTerm] = useState('');
   
   const [bookings, setBookings] = useState([]);
@@ -16,6 +52,7 @@ export const AdminDashboard = () => {
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const STATUS_OPTIONS = [
     { value: 'PENDING', label: 'PENDING', colorClass: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' },
@@ -91,9 +128,7 @@ export const AdminDashboard = () => {
       <div className="blob blob-1 fixed"></div>
       <div className="blob blob-2 fixed"></div>
       
-      <Navbar />
-      
-      <main className="flex-grow relative z-20 pt-32 pb-48 px-4 max-w-7xl mx-auto w-full flex flex-col">
+      <main className="flex-grow relative z-20 pt-12 pb-48 px-4 max-w-7xl mx-auto w-full flex flex-col">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-white flex items-center gap-3">
@@ -102,75 +137,174 @@ export const AdminDashboard = () => {
             <p className="text-gray-400 mt-2">Manage platform bookings and user registry</p>
           </div>
           
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            {/* Notifications */}
-            <div className="relative">
-              <button 
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition-colors relative"
-              >
-                <Bell className="w-5 h-5" />
-                {notifications.filter(n => !n.isRead).length > 0 && (
-                  <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#1e2128]"></span>
-                )}
-              </button>
+          <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
+            {/* Theme Toggle, Notifications, User Profile Controls */}
+            <div className="flex items-center gap-3">
+              <ThemeSwitch />
+              
+              {/* Notifications Bell */}
+              <div className="relative">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition-colors relative"
+                  title="Notifications"
+                >
+                  <Bell className="w-5 h-5" />
+                  {notifications.filter(n => !n.isRead).length > 0 && (
+                    <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#1e2128]"></span>
+                  )}
+                </button>
 
-              <AnimatePresence>
-                {showNotifications && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-2xl bg-dark border border-white/10 shadow-2xl z-50 custom-scrollbar"
-                    >
-                      <div className="p-4 border-b border-white/10 sticky top-0 bg-dark/90 backdrop-blur-md flex justify-between items-center z-10">
-                        <h3 className="font-bold text-white">Notifications</h3>
-                        {notifications.length > 0 && (
-                          <button 
-                            onClick={async () => {
-                              try {
-                                await api.patch('/notifications/read-all');
-                                setNotifications(notifications.map(n => ({...n, isRead: true})));
-                              } catch(e) {}
-                            }}
-                            className="text-xs text-primary hover:underline"
-                          >
-                            Mark all read
-                          </button>
-                        )}
-                      </div>
-                      <div className="p-2 flex flex-col gap-1">
-                        {notifications.length === 0 ? (
-                          <div className="p-4 text-center text-sm text-gray-400">No notifications yet</div>
-                        ) : (
-                          notifications.map((notif) => (
-                            <div 
-                              key={notif._id} 
-                              className={`p-3 rounded-xl transition-colors cursor-pointer ${notif.isRead ? 'opacity-70 hover:bg-white/5' : 'bg-primary/5 border border-primary/10 hover:bg-primary/10'}`}
-                              onClick={async () => {
-                                if(!notif.isRead) {
+                <AnimatePresence>
+                  {showNotifications && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-2xl bg-dark border border-white/10 shadow-2xl z-50 custom-scrollbar"
+                      >
+                        <div className="p-4 border-b border-white/10 sticky top-0 bg-dark/90 backdrop-blur-md flex justify-between items-center z-10">
+                          <h3 className="font-bold text-white">Notifications</h3>
+                          {notifications.length > 0 && (
+                            <div className="flex items-center gap-3">
+                              <button 
+                                onClick={async () => {
                                   try {
-                                    await api.patch(`/notifications/${notif._id}/read`);
-                                    setNotifications(notifications.map(n => n._id === notif._id ? {...n, isRead: true} : n));
+                                    await api.patch('/notifications/read-all');
+                                    setNotifications(notifications.map(n => ({...n, isRead: true})));
+                                    toast.success('Marked all as read');
                                   } catch(e) {}
-                                }
-                              }}
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <h4 className={`text-sm font-bold ${notif.isRead ? 'text-gray-300' : 'text-white'}`}>{notif.title}</h4>
-                                <span className="text-[10px] text-gray-500 whitespace-nowrap">{new Date(notif.createdAt).toLocaleDateString()}</span>
-                              </div>
-                              <p className={`text-xs mt-1 ${notif.isRead ? 'text-gray-500' : 'text-gray-400'}`}>{notif.message}</p>
+                                }}
+                                className="text-xs text-primary hover:underline"
+                              >
+                                Mark all read
+                              </button>
+                              <button
+                                onClick={async (e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const backup = [...notifications];
+                                  setNotifications([]);
+                                  try {
+                                    await api.delete('/notifications');
+                                    toast.success('Notifications cleared');
+                                  } catch(e) {
+                                    setNotifications(backup);
+                                    toast.error('Failed to clear notifications');
+                                  }
+                                }}
+                                className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 p-1 rounded hover:bg-white/10"
+                                title="Delete all notifications"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
                             </div>
-                          ))
-                        )}
-                      </div>
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
+                          )}
+                        </div>
+                        <div className="p-2 flex flex-col gap-1">
+                          {notifications.length === 0 ? (
+                            <div className="p-4 text-center text-sm text-gray-400">No notifications yet</div>
+                          ) : (
+                            notifications.map((notif) => (
+                              <div 
+                                key={notif._id} 
+                                className={`p-3 rounded-xl transition-colors cursor-pointer group relative ${notif.isRead ? 'opacity-70 hover:bg-white/5' : 'bg-primary/5 border border-primary/10 hover:bg-primary/10'}`}
+                                onClick={async () => {
+                                  if(!notif.isRead) {
+                                    try {
+                                      await api.patch(`/notifications/${notif._id}/read`);
+                                      setNotifications(notifications.map(n => n._id === notif._id ? {...n, isRead: true} : n));
+                                    } catch(e) {}
+                                  }
+                                }}
+                              >
+                                <div className="flex items-start justify-between gap-2 pr-6">
+                                  <h4 className={`text-sm font-bold ${notif.isRead ? 'text-gray-300' : 'text-white'}`}>{notif.title}</h4>
+                                  <span className="text-[10px] text-gray-500 whitespace-nowrap">{new Date(notif.createdAt).toLocaleDateString()}</span>
+                                </div>
+                                <p className={`text-xs mt-1 ${notif.isRead ? 'text-gray-500' : 'text-gray-400'}`}>{notif.message}</p>
+                                
+                                <button 
+                                  onClick={async (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const targetId = notif._id;
+                                    setNotifications(prev => prev.filter(n => n._id !== targetId));
+                                    try {
+                                      await api.delete(`/notifications/${targetId}`);
+                                      toast.success('Notification deleted');
+                                    } catch(err) {
+                                      console.error(err);
+                                      toast.error('Failed to delete notification');
+                                    }
+                                  }}
+                                  className="absolute top-3 right-2 text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-white/10 transition-colors z-20"
+                                  title="Delete notification"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* User Profile Controls */}
+              <div className="relative">
+                <button 
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition-colors relative"
+                  title="Admin Profile"
+                >
+                  <User className="w-5 h-5 text-primary" />
+                </button>
+
+                <AnimatePresence>
+                  {showProfileMenu && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShowProfileMenu(false)}></div>
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-2 w-72 rounded-2xl bg-dark border border-white/10 shadow-2xl z-50 p-4"
+                      >
+                        <div className="flex items-center gap-3 pb-3 border-b border-white/10">
+                          <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-lg">
+                            {(authUser?.name || 'A').charAt(0).toUpperCase()}
+                          </div>
+                          <div className="overflow-hidden">
+                            <h4 className="font-bold text-white text-sm truncate">{authUser?.name || 'Admin User'}</h4>
+                            <p className="text-xs text-gray-400 truncate">{authUser?.email || 'admin@ganpati.com'}</p>
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider">
+                              {authUser?.role || 'ADMIN'}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-3">
+                          <button
+                            onClick={() => {
+                              setShowProfileMenu(false);
+                              logout();
+                              navigate('/login');
+                            }}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-semibold text-sm transition-all"
+                          >
+                            <LogOut className="w-4 h-4" /> Log Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             {/* Search */}
@@ -190,18 +324,72 @@ export const AdminDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-white/10 pb-4">
+        <div className="flex flex-wrap gap-2 md:gap-3 mb-8 border-b border-white/10 pb-4 overflow-x-auto custom-scrollbar">
           <button 
-            onClick={() => setActiveTab('bookings')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${activeTab === 'bookings' ? 'bg-primary/10 text-primary border border-primary/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            onClick={() => handleTabChange('dashboard')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'dashboard' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
-            <Navigation className="h-5 w-5" /> Bookings
+            <LayoutDashboard className="h-4 w-4" /> Overview
           </button>
           <button 
-            onClick={() => setActiveTab('users')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${activeTab === 'users' ? 'bg-primary/10 text-primary border border-primary/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            onClick={() => handleTabChange('bookings')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'bookings' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
-            <User className="h-5 w-5" /> Users
+            <Navigation className="h-4 w-4" /> Bookings
+          </button>
+          <button 
+            onClick={() => handleTabChange('products')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'products' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <Package className="h-4 w-4" /> Products
+          </button>
+          <button 
+            onClick={() => handleTabChange('services')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'services' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <Wrench className="h-4 w-4" /> Services
+          </button>
+          <button 
+            onClick={() => handleTabChange('projects')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'projects' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <FolderGit2 className="h-4 w-4" /> Projects
+          </button>
+          <button 
+            onClick={() => handleTabChange('reviews')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'reviews' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <Star className="h-4 w-4" /> Reviews
+          </button>
+          <button 
+            onClick={() => handleTabChange('enquiries')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'enquiries' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <MessageSquare className="h-4 w-4" /> Enquiries
+          </button>
+          <button 
+            onClick={() => handleTabChange('users')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'users' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <User className="h-4 w-4" /> Users
+          </button>
+          <button 
+            onClick={() => handleTabChange('content')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'content' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <Globe className="h-4 w-4" /> Website Content
+          </button>
+          <button 
+            onClick={() => handleTabChange('contact')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'contact' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <PhoneCall className="h-4 w-4" /> Contact Details
+          </button>
+          <button 
+            onClick={() => handleTabChange('audit-logs')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'audit-logs' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <Shield className="h-4 w-4" /> Audit Logs
           </button>
         </div>
 
@@ -210,6 +398,19 @@ export const AdminDashboard = () => {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
           
           <AnimatePresence mode="wait">
+            {activeTab === 'dashboard' && (
+              <motion.div 
+                key="dashboard"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="w-full"
+              >
+                <AdminDashboardOverview />
+              </motion.div>
+            )}
+
             {activeTab === 'bookings' && (
               <motion.div 
                 key="bookings"
@@ -217,7 +418,7 @@ export const AdminDashboard = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="w-full"
+                className="w-full overflow-x-auto"
               >
                 <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
                   <thead className="text-xs text-gray-400 uppercase bg-dark/50 border-b border-white/10">
@@ -329,6 +530,36 @@ export const AdminDashboard = () => {
               </motion.div>
             )}
 
+            {activeTab === 'products' && (
+              <motion.div key="products" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <AdminProducts />
+              </motion.div>
+            )}
+
+            {activeTab === 'services' && (
+              <motion.div key="services" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <AdminServices />
+              </motion.div>
+            )}
+
+            {activeTab === 'projects' && (
+              <motion.div key="projects" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <AdminProjects />
+              </motion.div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <AdminReviews />
+              </motion.div>
+            )}
+
+            {activeTab === 'enquiries' && (
+              <motion.div key="enquiries" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <AdminEnquiries />
+              </motion.div>
+            )}
+
             {activeTab === 'users' && (
               <motion.div 
                 key="users"
@@ -390,6 +621,24 @@ export const AdminDashboard = () => {
                     )}
                   </tbody>
                 </table>
+              </motion.div>
+            )}
+
+            {activeTab === 'content' && (
+              <motion.div key="content" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <AdminContent />
+              </motion.div>
+            )}
+
+            {activeTab === 'contact' && (
+              <motion.div key="contact" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <AdminContact />
+              </motion.div>
+            )}
+
+            {activeTab === 'audit-logs' && (
+              <motion.div key="audit-logs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <AdminAuditLogs />
               </motion.div>
             )}
           </AnimatePresence>

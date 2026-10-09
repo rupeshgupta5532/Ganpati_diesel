@@ -1,11 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { adminBookingApi } from '../../api/adminApi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 
 export const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+
+  const STATUS_OPTIONS = [
+    { value: 'PENDING', label: 'PENDING', colorClass: 'text-yellow-600 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/10 dark:border-yellow-500/20' },
+    { value: 'CONFIRMED', label: 'CONFIRMED', colorClass: 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-500/10 dark:border-blue-500/20' },
+    { value: 'IN_PROGRESS', label: 'IN PROGRESS', colorClass: 'text-purple-600 bg-purple-50 border-purple-200 dark:text-purple-400 dark:bg-purple-500/10 dark:border-purple-500/20' },
+    { value: 'COMPLETED', label: 'COMPLETED', colorClass: 'text-green-600 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-500/10 dark:border-green-500/20' },
+    { value: 'CANCELLED', label: 'CANCELLED', colorClass: 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20' },
+    { value: 'REJECTED', label: 'REJECTED', colorClass: 'text-gray-600 bg-gray-50 border-gray-200 dark:text-gray-400 dark:bg-gray-500/10 dark:border-gray-500/20' }
+  ];
+
   // Modal state
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [adminNotes, setAdminNotes] = useState('');
@@ -70,7 +83,7 @@ export const AdminBookings = () => {
 
       {error && <div className="bg-red-50 text-red-700 p-4 rounded mb-6 font-semibold border-l-4 border-red-500">{error}</div>}
 
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border border-brand-border/20 dark:border-brand-border/80 overflow-x-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none border border-brand-border/20 dark:border-brand-border/80 overflow-visible min-h-[400px]">
         {loading ? (
           <div className="p-12 text-center text-slate-500 dark:text-slate-400 font-medium">Loading bookings...</div>
         ) : bookings.length === 0 ? (
@@ -88,7 +101,7 @@ export const AdminBookings = () => {
             </thead>
             <tbody className="divide-y divide-brand-border/5">
               {bookings.map(booking => (
-                <tr key={booking._id} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 transition-colors text-slate-800 dark:text-slate-200">
+                <tr key={booking._id} className={`hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 transition-colors text-slate-800 dark:text-slate-200 relative ${openDropdownId === booking._id ? 'z-50' : 'z-10'}`}>
                   <td className="py-4 px-6 text-slate-700 dark:text-slate-200 whitespace-nowrap font-medium">
                     {new Date(booking.preferredDate).toLocaleDateString()}<br/><span className="text-sm text-slate-500">{booking.preferredTime || 'N/A'}</span>
                   </td>
@@ -100,19 +113,58 @@ export const AdminBookings = () => {
                     <div className="font-semibold">{booking.vehicleType}</div>
                     <div className="text-sm text-slate-500 dark:text-slate-400">{booking.vehicleModel}</div>
                   </td>
-                  <td className="py-4 px-6">
-                                        <select 
-                      value={booking.status}
-                      onChange={(e) => handleStatusChange(booking._id, e.target.value)}
-                      className="border border-slate-200 dark:border-slate-600 rounded p-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:border-brand-accent focus:ring-0 outline-none font-semibold cursor-pointer shadow dark:shadow-none-sm dark:shadow dark:shadow-none-none"
-                    >
-                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="PENDING">PENDING</option>
-                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="CONFIRMED">CONFIRMED</option>
-                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="IN_PROGRESS">IN_PROGRESS</option>
-                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="COMPLETED">COMPLETED</option>
-                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="CANCELLED">CANCELLED</option>
-                      <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="REJECTED">REJECTED</option>
-                    </select>
+                  <td className="py-4 px-6 relative overflow-visible" style={{ position: 'relative' }}>
+                    {(() => {
+                      const currentStatus = STATUS_OPTIONS.find(opt => opt.value === booking.status) || STATUS_OPTIONS[0];
+                      return (
+                        <div className="relative">
+                          <button
+                            onClick={() => setOpenDropdownId(openDropdownId === booking._id ? null : booking._id)}
+                            className={`flex items-center justify-between w-36 px-3 py-1.5 rounded-full text-xs font-bold border ${currentStatus.colorClass} hover:opacity-80 transition-opacity`}
+                          >
+                            {currentStatus.label}
+                            <ChevronDown className={`w-3 h-3 transition-transform ${openDropdownId === booking._id ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          <AnimatePresence>
+                            {openDropdownId === booking._id && (
+                              <>
+                                <div className="fixed inset-0 z-40" onClick={() => setOpenDropdownId(null)}></div>
+                                <motion.div 
+                                  initial={{ opacity: 0, y: -5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -5 }}
+                                  transition={{ duration: 0.1 }}
+                                  className="absolute left-0 z-[9999] mt-2 w-40 rounded-xl bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#374151] shadow-2xl flex flex-col overflow-hidden"
+                                >
+                                  <div className="py-2 flex flex-col w-full">
+                                    {STATUS_OPTIONS.map((statusOption) => (
+                                      <button
+                                        key={statusOption.value}
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          handleStatusChange(booking._id, statusOption.value);
+                                          setOpenDropdownId(null);
+                                        }}
+                                        className={`w-full block text-left px-4 py-2.5 text-xs font-bold transition-colors ${
+                                          booking.status === statusOption.value 
+                                            ? `${statusOption.colorClass.split(' ')[0]} bg-gray-100 dark:bg-white/5` 
+                                            : 'text-gray-700 dark:text-[#e5e7eb] hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-[#ffffff]'
+                                        }`}
+                                      >
+                                        {statusOption.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              </>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td className="py-4 px-6 whitespace-nowrap">
                     <div className="flex items-center gap-4">

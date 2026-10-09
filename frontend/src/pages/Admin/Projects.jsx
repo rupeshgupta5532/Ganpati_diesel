@@ -9,7 +9,7 @@ export const AdminProjects = () => {
   const fetchProjects = () => {
     setLoading(true);
     adminProjectApi.getAll()
-      .then(res => setProjects(res.data.data || res.data))
+      .then(res => setProjects(res.data?.data || res.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   };
@@ -25,60 +25,69 @@ export const AdminProjects = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Manage Case Studies</h1>
-        <Link to="/admin/projects/create" className="bg-brand-accent text-brand-primary px-4 py-2 rounded font-bold hover:bg-brand-accent-hover transition-colors">
+    <div className="w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Manage Projects / Case Studies</h2>
+          <p className="text-xs text-gray-400 mt-1">Showcase completed diesel repair jobs and diagnostics</p>
+        </div>
+        <Link to="/admin/projects/create" className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-hover transition-colors shadow-lg">
           + Add Project
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded shadow dark:shadow-none overflow-x-auto">
+      <div className="overflow-x-auto">
         {loading ? (
-          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading projects...</div>
+          <div className="p-8 text-center text-gray-400">Loading projects...</div>
         ) : projects.length === 0 ? (
-          <div className="p-8 text-center text-gray-500 dark:text-slate-400">No projects found.</div>
+          <div className="p-8 text-center text-gray-400">No projects found.</div>
         ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-100 dark:bg-slate-700 border-b text-slate-600 dark:text-slate-300">
-                <th className="py-3 px-4">Image</th>
-                <th className="py-3 px-4">Title / Vehicle</th>
-                <th className="py-3 px-4">Service Type</th>
-                <th className="py-3 px-4">Visibility</th>
-                <th className="py-3 px-4">Actions</th>
+          <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+            <thead className="text-xs text-gray-400 uppercase bg-dark/50 border-b border-white/10">
+              <tr>
+                <th className="py-3.5 px-4 font-semibold">Image</th>
+                <th className="py-3.5 px-4 font-semibold">Title / Vehicle</th>
+                <th className="py-3.5 px-4 font-semibold">Service Type</th>
+                <th className="py-3.5 px-4 font-semibold">Visibility</th>
+                <th className="py-3.5 px-4 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {projects.map(project => (
-                <tr key={project._id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-                  <td className="py-3 px-4">
-                    {project.afterImage ? (
-                      <img src={project.afterImage} alt="After" className="w-16 h-12 rounded object-cover" />
+                <tr key={project._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="py-3.5 px-4">
+                    {project.afterImage || project.beforeImage ? (
+                      <img src={project.afterImage || project.beforeImage} alt="Project" className="w-14 h-10 rounded-lg object-cover border border-white/10" />
                     ) : (
-                      <div className="w-16 h-12 bg-slate-200 rounded flex items-center justify-center text-[10px] text-slate-400">N/A</div>
+                      <div className="w-14 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-[10px] text-gray-500 font-bold">N/A</div>
                     )}
                   </td>
-                  <td className="py-3 px-4">
-                    <div className="font-medium text-slate-800 dark:text-slate-100">{project.title}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">{project.vehicle || 'Unknown Vehicle'}</div>
+                  <td className="py-3.5 px-4">
+                    <div className="font-bold text-white">{project.title}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{project.vehicle || 'Standard Vehicle'}</div>
                   </td>
-                  <td className="py-3 px-4 text-slate-700 dark:text-slate-200">{project.serviceType}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex flex-col space-y-1">
-                       <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold w-max ${project.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800 dark:text-gray-200'}`}>
+                  <td className="py-3.5 px-4 text-gray-300 font-medium">{project.serviceType || 'General Service'}</td>
+                  <td className="py-3.5 px-4">
+                    <div className="flex items-center gap-2">
+                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${project.isPublished ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-gray-500/10 text-gray-400 border-gray-500/20'}`}>
                          {project.isPublished ? 'Published' : 'Draft'}
                        </span>
                        {project.isFeatured && (
-                         <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold w-max bg-purple-100 text-purple-800">
+                         <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
                            Featured
                          </span>
                        )}
                     </div>
                   </td>
-                  <td className="py-3 px-4 space-x-2">
-                    <Link to={`/admin/projects/${project._id}/edit`} className="text-blue-600 hover:underline">Edit</Link>
-                    <button onClick={() => handleDelete(project._id)} className="text-red-600 hover:underline">Delete</button>
+                  <td className="py-3.5 px-4">
+                    <div className="flex items-center gap-2">
+                      <Link to={`/admin/projects/${project._id}/edit`} className="text-primary hover:text-primary-hover text-xs uppercase font-bold tracking-wider bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-full transition-colors">
+                        Edit
+                      </Link>
+                      <button onClick={() => handleDelete(project._id)} className="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider bg-red-400/10 hover:bg-red-400/20 px-3 py-1.5 rounded-full transition-colors">
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

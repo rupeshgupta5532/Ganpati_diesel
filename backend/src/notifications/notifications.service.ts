@@ -56,32 +56,60 @@ export class NotificationsService {
     } catch(e) { this.logger.warn('Failed to publish admin notification to redis'); }
   }
 
-  async findAllForUser(userId: string) {
+  private getQuery(userId?: string, extra: Record<string, any> = {}) {
+    if (userId) {
+      return { userId, ...extra };
+    }
+    return {
+      $or: [{ userId: { $exists: false } }, { userId: null }],
+      ...extra,
+    };
+  }
+
+  async findAllForUser(userId?: string) {
     return this.notificationModel
-      .find({ userId })
+      .find(this.getQuery(userId))
       .sort({ createdAt: -1 })
       .exec();
   }
 
-  async findUnreadCount(userId: string) {
+  async findUnreadCount(userId?: string) {
     return this.notificationModel
-      .countDocuments({ userId, isRead: false })
+      .countDocuments(this.getQuery(userId, { isRead: false }))
       .exec();
   }
 
-  async markAsRead(id: string, userId: string) {
+  async markAsRead(id: string, userId?: string) {
+    const query = userId ? { _id: id, userId } : { _id: id };
     const notification = await this.notificationModel
-      .findOneAndUpdate({ _id: id, userId }, { isRead: true }, { new: true })
+      .findOneAndUpdate(query, { isRead: true }, { new: true })
       .exec();
 
     if (!notification) throw new NotFoundException('Notification not found');
     return notification;
   }
 
-  async markAllAsRead(userId: string) {
+  async markAllAsRead(userId?: string) {
     await this.notificationModel
-      .updateMany({ userId, isRead: false }, { isRead: true })
+      .updateMany(this.getQuery(userId, { isRead: false }), { isRead: true })
       .exec();
     return { success: true, message: 'All notifications marked as read' };
+  }
+
+  async remove(id: string, userId?: string) {
+    const query = userId ? { _id: id, userId } : { _id: id };
+    const notification = await this.notificationModel
+      .findOneAndDelete(query)
+      .exec();
+
+    if (!notification) throw new NotFoundException('Notification not found');
+    return { success: true, message: 'Notification deleted' };
+  }
+
+  async removeAll(userId?: string) {
+    await this.notificationModel
+      .deleteMany(this.getQuery(userId))
+      .exec();
+    return { success: true, message: 'All notifications deleted' };
   }
 }

@@ -8,7 +8,7 @@ export const AdminEnquiries = () => {
   const fetchEnquiries = () => {
     setLoading(true);
     adminEnquiryApi.getAll()
-      .then(res => setEnquiries(res.data.data || res.data))
+      .then(res => setEnquiries(res.data?.data || res.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   };
@@ -24,39 +24,44 @@ export const AdminEnquiries = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-6">Enquiries Inbox</h1>
+    <div className="w-full">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white">Enquiries & Messages Inbox</h2>
+        <p className="text-xs text-gray-400 mt-1">Direct contact form submissions and customer inquiries</p>
+      </div>
+
       <div className="space-y-4">
         {loading ? (
-          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading enquiries...</div>
+          <div className="p-8 text-center text-gray-400">Loading enquiries...</div>
         ) : enquiries.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 p-8 text-center text-gray-500 dark:text-slate-400 rounded shadow dark:shadow-none">No enquiries found.</div>
+          <div className="p-8 text-center text-gray-400 bg-white/5 rounded-2xl border border-white/10">No enquiries found.</div>
         ) : (
           enquiries.map(enquiry => (
-            <div key={enquiry._id} className="bg-white dark:bg-slate-800 p-6 rounded shadow dark:shadow-none border-l-4 border-blue-500 flex flex-col md:flex-row justify-between">
+            <div key={enquiry._id} className="bg-dark/40 border border-white/10 p-6 rounded-2xl border-l-4 border-l-primary flex flex-col md:flex-row justify-between gap-4 transition-colors hover:bg-white/5">
                <div className="flex-1">
-                 <div className="flex items-center space-x-3 mb-2">
-                   <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">{enquiry.subject}</h3>
-                   <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded">{enquiry.status}</span>
+                 <div className="flex items-center gap-3 mb-2 flex-wrap">
+                   <h3 className="text-lg font-bold text-white">{enquiry.subject || 'General Inquiry'}</h3>
+                   <span className="px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 text-xs font-bold rounded-full">{enquiry.status || 'NEW'}</span>
                  </div>
-                 <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">{enquiry.message}</p>
-                 <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-4">
-                   <span>👤 {enquiry.name}</span>
-                   <span>📞 {enquiry.phone}</span>
+                 <p className="text-sm text-gray-300 mb-4 leading-relaxed">{enquiry.message}</p>
+                 <div className="text-xs text-gray-400 flex items-center gap-4 flex-wrap">
+                   <span>👤 <strong className="text-white">{enquiry.name}</strong></span>
+                   <span>📞 {enquiry.phone || 'N/A'}</span>
+                   <span>✉️ {enquiry.email || 'N/A'}</span>
                    <span>🕒 {new Date(enquiry.createdAt).toLocaleDateString()}</span>
                  </div>
                </div>
-               <div className="mt-4 md:mt-0 md:ml-6 flex flex-col justify-center">
-                                  <select 
-                   value={enquiry.status}
+               <div className="flex items-center">
+                 <select 
+                   value={enquiry.status || 'NEW'}
                    onChange={(e) => updateStatus(enquiry._id, e.target.value)}
-                   className="border rounded p-2 text-sm bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
+                   className="border border-white/10 rounded-xl px-3 py-2 text-xs font-bold bg-[#111827] text-white focus:outline-none focus:border-primary cursor-pointer shadow-lg"
                  >
-                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="NEW">NEW</option>
-                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="CONTACTED">CONTACTED</option>
-                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="IN_PROGRESS">IN_PROGRESS</option>
-                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="RESOLVED">RESOLVED</option>
-                   <option className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="CLOSED">CLOSED</option>
+                   <option className="bg-[#111827] text-white" value="NEW">NEW</option>
+                   <option className="bg-[#111827] text-white" value="CONTACTED">CONTACTED</option>
+                   <option className="bg-[#111827] text-white" value="IN_PROGRESS">IN PROGRESS</option>
+                   <option className="bg-[#111827] text-white" value="RESOLVED">RESOLVED</option>
+                   <option className="bg-[#111827] text-white" value="CLOSED">CLOSED</option>
                  </select>
                </div>
             </div>

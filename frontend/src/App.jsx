@@ -13,6 +13,9 @@ import { ForgotPassword } from './pages/ForgotPassword';
 import { OAuthCallback } from './pages/OAuthCallback';
 import { BookService } from './pages/BookService';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { ProductForm } from './pages/Admin/ProductForm';
+import { ServiceForm } from './pages/Admin/ServiceForm';
+import { ProjectForm } from './pages/Admin/ProjectForm';
 import { AuthProvider } from './context/AuthContext';
 import { VerifyOtp } from './pages/VerifyOtp';
 import { Profile } from './pages/Profile';
@@ -31,6 +34,25 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/book-service" element={<BookService />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/bookings" element={<AdminDashboard />} />
+        <Route path="/admin/products" element={<AdminDashboard />} />
+        <Route path="/admin/services" element={<AdminDashboard />} />
+        <Route path="/admin/projects" element={<AdminDashboard />} />
+        <Route path="/admin/reviews" element={<AdminDashboard />} />
+        <Route path="/admin/enquiries" element={<AdminDashboard />} />
+        <Route path="/admin/users" element={<AdminDashboard />} />
+        <Route path="/admin/content" element={<AdminDashboard />} />
+        <Route path="/admin/contact" element={<AdminDashboard />} />
+        <Route path="/admin/audit-logs" element={<AdminDashboard />} />
+        <Route path="/admin/audit" element={<AdminDashboard />} />
+
+        <Route path="/admin/products/create" element={<ProductForm />} />
+        <Route path="/admin/products/:id/edit" element={<ProductForm />} />
+        <Route path="/admin/services/create" element={<ServiceForm />} />
+        <Route path="/admin/services/:id/edit" element={<ServiceForm />} />
+        <Route path="/admin/projects/create" element={<ProjectForm />} />
+        <Route path="/admin/projects/:id/edit" element={<ProjectForm />} />
         <Route path="/profile" element={<Profile />} />
         
         <Route path="/login" element={<Login />} />

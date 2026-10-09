@@ -77,75 +77,80 @@ export const ProductForm = () => {
   };
 
   return (
-    <div className="max-w-3xl bg-white dark:bg-slate-800 p-8 rounded shadow dark:shadow-none border border-brand-border/20 dark:border-brand-border/80">
-      <h1 className="text-2xl font-bold mb-6 text-brand-primary dark:text-slate-100">{isEdit ? 'Edit Product' : 'Add New Product'}</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Product Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" required />
-          </div>
-          <div>
-            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Slug (optional)</label>
-            <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Part Number</label>
-            <input type="text" name="partNumber" value={formData.partNumber} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
-          </div>
-          <div>
-            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Category</label>
-            <input type="text" name="category" value={formData.category} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Price (NPR)</label>
-            <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" />
-          </div>
-          <div>
-            <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Product Image</label>
-            <div className="flex items-center space-x-2">
-              <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full border rounded p-1 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700" disabled={uploading} />
-              {uploading && <span className="text-xs text-blue-500 font-bold">Uploading...</span>}
+    <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-hidden flex flex-col p-6 md:p-12">
+      <div className="blob blob-1 fixed"></div>
+      <div className="blob blob-2 fixed"></div>
+
+      <div className="max-w-3xl mx-auto w-full glass-card p-8 rounded-3xl border border-white/10 relative z-10 shadow-2xl">
+        <h1 className="text-2xl font-bold mb-6 text-white">{isEdit ? 'Edit Product' : 'Add New Product'}</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-gray-300">Product Name</label>
+              <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full bg-dark/50 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary" required />
             </div>
-            {formData.image && (
-              <div className="mt-2 text-xs">
-                 <img src={formData.image} alt="Preview" className="h-20 w-auto rounded border" />
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-gray-300">Slug (optional)</label>
+              <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full bg-dark/50 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary" />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-gray-300">Part Number</label>
+              <input type="text" name="partNumber" value={formData.partNumber} onChange={handleChange} className="w-full bg-dark/50 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-gray-300">Category</label>
+              <input type="text" name="category" value={formData.category} onChange={handleChange} className="w-full bg-dark/50 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary" />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-gray-300">Price ($ / Rs)</label>
+              <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full bg-dark/50 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-gray-300">Product Image</label>
+              <div className="flex items-center space-x-2">
+                <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full bg-dark/50 border border-white/10 rounded-xl p-2 text-xs text-gray-300 focus:outline-none focus:border-primary" disabled={uploading} />
+                {uploading && <span className="text-xs text-primary font-bold animate-pulse">Uploading...</span>}
               </div>
-            )}
+              {formData.image && (
+                <div className="mt-2">
+                   <img src={formData.image} alt="Preview" className="h-20 w-auto rounded-xl border border-white/10 object-cover" />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-bold mb-1 text-slate-800 dark:text-slate-200">Detailed Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} rows="4" className="w-full border rounded p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:border-slate-700"></textarea>
-        </div>
-        
-        <div className="flex space-x-6 pt-2">
-          <div className="flex items-center space-x-2">
-            <input type="checkbox" name="availability" checked={formData.availability} onChange={handleChange} id="avail" />
-            <label htmlFor="avail" className="text-sm font-bold text-slate-800 dark:text-slate-200">In Stock</label>
+          
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-gray-300">Detailed Description</label>
+            <textarea name="description" value={formData.description} onChange={handleChange} rows="4" className="w-full bg-dark/50 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary"></textarea>
           </div>
-          <div className="flex items-center space-x-2">
-            <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} id="active" />
-            <label htmlFor="active" className="text-sm font-bold text-slate-800 dark:text-slate-200">Active (Visible)</label>
+          
+          <div className="flex space-x-6 pt-2">
+            <div className="flex items-center space-x-2">
+              <input type="checkbox" name="availability" checked={formData.availability} onChange={handleChange} id="avail" className="w-4 h-4 rounded text-primary focus:ring-primary" />
+              <label htmlFor="avail" className="text-sm font-bold text-gray-300 cursor-pointer">In Stock</label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} id="active" className="w-4 h-4 rounded text-primary focus:ring-primary" />
+              <label htmlFor="active" className="text-sm font-bold text-gray-300 cursor-pointer">Active (Visible)</label>
+            </div>
           </div>
-        </div>
-        
-        <div className="pt-4 flex space-x-4">
-          <button type="submit" disabled={loading} className="bg-brand-accent text-brand-primary px-6 py-2 rounded font-bold hover:bg-brand-accent-hover">
-            {loading ? 'Saving...' : 'Save Product'}
-          </button>
-          <button type="button" onClick={() => navigate('/admin/products')} className="px-6 py-2 rounded font-bold border hover:bg-gray-50 dark:bg-slate-900">
-            Cancel
-          </button>
-        </div>
-      </form>
+          
+          <div className="pt-6 flex space-x-4">
+            <button type="submit" disabled={loading} className="bg-primary text-black px-6 py-2.5 rounded-xl font-bold hover:bg-primary-hover transition-colors shadow-lg">
+              {loading ? 'Saving...' : 'Save Product'}
+            </button>
+            <button type="button" onClick={() => navigate('/admin/products')} className="px-6 py-2.5 rounded-xl font-bold border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition-colors">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

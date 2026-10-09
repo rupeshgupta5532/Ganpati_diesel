@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ArrowRight, User, Bell } from 'lucide-react';
+import { Menu, X, ArrowRight, User, Bell, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { Link, useLocation } from 'react-router';
@@ -103,18 +103,38 @@ const Navbar = () => {
                         <div className="p-4 border-b border-[#374151] sticky top-0 bg-[#111827]/90 backdrop-blur-md flex justify-between items-center z-10">
                           <h3 className="font-bold text-[#e5e7eb]">Notifications</h3>
                           {notifications.length > 0 && (
-                            <button 
-                              onClick={async () => {
-                                try {
-                                  const { default: api } = await import('../api/axios');
-                                  await api.patch('/notifications/read-all');
-                                  setNotifications(notifications.map(n => ({...n, isRead: true})));
-                                } catch(e) {}
-                              }}
-                              className="text-xs text-primary hover:underline"
-                            >
-                              Mark all read
-                            </button>
+                            <div className="flex items-center gap-3">
+                              <button 
+                                onClick={async () => {
+                                  try {
+                                    const { default: api } = await import('../api/axios');
+                                    await api.patch('/notifications/read-all');
+                                    setNotifications(notifications.map(n => ({...n, isRead: true})));
+                                  } catch(e) {}
+                                }}
+                                className="text-xs text-primary hover:underline"
+                              >
+                                Mark all read
+                              </button>
+                              <button 
+                                onClick={async (e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const backup = [...notifications];
+                                  setNotifications([]);
+                                  try {
+                                    const { default: api } = await import('../api/axios');
+                                    await api.delete('/notifications');
+                                  } catch(e) {
+                                    setNotifications(backup);
+                                  }
+                                }}
+                                className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 p-1 rounded hover:bg-white/10"
+                                title="Delete all notifications"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           )}
                         </div>
                         <div className="p-2 flex flex-col gap-1">
@@ -124,7 +144,7 @@ const Navbar = () => {
                             notifications.map((notif) => (
                               <div 
                                 key={notif._id} 
-                                className={`p-3 rounded-xl transition-colors cursor-pointer ${notif.isRead ? 'opacity-70 hover:bg-white/5' : 'bg-primary/5 border border-primary/10 hover:bg-primary/10'}`}
+                                className={`p-3 rounded-xl transition-colors cursor-pointer group relative ${notif.isRead ? 'opacity-70 hover:bg-white/5' : 'bg-primary/5 border border-primary/10 hover:bg-primary/10'}`}
                                 onClick={async () => {
                                   if(!notif.isRead) {
                                     try {
@@ -135,11 +155,30 @@ const Navbar = () => {
                                   }
                                 }}
                               >
-                                <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-start justify-between gap-2 pr-6">
                                   <h4 className={`text-sm font-bold ${notif.isRead ? 'text-[#d1d5db]' : 'text-[#ffffff]'}`}>{notif.title}</h4>
                                   <span className="text-[10px] text-[#6b7280] whitespace-nowrap">{new Date(notif.createdAt).toLocaleDateString()}</span>
                                 </div>
                                 <p className={`text-xs mt-1 ${notif.isRead ? 'text-[#9ca3af]' : 'text-[#d1d5db]'}`}>{notif.message}</p>
+                                
+                                <button 
+                                  onClick={async (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const targetId = notif._id;
+                                    setNotifications(prev => prev.filter(n => n._id !== targetId));
+                                    try {
+                                      const { default: api } = await import('../api/axios');
+                                      await api.delete(`/notifications/${targetId}`);
+                                    } catch(err) {
+                                      console.error(err);
+                                    }
+                                  }}
+                                  className="absolute top-3 right-2 text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-white/10 transition-colors z-20"
+                                  title="Delete notification"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
                               </div>
                             ))
                           )}

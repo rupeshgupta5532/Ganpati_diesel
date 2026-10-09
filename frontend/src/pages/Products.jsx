@@ -73,25 +73,19 @@ export const Products = () => {
     }, 2000);
   };
 
-  const [products, setProducts] = useState([
-    { name: 'BOSCH CRDI Injector 0445120123', category: 'Injectors', price: '$250', image: 'https://images.unsplash.com/photo-1635393222380-5a3d00d23829?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Delphi High Pressure Pump', category: 'Pumps', price: '$850', image: 'https://images.unsplash.com/photo-1589139886737-25eaf2105193?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Cummins ISX Filter Kit', category: 'Filters', price: '$85', image: 'https://images.unsplash.com/photo-1620050858102-140cce43a755?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Denso Common Rail Sensor', category: 'Electronics', price: '$120', image: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&q=80&w=400' },
-    { name: 'CAT C15 Injector Assembly', category: 'Injectors', price: '$320', image: 'https://images.unsplash.com/photo-1635393222380-5a3d00d23829?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Fuel Line Connector Kit', category: 'Accessories', price: '$45', image: 'https://images.unsplash.com/photo-1589139886737-25eaf2105193?auto=format&fit=crop&q=80&w=400' },
-  ]);
+  const [products, setProducts] = useState([]);
 
   React.useEffect(() => {
     import('../api/axios').then(({ default: api }) => {
       api.get('/products')
         .then(res => {
           const data = Array.isArray(res) ? res : (res.data || []);
-          if (data && data.length > 0) {
-            setProducts(data);
-          }
+          setProducts(data || []);
         })
-        .catch(err => console.error("Error fetching products:", err));
+        .catch(err => {
+          console.error("Error fetching products:", err);
+          setProducts([]);
+        });
     });
   }, []);
 
@@ -161,38 +155,54 @@ export const Products = () => {
           ))}
         </div>
 
-        {/* Product Grid or Out of Stock */}
+        {/* Product Grid or Stock Not Listed Yet */}
         {filteredProducts.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.map((product, i) => (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.05 }}
-                key={i}
-                className="glass-card rounded-2xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all group"
-              >
-                <div className="h-48 overflow-hidden relative">
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10"></div>
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110" />
-                  <span className="absolute top-3 right-3 z-20 bg-black/80 backdrop-blur-md text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">
-                    {product.category}
-                  </span>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-lg font-bold text-white mb-2">{product.name}</h3>
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="text-xl font-mono text-primary font-bold">{product.price}</span>
-                    <button 
-                      onClick={() => addToCart(product)}
-                      className="text-xs uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full transition-colors"
-                    >
-                      Add to Cart
-                    </button>
+            {filteredProducts.map((product, i) => {
+              const isOutOfStock = product.inStock === false || product.stock === 0;
+              return (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.05 }}
+                  key={i}
+                  className="glass-card rounded-2xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all group flex flex-col"
+                >
+                  <div className="h-48 overflow-hidden relative">
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10"></div>
+                    <img src={product.image || 'https://images.unsplash.com/photo-1589139886737-25eaf2105193?auto=format&fit=crop&q=80&w=400'} alt={product.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110" />
+                    <span className="absolute top-3 right-3 z-20 bg-black/80 backdrop-blur-md text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">
+                      {product.category || 'Spare Part'}
+                    </span>
+                    {isOutOfStock && (
+                      <span className="absolute top-3 left-3 z-20 bg-red-500/90 text-white text-xs font-bold px-3 py-1 rounded-full border border-red-400">
+                        Stock Not Listed Yet
+                      </span>
+                    )}
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                  <div className="p-5 flex flex-col flex-grow justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-2">{product.name}</h3>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-xl font-mono text-primary font-bold">{product.price || 'Contact for price'}</span>
+                      {isOutOfStock ? (
+                        <span className="text-xs font-semibold text-red-400 bg-red-500/10 px-3 py-1.5 rounded-full border border-red-500/20">
+                          Stock Not Listed Yet
+                        </span>
+                      ) : (
+                        <button 
+                          onClick={() => addToCart(product)}
+                          className="text-xs uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full transition-colors"
+                        >
+                          Add to Cart
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         ) : (
           <motion.div 
@@ -201,21 +211,25 @@ export const Products = () => {
             className="flex flex-col items-center justify-center py-20 text-center glass-card rounded-3xl border border-white/10"
           >
             <Search className="w-16 h-16 text-gray-500 mb-4 opacity-50" />
-            <h2 className="text-2xl font-bold text-white mb-2">Out of Stock</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Stock Not Listed Yet</h2>
             <p className="text-gray-400 mb-8 max-w-md">
-              We currently don't have any parts matching "{searchQuery}" in our active inventory.
+              {searchQuery 
+                ? `We currently don't have parts matching "${searchQuery}" listed in stock.`
+                : 'No products are currently listed in stock.'}
             </p>
-            {notifiedQueries.includes(searchQuery.toLowerCase()) ? (
-              <div className="flex items-center gap-2 text-green-400 bg-green-400/10 px-6 py-3 rounded-full border border-green-400/20 font-medium">
-                <CheckCircle className="w-5 h-5" /> We will notify you when it's back!
-              </div>
-            ) : (
-              <button 
-                onClick={() => setNotifiedQueries([...notifiedQueries, searchQuery.toLowerCase()])}
-                className="bg-primary text-black px-8 py-3 rounded-full font-bold hover:bg-primary-hover transition-colors shadow-[0_0_20px_rgba(217,119,6,0.2)]"
-              >
-                Notify me when in stock
-              </button>
+            {searchQuery && (
+              notifiedQueries.includes(searchQuery.toLowerCase()) ? (
+                <div className="flex items-center gap-2 text-green-400 bg-green-400/10 px-6 py-3 rounded-full border border-green-400/20 font-medium">
+                  <CheckCircle className="w-5 h-5" /> We will notify you when it's back in stock!
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setNotifiedQueries([...notifiedQueries, searchQuery.toLowerCase()])}
+                  className="bg-primary text-black px-8 py-3 rounded-full font-bold hover:bg-primary-hover transition-colors shadow-[0_0_20px_rgba(217,119,6,0.2)]"
+                >
+                  Notify me when in stock
+                </button>
+              )
             )}
           </motion.div>
         )}
