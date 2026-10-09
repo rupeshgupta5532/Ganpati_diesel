@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuditLog, AuditLogDocument } from './schemas/audit-log.schema';
-import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class AuditLogsService {
@@ -37,8 +36,7 @@ export class AuditLogsService {
   }
 
   // Cron job for auto deletion of logs after 1 day
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async deleteOldLogs() {
+    async deleteOldLogs() {
     this.logger.log('Running daily audit log cleanup...');
     const oneDayAgo = new Date();
     oneDayAgo.setDate(oneDayAgo.getDate() - 1);
