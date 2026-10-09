@@ -125,8 +125,14 @@ const Navbar = () => {
                                   try {
                                     const { default: api } = await import('../api/axios');
                                     await api.delete('/notifications');
-                                  } catch(e) {
-                                    setNotifications(backup);
+                                  } catch(err) {
+                                    try {
+                                      const { default: api } = await import('../api/axios');
+                                      await api.delete('/notifications/clear-all');
+                                    } catch(err2) {
+                                      console.error(err2);
+                                      setNotifications(backup);
+                                    }
                                   }
                                 }}
                                 className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 p-1 rounded hover:bg-white/10"

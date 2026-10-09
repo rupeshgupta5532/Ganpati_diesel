@@ -190,9 +190,15 @@ export const AdminDashboard = () => {
                                   try {
                                     await api.delete('/notifications');
                                     toast.success('Notifications cleared');
-                                  } catch(e) {
-                                    setNotifications(backup);
-                                    toast.error('Failed to clear notifications');
+                                  } catch(err) {
+                                    try {
+                                      await api.delete('/notifications/clear-all');
+                                      toast.success('Notifications cleared');
+                                    } catch(err2) {
+                                      console.error(err2);
+                                      setNotifications(backup);
+                                      toast.error('Failed to clear notifications');
+                                    }
                                   }
                                 }}
                                 className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 p-1 rounded hover:bg-white/10"

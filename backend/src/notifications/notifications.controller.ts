@@ -58,16 +58,6 @@ export class NotificationsController {
     return this.notificationsService.markAsRead(id, queryId);
   }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete a notification' })
-  remove(@Param('id') id: string, @CurrentUser() user: any) {
-    const queryId =
-      user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
-        ? undefined
-        : user.userId;
-    return this.notificationsService.remove(id, queryId);
-  }
-
   @Delete()
   @ApiOperation({ summary: 'Delete all notifications' })
   removeAll(@CurrentUser() user: any) {
@@ -76,5 +66,28 @@ export class NotificationsController {
         ? undefined
         : user.userId;
     return this.notificationsService.removeAll(queryId);
+  }
+
+  @Delete('clear-all')
+  @ApiOperation({ summary: 'Delete all notifications' })
+  clearAll(@CurrentUser() user: any) {
+    const queryId =
+      user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
+        ? undefined
+        : user.userId;
+    return this.notificationsService.removeAll(queryId);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a notification' })
+  remove(@Param('id') id: string, @CurrentUser() user: any) {
+    const queryId =
+      user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
+        ? undefined
+        : user.userId;
+    if (!id || id === 'clear-all' || id === 'delete-all') {
+      return this.notificationsService.removeAll(queryId);
+    }
+    return this.notificationsService.remove(id, queryId);
   }
 }

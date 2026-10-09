@@ -51,17 +51,33 @@ export const Products = () => {
     
     try {
       const { default: api } = await import('../api/axios');
-      // Extract user info from auth token or context if available. 
-      // As a fallback, we just say "A user".
-      const userName = JSON.parse(localStorage.getItem('user'))?.name || 'A user';
+      const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+      const userName = userObj.name || 'Customer';
+      const userPhone = userObj.phone || '9800000000';
+      const userEmail = userObj.email || undefined;
       
+      const productDetails = cart.map(item => item.name).join(', ');
+      
+      // 1. Create a Booking record for this Product Order so it appears on the Admin Bookings table
+      await api.post('/bookings', {
+        customerName: userName,
+        phone: userPhone,
+        ...(userEmail ? { email: userEmail } : {}),
+        vehicleType: 'Product Order',
+        vehicleModel: productDetails || 'Diesel Parts',
+        problemDescription: `Product Order: ${cart.length} item(s) ordered. Total: $${cartTotal.toFixed(2)}`,
+        preferredDate: new Date().toISOString(),
+        message: `Order placed via Products store. Items: ${productDetails}. Total: $${cartTotal.toFixed(2)}`
+      });
+
+      // 2. Notify Admin via Notification system
       await api.post('/notifications/admin', {
         title: 'New Product Order',
-        message: `${userName} has ordered ${cart.length} product(s) worth $${cartTotal.toFixed(2)}.`,
+        message: `${userName} ordered ${productDetails || 'products'} worth $${cartTotal.toFixed(2)}.`,
         type: 'NEW_ORDER'
       });
     } catch (err) {
-      console.error('Failed to notify admin:', err);
+      console.error('Failed to process order booking:', err);
     }
 
     setTimeout(() => {

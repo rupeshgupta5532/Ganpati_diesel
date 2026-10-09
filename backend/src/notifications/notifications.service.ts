@@ -32,7 +32,6 @@ export class NotificationsService {
       referenceId,
     });
 
-    // Publish to Redis to be caught by WebSocket Gateway
     try {
       this.redisService.publish('notifications', JSON.stringify({ room: `user:${userId}`, data: notification }));
     } catch(e) { this.logger.warn('Failed to publish notification to redis'); }
@@ -61,7 +60,7 @@ export class NotificationsService {
       return { userId, ...extra };
     }
     return {
-      $or: [{ userId: { $exists: false } }, { userId: null }],
+      $or: [{ userId: { $exists: false } }, { userId: null }, { userId: '' }],
       ...extra,
     };
   }
@@ -90,26 +89,23 @@ export class NotificationsService {
   }
 
   async markAllAsRead(userId?: string) {
-    await this.notificationModel
-      .updateMany(this.getQuery(userId, { isRead: false }), { isRead: true })
-      .exec();
+    const query = userId ? { userId, isRead: false } : { isRead: false };
+    await this.notificationModel.updateMany(query, { isRead: true }).exec();
     return { success: true, message: 'All notifications marked as read' };
   }
 
   async remove(id: string, userId?: string) {
+    if (!id || id === 'clear-all' || id === 'delete-all') {
+      return this.removeAll(userId);
+    }
     const query = userId ? { _id: id, userId } : { _id: id };
-    const notification = await this.notificationModel
-      .findOneAndDelete(query)
-      .exec();
-
-    if (!notification) throw new NotFoundException('Notification not found');
+    await this.notificationModel.findOneAndDelete(query).exec();
     return { success: true, message: 'Notification deleted' };
   }
 
   async removeAll(userId?: string) {
-    await this.notificationModel
-      .deleteMany(this.getQuery(userId))
-      .exec();
+    const query = userId ? { userId } : {};
+    await this.notificationModel.deleteMany(query).exec();
     return { success: true, message: 'All notifications deleted' };
   }
 }
