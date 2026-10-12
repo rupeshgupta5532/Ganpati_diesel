@@ -376,35 +376,35 @@ export const AdminDashboard = () => {
       {/* Main Content Column */}
       <div className="flex-1 flex flex-col min-w-0 min-h-screen relative z-10">
         {/* Top Frosted Glass Header */}
-        <header className="h-16 bg-black/40 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20 px-4 md:px-8 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
+        <header className="h-16 bg-black/40 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20 px-3 sm:px-6 md:px-8 flex items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
             {/* Mobile Hamburger Menu Toggle */}
             <button
               onClick={() => setMobileSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+              className="lg:hidden p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors flex-shrink-0"
               title="Open Navigation"
             >
               <Menu className="w-5 h-5" />
             </button>
             
             {/* Breadcrumb Section Badge */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500 font-semibold hidden sm:inline">Admin Portal /</span>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm md:text-base font-black text-white tracking-wide">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="text-xs text-gray-500 font-semibold hidden md:inline">Admin Portal /</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                <h1 className="text-xs sm:text-sm md:text-base font-black text-white tracking-wide truncate max-w-[120px] sm:max-w-none">
                   {currentTabLabel}
                 </h1>
-                <span className="w-2 h-2 rounded-full bg-primary/80 animate-ping hidden md:inline-block"></span>
+                <span className="w-2 h-2 rounded-full bg-primary/80 animate-ping hidden md:inline-block flex-shrink-0"></span>
               </div>
             </div>
           </div>
 
           {/* Right Header Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Search Input with ⌘K Badge */}
             {(activeTab === 'bookings' || activeTab === 'users' || activeTab === 'dashboard') && (
-              <div className="relative hidden md:flex items-center bg-dark/60 border border-white/10 rounded-xl px-3 py-1.5 focus-within:border-primary/50 transition-all w-56">
-                <Search className="w-3.5 h-3.5 text-gray-500 mr-2" />
+              <div className="relative hidden md:flex items-center bg-dark/60 border border-white/10 rounded-xl px-3 py-1.5 focus-within:border-primary/50 transition-all w-48 lg:w-56">
+                <Search className="w-3.5 h-3.5 text-gray-500 mr-2 flex-shrink-0" />
                 <input 
                   type="text" 
                   placeholder="Filter records..."
@@ -425,7 +425,7 @@ export const AdminDashboard = () => {
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:border-primary/40 transition-all relative group"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:border-primary/40 transition-all relative group"
                 title="Notifications"
               >
                 <Bell className="w-4 h-4 text-gray-300 group-hover:text-primary transition-colors" />
@@ -444,7 +444,7 @@ export const AdminDashboard = () => {
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-2xl bg-dark/95 backdrop-blur-2xl border border-white/15 shadow-[0_15px_50px_rgba(0,0,0,0.8)] z-50 custom-scrollbar"
+                      className="absolute right-0 mt-2 w-[calc(100vw-24px)] sm:w-80 max-w-sm max-h-96 overflow-y-auto rounded-2xl bg-dark/95 backdrop-blur-2xl border border-white/15 shadow-[0_15px_50px_rgba(0,0,0,0.8)] z-50 custom-scrollbar"
                     >
                       <div className="p-4 border-b border-white/10 sticky top-0 bg-dark/95 backdrop-blur-md flex justify-between items-center z-10">
                         <div className="flex items-center gap-2">

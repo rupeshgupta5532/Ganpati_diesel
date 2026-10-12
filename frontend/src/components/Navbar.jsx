@@ -49,9 +49,9 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto glass rounded-full px-6 py-3 flex justify-between items-center shadow-2xl shadow-black/50">
         
         {/* Logo */}
-        <Link to="/" className="flex-shrink-0 flex items-center gap-3 cursor-pointer">
-          <img src="/logo.png" alt="Ganpati Diesel Logo" className="h-9 w-9 rounded-full object-cover border border-white/20" />
-          <span className="font-semibold text-xl tracking-tight text-white hidden lg:block">
+        <Link to="/" className="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 cursor-pointer">
+          <img src="/logo.png" alt="Ganpati Diesel Logo" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover border border-white/20" />
+          <span className="font-semibold text-base sm:text-xl tracking-tight text-white block">
             Ganpati<span className="text-gray-400 font-light">Diesel</span>
           </span>
         </Link>
@@ -211,71 +211,100 @@ const Navbar = () => {
           <BookButton to="/book-service" />
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center">
+        {/* Mobile & Tablet Controls */}
+        <div className="lg:hidden flex items-center gap-2">
+          {isAuthenticated && (
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white relative"
+              aria-label="Notifications"
+            >
+              <Bell className="h-4 w-4" />
+              {notifications.filter(n => !n.isRead).length > 0 && (
+                <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-black/50"></span>
+              )}
+            </button>
+          )}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-gray-300 hover:text-white p-2"
+            className="text-gray-300 hover:text-white p-2 rounded-xl bg-white/5 border border-white/10 transition-colors"
+            aria-label="Toggle navigation"
           >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          className="md:hidden glass mt-4 rounded-2xl p-4 max-w-6xl mx-auto"
-        >
-          <div className="space-y-2">
-            {navLinks.map((link) => {
-              const isActive = (link.path.includes('#') && location.pathname + location.hash === link.path) || (!link.path.includes('#') && location.pathname === link.path);
-              return (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    isActive
-                      ? 'bg-primary/20 text-primary border border-primary/30'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
-            {!isAuthenticated ? (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="block px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={() => setIsOpen(false)}
-                  className="mt-4 block w-full text-center bg-primary text-black px-4 py-3 rounded-xl font-semibold text-sm"
-                >
-                  Sign Up
-                </Link>
-              </>
-            ) : (
-                <Link
-                  to="/profile"
-                  onClick={() => setIsOpen(false)}
-                  className="mt-4 w-full flex items-center justify-center gap-2 bg-primary text-black px-4 py-3 rounded-xl font-semibold text-sm"
-                >
-                  <User className="h-4 w-4" /> My Profile
-                </Link>
-            )}
-          </div>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden glass mt-3 rounded-3xl p-4 sm:p-6 max-w-xl mx-auto shadow-2xl border border-white/15 max-h-[85vh] overflow-y-auto custom-scrollbar"
+          >
+            <div className="space-y-1">
+              {navLinks.map((link) => {
+                const isActive = (link.path.includes('#') && location.pathname + location.hash === link.path) || (!link.path.includes('#') && location.pathname === link.path);
+                return (
+                  <Link
+                    key={link.name}
+                    to={link.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`block px-4 py-3 rounded-2xl text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-primary/20 text-primary border border-primary/30'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10 border border-transparent'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
+
+              <div className="pt-3 border-t border-white/10 flex flex-col gap-3">
+                <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-white/5 border border-white/5">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Appearance</span>
+                  <ThemeSwitch />
+                </div>
+
+                <div className="w-full flex justify-center pt-1">
+                  <BookButton to="/book-service" className="w-full [&_.button]:w-full" />
+                </div>
+
+                {!isAuthenticated ? (
+                  <div className="grid grid-cols-2 gap-2 pt-2">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="block text-center px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 transition-all border border-white/5"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/signup"
+                      onClick={() => setIsOpen(false)}
+                      className="block text-center bg-primary hover:bg-primary-hover text-black px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                ) : (
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 bg-primary text-black px-4 py-3 rounded-xl font-semibold text-sm shadow-md"
+                  >
+                    <User className="h-4 w-4" /> My Profile
+                  </Link>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <NotificationDetailModal 
         notification={selectedNotif} 

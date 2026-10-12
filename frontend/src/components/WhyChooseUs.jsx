@@ -103,9 +103,9 @@ const WhyChooseUs = ({ cms: propCms }) => {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              <div className="aspect-square rounded-[3rem] glass-card overflow-hidden relative p-4 flex items-center justify-center">
+              <div className="aspect-square rounded-[2rem] sm:rounded-[3rem] glass-card overflow-hidden relative p-3 sm:p-4 flex items-center justify-center">
                 {/* Live Repair Feed Slider */}
-                <div className="w-full h-full rounded-[2.5rem] bg-dark relative overflow-hidden border border-white/5 flex items-center justify-center">
+                <div className="w-full h-full rounded-[1.75rem] sm:rounded-[2.5rem] bg-dark relative overflow-hidden border border-white/5 flex items-center justify-center">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentImg}
@@ -119,10 +119,10 @@ const WhyChooseUs = ({ cms: propCms }) => {
                   </AnimatePresence>
                   
                   {/* Central glowing element */}
-                  <div className="relative z-10 w-32 h-32 rounded-full border border-primary/30 flex items-center justify-center bg-primary/5 backdrop-blur-md">
-                    <div className="w-24 h-24 rounded-full border border-primary/50 flex items-center justify-center animate-pulse">
-                      <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center shadow-[0_0_30px_rgba(0,255,163,0.5)]">
-                         <span className="text-primary font-bold text-base whitespace-nowrap">
+                  <div className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 rounded-full border border-primary/30 flex items-center justify-center bg-primary/5 backdrop-blur-md">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border border-primary/50 flex items-center justify-center animate-pulse">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-primary/20 flex items-center justify-center shadow-[0_0_30px_rgba(0,255,163,0.5)]">
+                         <span className="text-primary font-bold text-sm sm:text-base whitespace-nowrap">
                            {cms?.projectsCompleted ? `${cms.projectsCompleted}+` : '99%'}
                          </span>
                       </div>
@@ -132,11 +132,11 @@ const WhyChooseUs = ({ cms: propCms }) => {
               </div>
               
               {/* Floating Badge */}
-              <div className="absolute -bottom-6 -left-6 glass border border-white/10 text-white p-6 rounded-2xl shadow-2xl backdrop-blur-xl">
-                <div className="text-4xl font-semibold mb-1 text-primary">
+              <div className="absolute sm:-bottom-6 sm:-left-6 bottom-3 left-3 glass border border-white/10 text-white p-4 sm:p-6 rounded-2xl shadow-2xl backdrop-blur-xl">
+                <div className="text-3xl sm:text-4xl font-semibold mb-0.5 sm:mb-1 text-primary">
                   {cms?.yearsExperience || 15}+
                 </div>
-                <div className="text-sm text-gray-400 font-light">Years of <br/>Network Uptime</div>
+                <div className="text-xs sm:text-sm text-gray-400 font-light">Years of <br/>Network Uptime</div>
               </div>
             </motion.div>
           </div>
