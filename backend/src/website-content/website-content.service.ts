@@ -29,7 +29,7 @@ export class WebsiteContentService {
 
   async updateContent(key: string, dto: UpdateWebsiteContentDto) {
     const content = await this.contentModel
-      .findOneAndUpdate({ key }, dto, { new: true, upsert: true })
+      .findOneAndUpdate({ key }, { ...dto, key }, { new: true, upsert: true })
       .exec();
     await this.redisService.del(`cms:${key}`);
     return content;

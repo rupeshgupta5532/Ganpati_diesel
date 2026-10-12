@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Services from '../components/Services';
 import WhyChooseUs from '../components/WhyChooseUs';
 import Footer from '../components/Footer';
+import { websiteContentApi } from '../api/services';
 
 export const LandingPage = () => {
+  const [cmsContent, setCmsContent] = useState(null);
+
+  useEffect(() => {
+    websiteContentApi.getHomepage()
+      .then(res => setCmsContent(res.data?.data || res.data || res || {}))
+      .catch(err => console.error('Failed to load CMS content:', err));
+  }, []);
+
   return (
     <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-hidden">
       {/* Background glowing blobs */}
@@ -18,9 +27,9 @@ export const LandingPage = () => {
       <div className="relative z-10">
         <Navbar />
         <main>
-          <Hero />
+          <Hero cms={cmsContent} />
           <Services />
-          <WhyChooseUs />
+          <WhyChooseUs cms={cmsContent} />
         </main>
         <Footer />
       </div>

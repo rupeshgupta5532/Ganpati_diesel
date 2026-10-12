@@ -23,8 +23,13 @@ export class ContactService {
   }
 
   async updateContact(dto: UpdateContactDto) {
+    const { _id, key, createdAt, updatedAt, __v, ...cleanDto } = dto as any;
     const contact = await this.contactModel
-      .findOneAndUpdate({ key: 'main' }, dto, { new: true, upsert: true })
+      .findOneAndUpdate(
+        { key: 'main' },
+        { $set: { ...cleanDto, key: 'main' } },
+        { new: true, upsert: true, setDefaultsOnInsert: true },
+      )
       .exec();
     await this.redisService.del('cms:contact');
     return contact;

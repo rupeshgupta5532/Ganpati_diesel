@@ -9,8 +9,21 @@ const sliderImages = [
   'https://images.unsplash.com/photo-1599839619722-39751411ea63?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
 ];
 
-const WhyChooseUs = () => {
+const WhyChooseUs = ({ cms: propCms }) => {
   const [currentImg, setCurrentImg] = useState(0);
+  const [internalCms, setInternalCms] = useState(null);
+
+  useEffect(() => {
+    if (!propCms) {
+      import('../api/services').then(({ websiteContentApi }) => {
+        websiteContentApi.getHomepage()
+          .then(res => setInternalCms(res.data?.data || res.data || res || {}))
+          .catch(console.error);
+      });
+    }
+  }, [propCms]);
+
+  const cms = propCms || internalCms;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -109,7 +122,9 @@ const WhyChooseUs = () => {
                   <div className="relative z-10 w-32 h-32 rounded-full border border-primary/30 flex items-center justify-center bg-primary/5 backdrop-blur-md">
                     <div className="w-24 h-24 rounded-full border border-primary/50 flex items-center justify-center animate-pulse">
                       <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center shadow-[0_0_30px_rgba(0,255,163,0.5)]">
-                         <span className="text-primary font-bold text-2xl">99%</span>
+                         <span className="text-primary font-bold text-base whitespace-nowrap">
+                           {cms?.projectsCompleted ? `${cms.projectsCompleted}+` : '99%'}
+                         </span>
                       </div>
                     </div>
                   </div>
@@ -118,7 +133,9 @@ const WhyChooseUs = () => {
               
               {/* Floating Badge */}
               <div className="absolute -bottom-6 -left-6 glass border border-white/10 text-white p-6 rounded-2xl shadow-2xl backdrop-blur-xl">
-                <div className="text-4xl font-semibold mb-1 text-primary">15+</div>
+                <div className="text-4xl font-semibold mb-1 text-primary">
+                  {cms?.yearsExperience || 15}+
+                </div>
                 <div className="text-sm text-gray-400 font-light">Years of <br/>Network Uptime</div>
               </div>
             </motion.div>

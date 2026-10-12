@@ -9,8 +9,21 @@ const bgImages = [
   '/indian_truck_3.jpg' // Mechanic working on Tata truck
 ];
 
-const Hero = () => {
+const Hero = ({ cms: propCms }) => {
   const [currentBg, setCurrentBg] = useState(0);
+  const [internalCms, setInternalCms] = useState(null);
+
+  useEffect(() => {
+    if (!propCms) {
+      import('../api/services').then(({ websiteContentApi }) => {
+        websiteContentApi.getHomepage()
+          .then(res => setInternalCms(res.data?.data || res.data || res || {}))
+          .catch(console.error);
+      });
+    }
+  }, [propCms]);
+
+  const cms = propCms || internalCms;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,7 +69,9 @@ const Hero = () => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
           </span>
-          <span className="text-xs font-medium text-gray-300 tracking-wide uppercase">Ganpati Network Live</span>
+          <span className="text-xs font-medium text-gray-300 tracking-wide uppercase">
+            {cms?.heroSubtitle || "Ganpati Network Live"}
+          </span>
         </motion.div>
         
         <motion.div
@@ -66,12 +81,18 @@ const Hero = () => {
           className="max-w-4xl mx-auto"
         >
           <h1 className="text-6xl md:text-8xl font-semibold text-white tracking-tighter leading-[1.05] mb-8">
-            The Future of <br/>
-            <span className="text-gradient">Fleet Maintenance.</span>
+            {cms?.heroTitle ? (
+              <span className="text-gradient">{cms.heroTitle}</span>
+            ) : (
+              <>
+                The Future of <br/>
+                <span className="text-gradient">Fleet Maintenance.</span>
+              </>
+            )}
           </h1>
           
           <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
-            A next-generation ecosystem for heavy-duty diagnostics, optimizing truck performance through decentralized service networks and rapid response protocol.
+            {cms?.heroDescription || "A next-generation ecosystem for heavy-duty diagnostics, optimizing truck performance through decentralized service networks and rapid response protocol."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

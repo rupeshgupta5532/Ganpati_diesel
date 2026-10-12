@@ -23,7 +23,26 @@ export const AdminContent = () => {
 
   const handleSave = () => {
     setSaving(true);
-    adminContentApi.updateHomepage(content)
+    const payload = {};
+    if (content?.heroTitle !== undefined) payload.heroTitle = content.heroTitle;
+    if (content?.heroSubtitle !== undefined) payload.heroSubtitle = content.heroSubtitle;
+    if (content?.heroDescription !== undefined) payload.heroDescription = content.heroDescription;
+    if (content?.serviceCoverage !== undefined) payload.serviceCoverage = content.serviceCoverage;
+    if (content?.aboutContent !== undefined) payload.aboutContent = content.aboutContent;
+    if (content?.seoTitle !== undefined) payload.seoTitle = content.seoTitle;
+    if (content?.seoDescription !== undefined) payload.seoDescription = content.seoDescription;
+    
+    if (content?.yearsExperience !== '' && content?.yearsExperience !== undefined && content?.yearsExperience !== null) {
+      payload.yearsExperience = Number(content.yearsExperience);
+    }
+    if (content?.projectsCompleted !== '' && content?.projectsCompleted !== undefined && content?.projectsCompleted !== null) {
+      payload.projectsCompleted = Number(content.projectsCompleted);
+    }
+    if (content?.establishedYear !== '' && content?.establishedYear !== undefined && content?.establishedYear !== null) {
+      payload.establishedYear = Number(content.establishedYear);
+    }
+
+    adminContentApi.updateHomepage(payload)
       .then(() => toast.success('Website content published successfully!'))
       .catch(err => {
         console.error(err);
