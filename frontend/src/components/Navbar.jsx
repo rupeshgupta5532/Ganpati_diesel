@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
-import { Menu, X, ArrowRight, User } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { Menu, X, ArrowRight, User, Bell, Trash2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { Link, useLocation } from 'react-router';
 import BookButton from './BookButton';
 import ThemeSwitch from './ThemeSwitch';
 import { useAuth } from '../context/AuthContext';
+import { NotificationDetailModal } from './NotificationDetailModal';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [selectedNotif, setSelectedNotif] = useState(null);
 
   const navLinks = [
     { name: 'About', path: '/about' },
@@ -23,14 +28,30 @@ const Navbar = () => {
 
   const { isAuthenticated } = useAuth();
 
+  useEffect(() => {
+    let interval;
+    if (isAuthenticated) {
+      import('../api/axios').then(({ default: api }) => {
+        const fetchNotifs = () => {
+          api.get('/notifications')
+             .then(res => setNotifications(Array.isArray(res) ? res : (res.data?.data || res.data || [])))
+             .catch(console.error);
+        };
+        fetchNotifs();
+        interval = setInterval(fetchNotifs, 30000); // refresh every 30s
+      });
+    }
+    return () => clearInterval(interval);
+  }, [isAuthenticated, location.pathname]); // refetch on route change
+
   return (
     <nav className="fixed w-full z-50 top-0 pt-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto glass rounded-full px-6 py-3 flex justify-between items-center shadow-2xl shadow-black/50">
         
         {/* Logo */}
-        <Link to="/" className="flex-shrink-0 flex items-center gap-3 cursor-pointer">
-          <img src="/logo.png" alt="Ganpati Diesel Logo" className="h-9 w-9 rounded-full object-cover border border-white/20" />
-          <span className="font-semibold text-xl tracking-tight text-white hidden lg:block">
+        <Link to="/" className="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 cursor-pointer">
+          <img src="/logo.png" alt="Ganpati Diesel Logo" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover border border-white/20" />
+          <span className="font-semibold text-base sm:text-xl tracking-tight text-white block">
             Ganpati<span className="text-gray-400 font-light">Diesel</span>
           </span>
         </Link>
@@ -59,9 +80,129 @@ const Navbar = () => {
         <div className="hidden lg:flex items-center gap-4">
           <ThemeSwitch />
           {isAuthenticated ? (
-            <Link to="/profile" className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all" title="My Profile">
-              <User className="h-5 w-5" />
-            </Link>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all relative"
+                >
+                  <Bell className="h-5 w-5" />
+                  {notifications.filter(n => !n.isRead).length > 0 && (
+                    <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-black/50"></span>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {showNotifications && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-2xl bg-[#111827] border border-[#374151] shadow-2xl z-50 custom-scrollbar"
+                      >
+                        <div className="p-4 border-b border-[#374151] sticky top-0 bg-[#111827]/90 backdrop-blur-md flex justify-between items-center z-10">
+                          <h3 className="font-bold text-[#e5e7eb]">Notifications</h3>
+                          {notifications.length > 0 && (
+                            <div className="flex items-center gap-3">
+                              <button 
+                                onClick={async () => {
+                                  try {
+                                    const { default: api } = await import('../api/axios');
+                                    await api.patch('/notifications/read-all');
+                                    setNotifications(notifications.map(n => ({...n, isRead: true})));
+                                  } catch(e) {}
+                                }}
+                                className="text-xs text-primary hover:underline"
+                              >
+                                Mark all read
+                              </button>
+                              <button 
+                                onClick={async (e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const backup = [...notifications];
+                                  setNotifications([]);
+                                  try {
+                                    const { default: api } = await import('../api/axios');
+                                    await api.delete('/notifications');
+                                  } catch(err) {
+                                    try {
+                                      const { default: api } = await import('../api/axios');
+                                      await api.delete('/notifications/clear-all');
+                                    } catch(err2) {
+                                      console.error(err2);
+                                      setNotifications(backup);
+                                    }
+                                  }
+                                }}
+                                className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 p-1 rounded hover:bg-white/10"
+                                title="Delete all notifications"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-2 flex flex-col gap-1">
+                          {notifications.length === 0 ? (
+                            <div className="p-4 text-center text-sm text-[#9ca3af]">No notifications yet</div>
+                          ) : (
+                            notifications.map((notif) => (
+                              <div 
+                                key={notif._id} 
+                                className={`p-3 rounded-xl transition-colors cursor-pointer group relative ${notif.isRead ? 'opacity-70 hover:bg-white/5' : 'bg-primary/5 border border-primary/10 hover:bg-primary/10'}`}
+                                onClick={async () => {
+                                  setShowNotifications(false);
+                                  setSelectedNotif(notif);
+                                  if(!notif.isRead) {
+                                    try {
+                                      const { default: api } = await import('../api/axios');
+                                      await api.patch(`/notifications/${notif._id}/read`);
+                                      setNotifications(notifications.map(n => n._id === notif._id ? {...n, isRead: true} : n));
+                                    } catch(e) {}
+                                  }
+                                }}
+                              >
+                                <div className="flex items-start justify-between gap-2 pr-6">
+                                  <h4 className={`text-sm font-bold ${notif.isRead ? 'text-[#d1d5db]' : 'text-[#ffffff]'}`}>{notif.title}</h4>
+                                  <span className="text-[10px] text-[#6b7280] whitespace-nowrap">{new Date(notif.createdAt).toLocaleDateString()}</span>
+                                </div>
+                                <p className={`text-xs mt-1 ${notif.isRead ? 'text-[#9ca3af]' : 'text-[#d1d5db]'}`}>{notif.message}</p>
+                                
+                                <button 
+                                  onClick={async (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const targetId = notif._id;
+                                    setNotifications(prev => prev.filter(n => n._id !== targetId));
+                                    try {
+                                      const { default: api } = await import('../api/axios');
+                                      await api.delete(`/notifications/${targetId}`);
+                                    } catch(err) {
+                                      console.error(err);
+                                    }
+                                  }}
+                                  className="absolute top-3 right-2 text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-white/10 transition-colors z-20"
+                                  title="Delete notification"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <Link to="/profile" className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all" title="My Profile">
+                <User className="h-5 w-5" />
+              </Link>
+            </div>
           ) : (
             <Link to="/login" className="text-sm font-medium text-white hover:text-primary transition-colors">
               Login
@@ -70,71 +211,105 @@ const Navbar = () => {
           <BookButton to="/book-service" />
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center">
+        {/* Mobile & Tablet Controls */}
+        <div className="lg:hidden flex items-center gap-2">
+          {isAuthenticated && (
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white relative"
+              aria-label="Notifications"
+            >
+              <Bell className="h-4 w-4" />
+              {notifications.filter(n => !n.isRead).length > 0 && (
+                <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-black/50"></span>
+              )}
+            </button>
+          )}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-gray-300 hover:text-white p-2"
+            className="text-gray-300 hover:text-white p-2 rounded-xl bg-white/5 border border-white/10 transition-colors"
+            aria-label="Toggle navigation"
           >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          className="md:hidden glass mt-4 rounded-2xl p-4 max-w-6xl mx-auto"
-        >
-          <div className="space-y-2">
-            {navLinks.map((link) => {
-              const isActive = (link.path.includes('#') && location.pathname + location.hash === link.path) || (!link.path.includes('#') && location.pathname === link.path);
-              return (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    isActive
-                      ? 'bg-primary/20 text-primary border border-primary/30'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
-            {!isAuthenticated ? (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="block px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={() => setIsOpen(false)}
-                  className="mt-4 block w-full text-center bg-primary text-black px-4 py-3 rounded-xl font-semibold text-sm"
-                >
-                  Sign Up
-                </Link>
-              </>
-            ) : (
-                <Link
-                  to="/profile"
-                  onClick={() => setIsOpen(false)}
-                  className="mt-4 w-full flex items-center justify-center gap-2 bg-primary text-black px-4 py-3 rounded-xl font-semibold text-sm"
-                >
-                  <User className="h-4 w-4" /> My Profile
-                </Link>
-            )}
-          </div>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden glass mt-3 rounded-3xl p-4 sm:p-6 max-w-xl mx-auto shadow-2xl border border-white/15 max-h-[85vh] overflow-y-auto custom-scrollbar"
+          >
+            <div className="space-y-1">
+              {navLinks.map((link) => {
+                const isActive = (link.path.includes('#') && location.pathname + location.hash === link.path) || (!link.path.includes('#') && location.pathname === link.path);
+                return (
+                  <Link
+                    key={link.name}
+                    to={link.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`block px-4 py-3 rounded-2xl text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-primary/20 text-primary border border-primary/30'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10 border border-transparent'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
+
+              <div className="pt-3 border-t border-white/10 flex flex-col gap-3">
+                <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-white/5 border border-white/5">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Appearance</span>
+                  <ThemeSwitch />
+                </div>
+
+                <div className="w-full flex justify-center pt-1">
+                  <BookButton to="/book-service" className="w-full [&_.button]:w-full" />
+                </div>
+
+                {!isAuthenticated ? (
+                  <div className="grid grid-cols-2 gap-2 pt-2">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="block text-center px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 transition-all border border-white/5"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/signup"
+                      onClick={() => setIsOpen(false)}
+                      className="block text-center bg-primary hover:bg-primary-hover text-black px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                ) : (
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 bg-primary text-black px-4 py-3 rounded-xl font-semibold text-sm shadow-md"
+                  >
+                    <User className="h-4 w-4" /> My Profile
+                  </Link>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <NotificationDetailModal 
+        notification={selectedNotif} 
+        onClose={() => setSelectedNotif(null)} 
+      />
     </nav>
   );
 };

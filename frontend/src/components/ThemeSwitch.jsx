@@ -2,17 +2,28 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const ThemeSwitch = () => {
-  const [isDark, setIsDark] = useState(true); // Default is dark based on our site
+  const [isDark, setIsDark] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    // Fallback to checking the DOM if already set
+    if (typeof document !== 'undefined') {
+      return !document.documentElement.classList.contains('light-mode');
+    }
+    return true;
+  });
 
   useEffect(() => {
-    // On mount, check if there's a theme preference or just default to dark
     const root = document.documentElement;
     if (isDark) {
       root.removeAttribute('data-theme');
       root.classList.remove('light-mode');
+      localStorage.setItem('theme', 'dark');
     } else {
       root.setAttribute('data-theme', 'light');
       root.classList.add('light-mode');
+      localStorage.setItem('theme', 'light');
     }
   }, [isDark]);
 

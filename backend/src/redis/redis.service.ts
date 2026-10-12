@@ -42,7 +42,12 @@ export class RedisService implements OnModuleDestroy {
   }
 
   async del(key: string): Promise<number> {
-    return this.client.del(key);
+    try {
+      return await this.client.del(key);
+    } catch (error) {
+      console.error('Redis DEL error:', error.message);
+      return 0;
+    }
   }
 
   // Pub/Sub abstraction

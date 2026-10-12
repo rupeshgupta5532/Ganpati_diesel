@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -11,12 +11,16 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
+  @Post('admin')
+  @ApiOperation({ summary: 'Create an admin notification' })
+  async createAdminNotification(@Body() body: { title: string; message: string; type: string }) {
+    await this.notificationsService.notifyAdmin(body.title, body.message, body.type);
+    return { success: true };
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all notifications for current user/admin' })
   findAll(@CurrentUser() user: any) {
-    // If admin, they query admin notifications (where userId is undefined) or we pass their ID.
-    // Simplifying: we'll just query by their userId. (Admins might not have a userId on the notification, wait.)
-    // If admin, we should fetch notifications without a userId.
     const queryId =
       user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
         ? undefined
@@ -52,5 +56,38 @@ export class NotificationsController {
         ? undefined
         : user.userId;
     return this.notificationsService.markAsRead(id, queryId);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Delete all notifications' })
+  removeAll(@CurrentUser() user: any) {
+    const queryId =
+      user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
+        ? undefined
+        : user.userId;
+    return this.notificationsService.removeAll(queryId);
+  }
+
+  @Delete('clear-all')
+  @ApiOperation({ summary: 'Delete all notifications' })
+  clearAll(@CurrentUser() user: any) {
+    const queryId =
+      user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
+        ? undefined
+        : user.userId;
+    return this.notificationsService.removeAll(queryId);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a notification' })
+  remove(@Param('id') id: string, @CurrentUser() user: any) {
+    const queryId =
+      user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
+        ? undefined
+        : user.userId;
+    if (!id || id === 'clear-all' || id === 'delete-all') {
+      return this.notificationsService.removeAll(queryId);
+    }
+    return this.notificationsService.remove(id, queryId);
   }
 }

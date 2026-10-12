@@ -22,8 +22,16 @@
   }
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
-  @apply bg-darker text-gray-100 antialiased overflow-x-hidden;
+  @apply bg-darker text-gray-100 antialiased;
+  overflow-x: hidden;
+  max-width: 100vw;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Background blob animations for the high-tech feel */
@@ -58,43 +66,285 @@ body {
 }
 
 
-/* Proper Light Mode Mapping (No Filters) */
-body.light-mode {
-  background-color: #f1f5f9 !important; /* Soft slate-50/100, not blinding white */
-  color: #0f172a !important; /* Slate 900 */
+/* Proper Light Mode Mapping (Clean Modern Slate & White) */
+.light-mode {
+  --color-primary: #d97706 !important;
+  --color-primary-hover: #b45309 !important;
+  --color-secondary: #ea580c !important;
+  --color-dark: #ffffff !important;
+  --color-darker: #f8fafc !important;
 }
 
-/* Typography Overrides */
+body.light-mode {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Typography Overrides (Refined Slate Hierarchy) */
 .light-mode .text-white { color: #0f172a !important; }
-.light-mode .text-gray-100 { color: #1e293b !important; }
+.light-mode .text-gray-50 { color: #0f172a !important; }
+.light-mode .text-gray-100 { color: #0f172a !important; }
+.light-mode .text-gray-200 { color: #1e293b !important; }
 .light-mode .text-gray-300 { color: #334155 !important; }
-.light-mode .text-gray-400 { color: #475569 !important; }
+.light-mode .text-gray-400 { color: #64748b !important; }
 .light-mode .text-gray-500 { color: #64748b !important; }
+.light-mode .text-gray-600 { color: #475569 !important; }
+.light-mode .text-gray-700 { color: #334155 !important; }
+.light-mode .text-gray-800 { color: #cbd5e1 !important; }
+.light-mode .text-gray-900 { color: #f8fafc !important; }
 
 /* Backgrounds Overrides */
-.light-mode .bg-darker { background-color: #f1f5f9 !important; }
-.light-mode .bg-dark { background-color: #e2e8f0 !important; }
-.light-mode .bg-dark\/50 { background-color: rgba(226, 232, 240, 0.5) !important; }
-.light-mode .bg-white\/5 { background-color: rgba(0, 0, 0, 0.05) !important; }
-.light-mode .bg-white\/10 { background-color: rgba(0, 0, 0, 0.1) !important; }
-.light-mode .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.1) !important; }
+.light-mode .bg-darker { background-color: #f8fafc !important; }
+.light-mode .bg-dark { background-color: #ffffff !important; }
+.light-mode footer.bg-dark { background-color: #f8fafc !important; border-top: 1px solid #e2e8f0 !important; }
+.light-mode .bg-dark\/40 { background-color: #ffffff !important; }
+.light-mode .bg-dark\/50 { background-color: #ffffff !important; }
+.light-mode .bg-dark\/60 { background-color: #f8fafc !important; }
+.light-mode .bg-dark\/80 { background-color: #ffffff !important; }
+.light-mode .bg-dark\/95 { background-color: #ffffff !important; }
+.light-mode .bg-black\/40 { background-color: #ffffff !important; }
+.light-mode .bg-black\/80 { background-color: rgba(15, 23, 42, 0.4) !important; }
+.light-mode .bg-white\/5 { background-color: #f8fafc !important; }
+.light-mode .bg-white\/10 { background-color: #f1f5f9 !important; }
+.light-mode .hover\:bg-white\/10:hover { background-color: #e2e8f0 !important; }
+.light-mode .hover\:bg-white\/5:hover { background-color: #f1f5f9 !important; }
 
 /* Borders Overrides */
-.light-mode .border-white\/5 { border-color: rgba(0, 0, 0, 0.05) !important; }
-.light-mode .border-white\/10 { border-color: rgba(0, 0, 0, 0.1) !important; }
-.light-mode .border-white\/20 { border-color: rgba(0, 0, 0, 0.15) !important; }
+.light-mode .border-white\/5 { border-color: #f1f5f9 !important; }
+.light-mode .border-white\/10 { border-color: #e2e8f0 !important; }
+.light-mode .border-white\/15 { border-color: #cbd5e1 !important; }
+.light-mode .border-white\/20 { border-color: #cbd5e1 !important; }
 
 /* Glass Components Overrides */
 .light-mode .glass {
-  background-color: rgba(255, 255, 255, 0.7) !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: #e2e8f0 !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
 }
 
 .light-mode .glass-card {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.04), 0 2px 8px -2px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* =========================================
+   Admin Dashboard Dedicated Light Mode
+   ========================================= */
+
+/* Sidebar */
+.light-mode aside {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.03) !important;
+}
+.light-mode aside .border-white\/10,
+.light-mode aside .border-white\/5,
+.light-mode aside .border-white\/15 {
+  border-color: #e2e8f0 !important;
+}
+.light-mode aside .from-white\/\[0\.03\],
+.light-mode aside .from-white\/\[0\.02\] {
+  --tw-gradient-from: transparent !important;
+}
+.light-mode aside .bg-black {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+.light-mode aside .text-gray-500 {
+  color: #64748b !important;
+}
+.light-mode aside button {
+  color: #475569 !important;
+}
+.light-mode aside button:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+/* Active Tab in Sidebar */
+.light-mode aside button.bg-gradient-to-r,
+.light-mode aside button.border-primary\/30 {
+  background: #fffbeb !important;
+  color: #92400e !important;
+  border: 1px solid #fde68a !important;
+  box-shadow: 0 1px 4px rgba(217, 119, 6, 0.12) !important;
+}
+.light-mode aside button.border-primary\/30 span,
+.light-mode aside button.border-primary\/30 svg,
+.light-mode aside button.bg-gradient-to-r span,
+.light-mode aside button.bg-gradient-to-r svg {
+  color: #d97706 !important;
+}
+.light-mode aside button .scale-y-100 {
+  background-color: #d97706 !important;
+  box-shadow: 0 0 8px rgba(217, 119, 6, 0.4) !important;
+}
+.light-mode aside .bg-white\/10 {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+}
+/* System Mesh Card in Sidebar */
+.light-mode aside .bg-white\/\[0\.02\] {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+.light-mode aside .bg-white\/\[0\.02\] .text-gray-400 {
+  color: #475569 !important;
+}
+.light-mode aside .bg-white\/\[0\.02\] .bg-white\/10 {
+  background-color: #e2e8f0 !important;
+}
+
+/* Header */
+.light-mode header {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.03) !important;
+}
+.light-mode header .border-white\/10 {
+  border-color: #e2e8f0 !important;
+}
+.light-mode header .text-gray-500 {
+  color: #64748b !important;
+}
+.light-mode header h1 {
+  color: #0f172a !important;
+}
+.light-mode header .bg-dark\/60 {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+.light-mode header .bg-white\/5 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+.light-mode header .bg-white\/5:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+.light-mode header .text-gray-300,
+.light-mode header .text-gray-400 {
+  color: #475569 !important;
+}
+
+/* Dropdown Menus in Header */
+.light-mode .bg-dark\/95 {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.12) !important;
+}
+.light-mode .bg-dark\/95 .border-white\/10 {
+  border-color: #f1f5f9 !important;
+}
+.light-mode .bg-dark\/95 h3,
+.light-mode .bg-dark\/95 h4 {
+  color: #0f172a !important;
+}
+
+/* Tables */
+.light-mode table thead {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+.light-mode table thead th {
+  color: #64748b !important;
+  font-weight: 700 !important;
+}
+.light-mode table tbody tr {
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+.light-mode table tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+.light-mode table tbody td {
+  color: #334155 !important;
+}
+.light-mode .divide-white\/5 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #f1f5f9 !important;
+}
+
+/* Status Badges */
+.light-mode .bg-green-500\/10 {
+  background-color: #ecfdf5 !important;
+  color: #047857 !important;
+  border-color: #a7f3d0 !important;
+}
+.light-mode .bg-red-500\/10 {
+  background-color: #fff1f2 !important;
+  color: #be123c !important;
+  border-color: #fecdd3 !important;
+}
+.light-mode .bg-primary\/20 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #fde68a !important;
+}
+
+/* Inputs, Selects & Textareas */
+.light-mode input,
+.light-mode select,
+.light-mode textarea {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+.light-mode input:focus,
+.light-mode select:focus,
+.light-mode textarea:focus {
+  border-color: #d97706 !important;
+  outline: 2px solid rgba(217, 119, 6, 0.2) !important;
+}
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #94a3b8 !important;
+}
+.light-mode select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Styled Component Overrides for Auth/Forms */
+.light-mode .container {
+  background: #ffffff !important;
+  box-shadow: 0px 20px 40px -15px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.light-mode .heading {
+  color: #0f172a !important;
+}
+
+.light-mode .form .input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.light-mode .form .input:focus {
+  border-color: #d97706 !important;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2) !important;
+}
+
+.light-mode .agreement, 
+.light-mode .agreement a {
+  color: #64748b !important;
+}
+
+.light-mode .social-button {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.light-mode .social-button svg {
+  fill: #0f172a !important;
+}
+
+.light-mode .social-button:hover {
+  background: #f1f5f9 !important;
 }
 
 /* Make Navbar Links Bolder in Light Mode */
@@ -102,20 +352,128 @@ body.light-mode {
   font-weight: 600 !important;
 }
 
-/* Fix Input Fields */
-.light-mode input,
-.light-mode textarea {
-  color: #0f172a !important;
-  background-color: rgba(255, 255, 255, 0.8) !important;
-  border-color: rgba(0, 0, 0, 0.2) !important;
-}
-.light-mode input::placeholder,
-.light-mode textarea::placeholder {
-  color: #64748b !important;
-}
-
 /* Ensure background glowing blobs are subtle and don't wash out */
 .light-mode .blob {
-  opacity: 0.15 !important;
+  opacity: 0.06 !important;
   mix-blend-mode: multiply !important;
 }
+
+/* BookButton Overrides */
+.light-mode .button {
+  color: #0f172a !important;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light-mode .button:hover {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+}
+
+/* =========================================
+   Custom Scrollbar System
+   ========================================= */
+
+/* Global Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 163, 0.5);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+/* Custom Fine-Tuned Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00ffa3;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+/* Hide Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Light Mode Scrollbars */
+.light-mode ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18) !important;
+}
+.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: #d97706 !important;
+}
+.light-mode * {
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+.light-mode .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18) !important;
+}
+.light-mode .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #d97706 !important;
+}
+.light-mode .custom-scrollbar {
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+/* Light Mode Recharts */
+.light-mode .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+}
+.light-mode .recharts-cartesian-grid-line {
+  stroke: #f1f5f9 !important;
+}
+.light-mode .recharts-cartesian-axis-line {
+  stroke: #e2e8f0 !important;
+}
+.light-mode .recharts-cartesian-axis-tick-value {
+  fill: #64748b !important;
+}
+
+

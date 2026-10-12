@@ -18,6 +18,7 @@ export const adminBookingApi = {
   getAll: () => api.get('/admin/bookings'),
   updateStatus: (id, status) => api.patch(`/admin/bookings/${id}/status`, { status }),
   updateNotes: (id, notes) => api.patch(`/admin/bookings/${id}/notes`, { adminNotes: notes }),
+  delete: (id) => api.delete(`/admin/bookings/${id}`),
 };
 
 export const adminProjectApi = {
@@ -41,12 +42,12 @@ export const adminEnquiryApi = {
 
 export const adminContentApi = {
   getHomepage: () => api.get('/website-content'),
-  updateHomepage: (data) => api.patch('/admin/website-content', data),
+  updateHomepage: (data) => api.patch('/website-content', data),
 };
 
 export const adminContactApi = {
   getContact: () => api.get('/contact'),
-  updateContact: (data) => api.patch('/admin/contact', data),
+  updateContact: (data) => api.patch('/contact', data),
 };
 
 export const dashboardApi = {
@@ -63,4 +64,8 @@ export const uploadApi = {
 
 export const adminUserApi = {
   getAll: (search) => api.get('/admin/users' + (search ? '?search=' + search : '')),
+};
+
+export const adminAuditLogApi = {
+  getAll: () => api.get('/admin/audit-logs'),
 };

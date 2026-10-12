@@ -7,6 +7,7 @@ import { User, Mail, Phone, Truck, MapPin, Navigation, ArrowRight } from 'lucide
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 export const BookService = () => {
   const navigate = useNavigate();
@@ -28,6 +29,14 @@ export const BookService = () => {
   
   const [bookings, setBookings] = useState([]);
   const [locationLoading, setLocationLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      api.get('/bookings/me')
+        .then(res => setBookings(Array.isArray(res) ? res : (res.data || [])))
+        .catch(err => console.error('Failed to load active requests', err));
+    }
+  }, [isAuthenticated]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,31 +66,45 @@ export const BookService = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.vehicle) return;
     
-    const newBooking = {
-      id: Date.now().toString(),
-      ...formData,
-      status: 'Pending',
-      date: new Date().toLocaleDateString()
-    };
-    
-    setBookings(prev => [newBooking, ...prev]);
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      vehicle: '',
-      location: ''
-    });
+    try {
+      const bookingPayload = {
+        customerName: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        vehicleType: 'Commercial', // default or extracted from vehicle string
+        vehicleModel: formData.vehicle,
+        problemDescription: `Location: ${formData.location || 'Not provided'}`,
+        preferredDate: new Date().toISOString(),
+      };
+      
+      const response = await api.post('/bookings', bookingPayload);
+      
+      // Add the new booking from the backend directly to the live view
+      setBookings(prev => [response.data || response, ...prev]);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        vehicle: '',
+        location: ''
+      });
+      
+      import('react-hot-toast').then(toast => toast.default.success('Service requested successfully!'));
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      import('react-hot-toast').then(toast => toast.default.error('Failed to request service.'));
+    }
   };
 
   const handleDelete = (id) => {
-    setBookings(prev => prev.filter(b => b.id !== id));
+    // Ideally this would also call a DELETE API, but for now just hide from local state
+    setBookings(prev => prev.filter(b => (b.id || b._id) !== id));
   };
 
   if (isLoading) {
@@ -234,7 +257,7 @@ export const BookService = () => {
               <AnimatePresence>
                 {bookings.map((booking) => (
                   <motion.div
-                    key={booking.id}
+                    key={booking._id || booking.id}
                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, x: -20 }}
@@ -242,15 +265,15 @@ export const BookService = () => {
                   >
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
                     <div>
-                      <h3 className="font-semibold text-white text-lg">{booking.vehicle}</h3>
+                      <h3 className="font-semibold text-white text-lg">{booking.vehicleModel || booking.vehicle}</h3>
                       <div className="text-xs text-gray-400 mt-1 flex flex-col gap-1">
-                        <span className="flex items-center gap-1.5"><User className="h-3 w-3" /> {booking.name} ({booking.phone})</span>
-                        <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-primary/70" /> {booking.location}</span>
+                        <span className="flex items-center gap-1.5"><User className="h-3 w-3" /> {booking.customerName || booking.name} ({booking.phone})</span>
+                        <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-primary/70" /> {booking.problemDescription || booking.location}</span>
                       </div>
                     </div>
                     <div className="flex-shrink-0 ml-4">
                       {/* The user's requested Custom Delete Button */}
-                      <DeleteButton onClick={() => handleDelete(booking.id)} />
+                      <DeleteButton onClick={() => handleDelete(booking._id || booking.id)} />
                     </div>
                   </motion.div>
                 ))}

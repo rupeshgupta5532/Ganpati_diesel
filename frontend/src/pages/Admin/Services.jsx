@@ -10,7 +10,7 @@ export const AdminServices = () => {
   const fetchServices = () => {
     setLoading(true);
     adminServiceApi.getAll()
-      .then(res => setServices(res.data.data || res.data))
+      .then(res => setServices(res.data?.data || res.data || []))
       .catch(err => setError('Failed to load services.'))
       .finally(() => setLoading(false));
   };
@@ -28,44 +28,53 @@ export const AdminServices = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Manage Services</h1>
-        <Link to="/admin/services/create" className="bg-brand-accent text-brand-primary px-4 py-2 rounded font-bold hover:bg-brand-accent-hover transition-colors">
+    <div className="w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Manage Workshop Services</h2>
+          <p className="text-xs text-gray-400 mt-1">Configure diagnostic protocols and repair services</p>
+        </div>
+        <Link to="/admin/services/create" className="bg-primary text-black px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-hover transition-colors shadow-lg">
           + Add New Service
         </Link>
       </div>
 
-      {error && <div className="bg-red-100 text-red-700 p-4 rounded mb-6">{error}</div>}
+      {error && <div className="bg-red-500/10 text-red-400 p-4 rounded-xl mb-6 border border-red-500/20 text-sm font-semibold">{error}</div>}
 
-      <div className="bg-white dark:bg-slate-800 rounded shadow dark:shadow-none overflow-x-auto">
+      <div className="overflow-x-auto">
         {loading ? (
-          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading services...</div>
+          <div className="p-8 text-center text-gray-400">Loading services...</div>
         ) : services.length === 0 ? (
-          <div className="p-8 text-center text-gray-500 dark:text-slate-400">No services found.</div>
+          <div className="p-8 text-center text-gray-400">No services found.</div>
         ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-100 dark:bg-slate-700 border-b text-slate-600 dark:text-slate-300">
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Slug</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Actions</th>
+          <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+            <thead className="text-xs text-gray-400 uppercase bg-dark/50 border-b border-white/10">
+              <tr>
+                <th className="py-3.5 px-4 font-semibold">Service Name</th>
+                <th className="py-3.5 px-4 font-semibold">Slug / Identifier</th>
+                <th className="py-3.5 px-4 font-semibold">Status</th>
+                <th className="py-3.5 px-4 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {services.map(service => (
-                <tr key={service._id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-                  <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-100">{service.name}</td>
-                  <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{service.slug}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${service.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <tr key={service._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="py-3.5 px-4 font-bold text-white">{service.name}</td>
+                  <td className="py-3.5 px-4 text-gray-400 font-mono text-xs">{service.slug}</td>
+                  <td className="py-3.5 px-4">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${service.isActive ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
                       {service.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  <td className="py-3 px-4 space-x-2">
-                    <Link to={`/admin/services/${service._id}/edit`} className="text-blue-600 hover:underline">Edit</Link>
-                    <button onClick={() => handleDelete(service._id)} className="text-red-600 hover:underline">Delete</button>
+                  <td className="py-3.5 px-4">
+                    <div className="flex items-center gap-2">
+                      <Link to={`/admin/services/${service._id}/edit`} className="text-primary hover:text-primary-hover text-xs uppercase font-bold tracking-wider bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-full transition-colors">
+                        Edit
+                      </Link>
+                      <button onClick={() => handleDelete(service._id)} className="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider bg-red-400/10 hover:bg-red-400/20 px-3 py-1.5 rounded-full transition-colors">
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

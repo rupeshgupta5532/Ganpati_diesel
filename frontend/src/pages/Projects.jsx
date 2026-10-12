@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 export const Projects = () => {
-  const projects = [
+  const [projects, setProjects] = React.useState([
     {
       title: 'Fleet Overhaul for Apex Logistics',
       type: 'Complete Rebuild',
@@ -24,7 +24,20 @@ export const Projects = () => {
       desc: 'Calibrated twin marine diesel pumps for a commercial fishing vessel, ensuring optimal performance at sea.',
       image: 'https://images.unsplash.com/photo-1549643276-fdf2fab574f5?auto=format&fit=crop&q=80&w=800'
     }
-  ];
+  ]);
+
+  React.useEffect(() => {
+    import('../api/axios').then(({ default: api }) => {
+      api.get('/projects')
+        .then(res => {
+          const data = Array.isArray(res) ? res : (res.data || []);
+          if (data && data.length > 0) {
+            setProjects(data);
+          }
+        })
+        .catch(err => console.error("Error fetching projects:", err));
+    });
+  }, []);
 
   return (
     <div className="font-sans bg-darker text-gray-100 min-h-screen relative overflow-hidden flex flex-col">

@@ -8,7 +8,7 @@ export const AdminReviews = () => {
   const fetchReviews = () => {
     setLoading(true);
     adminReviewApi.getAll()
-      .then(res => setReviews(res.data.data || res.data))
+      .then(res => setReviews(res.data?.data || res.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   };
@@ -25,38 +25,54 @@ export const AdminReviews = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-6">Manage Reviews</h1>
-      <div className="bg-white dark:bg-slate-800 rounded shadow dark:shadow-none overflow-x-auto">
+    <div className="w-full">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white">Manage Customer Reviews</h2>
+        <p className="text-xs text-gray-400 mt-1">Approve or reject testimonials submitted by clients</p>
+      </div>
+
+      <div className="overflow-x-auto">
         {loading ? (
-          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading reviews...</div>
+          <div className="p-8 text-center text-gray-400">Loading reviews...</div>
+        ) : reviews.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">No reviews found.</div>
         ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-100 dark:bg-slate-700 border-b text-slate-600 dark:text-slate-300">
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Customer</th>
-                <th className="py-3 px-4">Rating</th>
-                <th className="py-3 px-4 w-1/3">Comment</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Actions</th>
+          <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+            <thead className="text-xs text-gray-400 uppercase bg-dark/50 border-b border-white/10">
+              <tr>
+                <th className="py-3.5 px-4 font-semibold">Date</th>
+                <th className="py-3.5 px-4 font-semibold">Customer</th>
+                <th className="py-3.5 px-4 font-semibold">Rating</th>
+                <th className="py-3.5 px-4 font-semibold w-1/3">Comment</th>
+                <th className="py-3.5 px-4 font-semibold">Status</th>
+                <th className="py-3.5 px-4 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {reviews.map(review => (
-                <tr key={review._id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-                  <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-300">{new Date(review.createdAt).toLocaleDateString()}</td>
-                  <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-100">{review.userId?.name || 'Unknown'}</td>
-                  <td className="py-3 px-4 text-yellow-500 font-bold">{review.rating} / 5</td>
-                  <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 italic">"{review.comment}"</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${review.status === 'APPROVED' ? 'bg-green-100 text-green-800' : review.status === 'REJECTED' ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800'}`}>
-                      {review.status}
+                <tr key={review._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="py-3.5 px-4 text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString()}</td>
+                  <td className="py-3.5 px-4 font-bold text-white">{review.userId?.name || review.name || 'Anonymous'}</td>
+                  <td className="py-3.5 px-4 text-primary font-bold">{review.rating} / 5 ★</td>
+                  <td className="py-3.5 px-4 text-xs text-gray-300 italic whitespace-normal max-w-xs">"{review.comment || review.text}"</td>
+                  <td className="py-3.5 px-4">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${review.status === 'APPROVED' ? 'bg-green-500/10 text-green-400 border-green-500/20' : review.status === 'REJECTED' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>
+                      {review.status || 'PENDING'}
                     </span>
                   </td>
-                  <td className="py-3 px-4 space-x-2 text-sm font-semibold">
-                    {review.status !== 'APPROVED' && <button onClick={() => handleAction(review._id, 'approve')} className="text-green-600 hover:underline">Approve</button>}
-                    {review.status !== 'REJECTED' && <button onClick={() => handleAction(review._id, 'reject')} className="text-red-600 hover:underline">Reject</button>}
+                  <td className="py-3.5 px-4">
+                    <div className="flex items-center gap-2">
+                      {review.status !== 'APPROVED' && (
+                        <button onClick={() => handleAction(review._id, 'approve')} className="text-green-400 hover:text-green-300 text-xs uppercase font-bold tracking-wider bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded-full transition-colors">
+                          Approve
+                        </button>
+                      )}
+                      {review.status !== 'REJECTED' && (
+                        <button onClick={() => handleAction(review._id, 'reject')} className="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider bg-red-400/10 hover:bg-red-400/20 px-3 py-1.5 rounded-full transition-colors">
+                          Reject
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

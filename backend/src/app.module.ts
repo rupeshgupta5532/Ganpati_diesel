@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DatabaseModule } from './database/database.module';
 import { RedisModule } from './redis/redis.module';
 import { HealthModule } from './health/health.module';
@@ -17,6 +18,7 @@ import { WebsiteContentModule } from './website-content/website-content.module';
 import { ContactModule } from './contact/contact.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
+import { AuditLogInterceptor } from './audit-logs/audit-log.interceptor';
 
 @Module({
   imports: [
@@ -38,6 +40,12 @@ import { AuditLogsModule } from './audit-logs/audit-logs.module';
     ContactModule,
     UploadsModule,
     AuditLogsModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditLogInterceptor,
+    },
   ],
 })
 export class AppModule {}

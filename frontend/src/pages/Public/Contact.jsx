@@ -14,7 +14,7 @@ export const PublicContact = () => {
 
   useEffect(() => {
     contactApi.getContact()
-      .then(res => setContactInfo(res.data || res))
+      .then(res => setContactInfo(res.data?.data || res.data || res))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

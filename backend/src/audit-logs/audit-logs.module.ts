@@ -1,6 +1,8 @@
 import { Module, Global } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuditLog, AuditLogSchema } from './schemas/audit-log.schema';
+import { AuditLogsService } from './audit-logs.service';
+import { AuditLogsController } from './audit-logs.controller';
 
 @Global()
 @Module({
@@ -9,6 +11,8 @@ import { AuditLog, AuditLogSchema } from './schemas/audit-log.schema';
       { name: AuditLog.name, schema: AuditLogSchema },
     ]),
   ],
-  exports: [MongooseModule],
+  controllers: [AuditLogsController],
+  providers: [AuditLogsService],
+  exports: [MongooseModule, AuditLogsService],
 })
 export class AuditLogsModule {}

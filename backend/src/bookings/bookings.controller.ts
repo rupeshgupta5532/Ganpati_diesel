@@ -5,6 +5,7 @@ import {
   Body,
   Patch,
   Param,
+  Delete,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -81,4 +82,9 @@ export class AdminBookingsController {
     return this.bookingsService.updateStatusAdmin(id, { status: undefined, adminNotes } as any);
   }
 
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a booking' })
+  remove(@Param('id') id: string) {
+    return this.bookingsService.deleteAdmin(id);
+  }
 }

@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion } from 'framer-motion';
 import { Wrench, Shield, Clock, Users, Award, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router';
+import { websiteContentApi } from '../api/services';
 
 export const About = () => {
+  const [cms, setCms] = useState(null);
+
+  useEffect(() => {
+    websiteContentApi.getHomepage()
+      .then(res => setCms(res.data?.data || res.data || res || {}))
+      .catch(console.error);
+  }, []);
+
   const stats = [
-    { icon: <Clock className="text-primary" size={32} />, value: '20+', label: 'Years Experience' },
-    { icon: <Wrench className="text-primary" size={32} />, value: '15k+', label: 'Engines Repaired' },
+    { icon: <Clock className="text-primary" size={32} />, value: `${cms?.yearsExperience || 20}+`, label: 'Years Experience' },
+    { icon: <Wrench className="text-primary" size={32} />, value: `${cms?.projectsCompleted || '15k'}+`, label: 'Engines Repaired' },
     { icon: <Users className="text-primary" size={32} />, value: '50+', label: 'Expert Mechanics' },
-    { icon: <Award className="text-primary" size={32} />, value: '99%', label: 'Client Satisfaction' },
+    { icon: <Award className="text-primary" size={32} />, value: cms?.establishedYear ? `Est. ${cms.establishedYear}` : 'Est. 2004', label: 'Inception' },
   ];
 
   return (
@@ -39,7 +48,7 @@ export const About = () => {
             transition={{ delay: 0.1 }}
             className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto"
           >
-            Founded in 2004, Ganpati Diesel has been the trusted partner for fleet operators across the nation, ensuring maximum uptime and unmatched engine performance.
+            {cms?.aboutContent || "Founded in 2004, Ganpati Diesel has been the trusted partner for fleet operators across the nation, ensuring maximum uptime and unmatched engine performance."}
           </motion.p>
         </div>
 
