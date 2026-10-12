@@ -36,3 +36,8 @@ export const userApi = {
 export const enquiryApi = {
   create: (data) => api.post('/enquiries', data),
 };
+
+export const chatbotApi = {
+  ask: (message) => api.post('/chatbot/ask', { message }),
+};
+

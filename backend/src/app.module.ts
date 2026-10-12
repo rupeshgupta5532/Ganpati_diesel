@@ -18,6 +18,7 @@ import { WebsiteContentModule } from './website-content/website-content.module';
 import { ContactModule } from './contact/contact.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AuditLogsModule } from './audit-logs/audit-logs.module';
     ContactModule,
     UploadsModule,
     AuditLogsModule,
+    ChatbotModule,
   ],
 })
 export class AppModule {}

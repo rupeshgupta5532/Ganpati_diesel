@@ -2,6 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { Outlet, Link } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { ChatWidget } from '../components/ChatWidget';
 import { contactApi, websiteContentApi } from '../api/services';
 
 export const PublicLayout = () => {
@@ -122,7 +123,8 @@ export const PublicLayout = () => {
         )}
       </header>
 
-      {/* Floating Action Buttons */}
+      {/* Floating Action Buttons & Chatbot */}
+      <ChatWidget />
       <div className="fixed bottom-6 right-6 flex flex-col space-y-3 z-40">
          <a href={`https://wa.me/${contact?.whatsapp || '9779800000000'}`} target="_blank" rel="noreferrer" className="w-12 h-12 bg-green-500 rounded-full shadow dark:shadow-none-xl flex items-center justify-center text-white hover:scale-110 transition-transform">
            W
