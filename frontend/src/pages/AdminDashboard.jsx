@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ThemeSwitch from '../components/ThemeSwitch';
 import { useLocation, useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Navigation, MapPin, Phone, Mail, Truck, ChevronDown, Bell, Trash2, 
   Package, Wrench, FolderGit2, Star, MessageSquare, Globe, PhoneCall, 
-  LayoutDashboard, LogOut, Shield, Menu, X, Search, Activity, Sparkles, CheckCircle2
+  LayoutDashboard, LogOut, Shield, Menu, X, Search, Activity, Sparkles, CheckCircle2,
+  ArrowLeft
 } from 'lucide-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -44,12 +45,58 @@ export const AdminDashboard = () => {
     const pathSegment = location.pathname.split('/')[2];
     if (pathSegment && ['dashboard', 'overview', 'bookings', 'products', 'services', 'projects', 'reviews', 'enquiries', 'users', 'content', 'contact', 'audit-logs', 'audit'].includes(pathSegment)) {
       setActiveTab(pathSegment === 'overview' ? 'dashboard' : (pathSegment === 'audit' ? 'audit-logs' : pathSegment));
+    } else {
+      setActiveTab('dashboard');
     }
   }, [location.pathname]);
+
+  const adminHistoryRef = useRef(['dashboard']);
+
+  useEffect(() => {
+    const history = adminHistoryRef.current;
+    if (history[history.length - 1] !== activeTab) {
+      history.push(activeTab);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const path = window.location.pathname;
+      if (path === '/' || path === '/login') {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          navigate('/admin/dashboard', { replace: true });
+        }
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [navigate]);
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
     navigate(`/admin/${tabName}`);
+  };
+
+  const handleBack = () => {
+    // If we are in overview tab, we still have to show the overview page
+    if (activeTab === 'dashboard') {
+      setActiveTab('dashboard');
+      navigate('/admin/dashboard');
+      return;
+    }
+
+    // If on another admin tab, go back to previous admin tab or overview
+    const history = adminHistoryRef.current;
+    if (history.length > 1) {
+      history.pop();
+      const prevTab = history[history.length - 1] || 'dashboard';
+      setActiveTab(prevTab);
+      navigate(`/admin/${prevTab}`);
+    } else {
+      setActiveTab('dashboard');
+      navigate('/admin/dashboard');
+    }
   };
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,6 +108,28 @@ export const AdminDashboard = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [selectedNotif, setSelectedNotif] = useState(null);
+
+  const profileMenuRef = useRef(null);
+  const notifMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+      }
+      if (notifMenuRef.current && !notifMenuRef.current.contains(e.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+    };
+  }, []);
 
   const STATUS_OPTIONS = [
     { value: 'PENDING', label: 'PENDING', colorClass: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' },
@@ -377,7 +446,19 @@ export const AdminDashboard = () => {
       <div className="flex-1 flex flex-col min-w-0 min-h-screen relative z-10">
         {/* Top Frosted Glass Header */}
         <header className="h-16 bg-black/40 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20 px-3 sm:px-6 md:px-8 flex items-center justify-between gap-2 sm:gap-4">
-          <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            {/* Back Button */}
+            <button
+              type="button"
+              onClick={handleBack}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 hover:border-primary/40 transition-all text-xs font-semibold flex-shrink-0 group cursor-pointer shadow-sm"
+              title="Go Back"
+              aria-label="Go Back"
+            >
+              <ArrowLeft className="w-4 h-4 text-primary group-hover:-translate-x-0.5 transition-transform" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+
             {/* Mobile Hamburger Menu Toggle */}
             <button
               onClick={() => setMobileSidebarOpen(true)}
@@ -422,7 +503,7 @@ export const AdminDashboard = () => {
             <ThemeSwitch />
 
             {/* Glowing Notifications Bell */}
-            <div className="relative">
+            <div className="relative" ref={notifMenuRef}>
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:border-primary/40 transition-all relative group"
@@ -552,7 +633,7 @@ export const AdminDashboard = () => {
             </div>
 
             {/* Admin Profile Pill & Menu */}
-            <div className="relative">
+            <div className="relative" ref={profileMenuRef}>
               <button 
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center gap-2.5 p-1 rounded-full bg-white/[0.04] border border-white/10 hover:border-primary/40 transition-all cursor-pointer group"

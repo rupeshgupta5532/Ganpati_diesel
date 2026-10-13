@@ -10,12 +10,24 @@ export const AuthProvider= ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('accessToken');
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch (e) {}
+      }
       if (token) {
         try {
           const profile = await api.get('/auth/profile');
-          setUser(profile.data || profile);
+          const userData = profile.data || profile;
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
         } catch (error) {
-          localStorage.removeItem('accessToken');
+          if (error.response?.status === 401) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('user');
+            setUser(null);
+          }
         }
       }
       setIsLoading(false);
@@ -23,18 +35,26 @@ export const AuthProvider= ({ children }) => {
     initAuth();
   }, []);
 
-const login = async (token, userData) => {
+  const login = async (token, userData) => {
     localStorage.setItem('accessToken', token);
+    if (userData) {
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+    }
     try {
       const profile = await api.get('/auth/profile');
-      setUser(profile.data || profile);
+      const data = profile.data || profile;
+      setUser(data);
+      localStorage.setItem('user', JSON.stringify(data));
     } catch (e) {
-      setUser(userData);
+      if (userData) setUser(userData);
     }
   };
 
   const logout = () => {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('adminActiveTab');
     setUser(null);
   };
 

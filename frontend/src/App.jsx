@@ -33,8 +33,10 @@ function App() {
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/book-service" element={<BookService />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/overview" element={<AdminDashboard />} />
+        <Route path="/admin/login" element={<Login />} />
         <Route path="/admin/bookings" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<AdminDashboard />} />
         <Route path="/admin/services" element={<AdminDashboard />} />

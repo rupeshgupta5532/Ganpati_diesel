@@ -9,8 +9,31 @@ import toast from 'react-hot-toast';
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token || isAuthenticated) {
+      const userStr = localStorage.getItem('user');
+      let isAdmin = true;
+      if (user?.role) {
+        isAdmin = user.role === 'admin' || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
+      } else if (userStr) {
+        try {
+          const parsed = JSON.parse(userStr);
+          if (parsed.role && parsed.role !== 'admin' && parsed.role !== 'ADMIN' && parsed.role !== 'SUPER_ADMIN') {
+            isAdmin = false;
+          }
+        } catch (e) {}
+      }
+      if (isAdmin) {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate('/book-service', { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,8 +50,8 @@ export const Login = () => {
         toast.success('Login successful!');
         
         // Redirect based on role
-        if (responseData.user.role === 'admin' || responseData.user.role === 'ADMIN') {
-          navigate('/admin');
+        if (responseData.user.role === 'admin' || responseData.user.role === 'ADMIN' || responseData.user.role === 'SUPER_ADMIN') {
+          navigate('/admin/dashboard');
         } else {
           navigate('/book-service');
         }

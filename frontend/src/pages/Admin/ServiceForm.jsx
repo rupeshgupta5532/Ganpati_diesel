@@ -109,10 +109,18 @@ export const ServiceForm = () => {
         <div className="flex items-center justify-between w-full">
           <button 
             type="button"
-            onClick={() => navigate('/admin/services')}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 text-xs font-bold transition-all"
+            onClick={() => {
+              if (window.history.state && window.history.state.idx > 0) {
+                navigate(-1);
+              } else if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate('/admin/services');
+              }
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 text-xs font-bold transition-all cursor-pointer group shadow-sm"
           >
-            <ArrowLeft className="w-4 h-4 text-primary" />
+            <ArrowLeft className="w-4 h-4 text-primary group-hover:-translate-x-0.5 transition-transform" />
             <span>Back to Services</span>
           </button>
 
