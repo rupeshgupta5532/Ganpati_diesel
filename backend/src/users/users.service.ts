@@ -2,16 +2,21 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
+import { Admin, AdminDocument } from '../admins/schemas/admin.schema';
+import { Role } from '../common/enums/role.enum';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Admin.name) private adminModel: Model<AdminDocument>,
+  ) {}
 
   async findAll(query: QueryUserDto) {
     const { search, isActive, page = 1, limit = 10 } = query;
-    const filter: any = {};
+    const filter: any = { role: Role.USER };
 
     if (search) {
       filter.$or = [
@@ -111,5 +116,47 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
     return { success: true, message: 'User deleted successfully', data: null };
+  }
+
+  async findAllAdmins(query: QueryUserDto) {
+    const { search, isActive, page = 1, limit = 10 } = query;
+    const filter: any = {};
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    if (isActive !== undefined) {
+      filter.isActive = isActive;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.adminModel
+        .find(filter)
+        .select('-passwordHash -refreshTokenHash')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit))
+        .lean()
+        .exec(),
+      this.adminModel.countDocuments(filter).exec(),
+    ]);
+
+    return {
+      success: true,
+      message: 'Admins retrieved successfully',
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }

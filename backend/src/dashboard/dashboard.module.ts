@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
+import { Admin, AdminSchema } from '../admins/schemas/admin.schema';
 import { Booking, BookingSchema } from '../bookings/schemas/booking.schema';
 import { Enquiry, EnquirySchema } from '../enquiries/schemas/enquiry.schema';
 import { Review, ReviewSchema } from '../reviews/schemas/review.schema';
@@ -11,6 +12,7 @@ import { Review, ReviewSchema } from '../reviews/schemas/review.schema';
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
+      { name: Admin.name, schema: AdminSchema },
       { name: Booking.name, schema: BookingSchema },
       { name: Enquiry.name, schema: EnquirySchema },
       { name: Review.name, schema: ReviewSchema },

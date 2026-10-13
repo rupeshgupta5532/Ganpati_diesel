@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
+import { Admin, AdminDocument } from '../admins/schemas/admin.schema';
 import { Booking, BookingDocument } from '../bookings/schemas/booking.schema';
 import { Enquiry, EnquiryDocument } from '../enquiries/schemas/enquiry.schema';
 import { Review, ReviewDocument } from '../reviews/schemas/review.schema';
@@ -17,6 +18,7 @@ export class DashboardService {
 
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Admin.name) private adminModel: Model<AdminDocument>,
     @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
     @InjectModel(Enquiry.name) private enquiryModel: Model<EnquiryDocument>,
     @InjectModel(Review.name) private reviewModel: Model<ReviewDocument>,
@@ -29,6 +31,7 @@ export class DashboardService {
 
     const [
       totalUsers,
+      totalAdmins,
       totalBookings,
       pendingBookings,
       totalEnquiries,
@@ -36,6 +39,7 @@ export class DashboardService {
       pendingReviews,
     ] = await Promise.all([
       this.userModel.countDocuments({ role: Role.USER }),
+      this.adminModel.countDocuments(),
       this.bookingModel.countDocuments(),
       this.bookingModel.countDocuments({ status: BookingStatus.PENDING }),
       this.enquiryModel.countDocuments(),
@@ -45,6 +49,7 @@ export class DashboardService {
 
     const summary = {
       users: { total: totalUsers },
+      admins: { total: totalAdmins },
       bookings: { total: totalBookings, pending: pendingBookings },
       enquiries: { total: totalEnquiries, new: newEnquiries },
       reviews: { pending: pendingReviews },

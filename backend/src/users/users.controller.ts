@@ -31,6 +31,12 @@ export class UsersController {
     return this.usersService.findAll(query);
   }
 
+  @Get('admins')
+  @ApiOperation({ summary: 'Get all admins with pagination and search' })
+  findAllAdmins(@Query() query: QueryUserDto) {
+    return this.usersService.findAllAdmins(query);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a user by ID' })
   findOne(@Param('id') id: string) {

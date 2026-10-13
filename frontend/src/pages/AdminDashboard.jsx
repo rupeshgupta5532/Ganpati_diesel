@@ -30,9 +30,10 @@ export const AdminDashboard = () => {
 
   const getInitialTab = () => {
     const pathSegment = location.pathname.split('/')[2];
-    if (['dashboard', 'overview', 'bookings', 'products', 'services', 'projects', 'reviews', 'enquiries', 'users', 'content', 'contact', 'audit-logs', 'audit'].includes(pathSegment)) {
+    if (['dashboard', 'overview', 'bookings', 'products', 'services', 'projects', 'reviews', 'enquiries', 'users', 'customers', 'admins', 'content', 'contact', 'audit-logs', 'audit'].includes(pathSegment)) {
       if (pathSegment === 'overview') return 'dashboard';
       if (pathSegment === 'audit') return 'audit-logs';
+      if (pathSegment === 'customers') return 'users';
       return pathSegment;
     }
     return 'dashboard';
@@ -43,8 +44,12 @@ export const AdminDashboard = () => {
 
   useEffect(() => {
     const pathSegment = location.pathname.split('/')[2];
-    if (pathSegment && ['dashboard', 'overview', 'bookings', 'products', 'services', 'projects', 'reviews', 'enquiries', 'users', 'content', 'contact', 'audit-logs', 'audit'].includes(pathSegment)) {
-      setActiveTab(pathSegment === 'overview' ? 'dashboard' : (pathSegment === 'audit' ? 'audit-logs' : pathSegment));
+    if (pathSegment && ['dashboard', 'overview', 'bookings', 'products', 'services', 'projects', 'reviews', 'enquiries', 'users', 'customers', 'admins', 'content', 'contact', 'audit-logs', 'audit'].includes(pathSegment)) {
+      setActiveTab(
+        pathSegment === 'overview' ? 'dashboard' : 
+        (pathSegment === 'audit' ? 'audit-logs' : 
+        (pathSegment === 'customers' ? 'users' : pathSegment))
+      );
     } else {
       setActiveTab('dashboard');
     }
@@ -102,6 +107,7 @@ export const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [bookings, setBookings] = useState([]);
   const [users, setUsers] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -160,12 +166,13 @@ export const AdminDashboard = () => {
       items: [
         { id: 'enquiries', label: 'Enquiries', icon: MessageSquare },
         { id: 'reviews', label: 'Reviews', icon: Star },
-        { id: 'users', label: 'Users', icon: User, badge: users.length > 0 ? users.length : null },
+        { id: 'users', label: 'Customers', icon: User, badge: users.length > 0 ? users.length : null },
       ]
     },
     {
       title: 'PORTAL SETTINGS',
       items: [
+        { id: 'admins', label: 'Administrators', icon: Shield, badge: admins.length > 0 ? admins.length : null },
         { id: 'content', label: 'Website CMS', icon: Globe },
         { id: 'contact', label: 'Contact Details', icon: PhoneCall },
         { id: 'audit-logs', label: 'Audit Logs', icon: Shield, badgeTag: 'LIVE' },
@@ -177,13 +184,15 @@ export const AdminDashboard = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [bookingsRes, usersRes, notifRes] = await Promise.all([
+        const [bookingsRes, usersRes, adminsRes, notifRes] = await Promise.all([
           api.get('/admin/bookings'),
           api.get('/admin/users'),
+          api.get('/admin/users/admins'),
           api.get('/notifications')
         ]);
         setBookings(Array.isArray(bookingsRes) ? bookingsRes : (bookingsRes.data || []));
         setUsers(Array.isArray(usersRes) ? usersRes : (usersRes.data?.data || usersRes.data || []));
+        setAdmins(Array.isArray(adminsRes) ? adminsRes : (adminsRes.data?.data || adminsRes.data || []));
         setNotifications(Array.isArray(notifRes) ? notifRes : (notifRes.data?.data || notifRes.data || []));
       } catch (err) {
         console.error('Error fetching admin data:', err);
@@ -204,6 +213,11 @@ export const AdminDashboard = () => {
   const filteredUsers = users.filter(u => 
     (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
     (u.email || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredAdmins = admins.filter(a => 
+    (a.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (a.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const updateBookingStatus = async (id, status) => {
@@ -483,7 +497,7 @@ export const AdminDashboard = () => {
           {/* Right Header Controls */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Search Input with ⌘K Badge */}
-            {(activeTab === 'bookings' || activeTab === 'users' || activeTab === 'dashboard') && (
+            {(activeTab === 'bookings' || activeTab === 'users' || activeTab === 'admins' || activeTab === 'dashboard') && (
               <div className="relative hidden md:flex items-center bg-dark/60 border border-white/10 rounded-xl px-3 py-1.5 focus-within:border-primary/50 transition-all w-48 lg:w-56">
                 <Search className="w-3.5 h-3.5 text-gray-500 mr-2 flex-shrink-0" />
                 <input 
@@ -891,18 +905,45 @@ export const AdminDashboard = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <h2 className="text-2xl font-black text-white flex items-center gap-2.5">
-                      <User className="h-6 w-6 text-primary" /> User Registry
+                      <User className="h-6 w-6 text-primary" /> Customer Registry
                     </h2>
-                    <p className="text-xs text-gray-400 mt-1">Platform customer accounts, role mappings and security clearances</p>
+                    <p className="text-xs text-gray-400 mt-1">Platform customer accounts, booking history and contact details</p>
                   </div>
-                  <div className="md:hidden">
-                    <input 
-                      type="text" 
-                      placeholder="Search users..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full bg-dark/60 border border-white/10 rounded-xl py-2 px-3 text-xs text-white placeholder-gray-500"
-                    />
+
+                  {/* Switcher & Mobile Search */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex bg-dark/80 p-1 rounded-xl border border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => handleTabChange('users')}
+                        className="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-primary text-black shadow-lg shadow-primary/25"
+                      >
+                        <span>Customers</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/20 text-black font-extrabold">
+                          {users.length}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTabChange('admins')}
+                        className="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-gray-400 hover:text-white"
+                      >
+                        <span>Administrators</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 text-gray-300">
+                          {admins.length}
+                        </span>
+                      </button>
+                    </div>
+
+                    <div className="md:hidden w-full">
+                      <input 
+                        type="text" 
+                        placeholder="Search customers..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-dark/60 border border-white/10 rounded-xl py-2 px-3 text-xs text-white placeholder-gray-500"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -911,16 +952,16 @@ export const AdminDashboard = () => {
                     <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
                       <thead className="text-xs text-gray-400 uppercase bg-dark/60 border-b border-white/10">
                         <tr>
-                          <th className="px-4 py-3.5 font-bold">User</th>
+                          <th className="px-4 py-3.5 font-bold">Customer</th>
                           <th className="px-4 py-3.5 font-bold">Contact</th>
-                          <th className="px-4 py-3.5 font-bold">Role</th>
+                          <th className="px-4 py-3.5 font-bold">Account Role</th>
                           <th className="px-4 py-3.5 font-bold">Joined Date</th>
                           <th className="px-4 py-3.5 font-bold text-center">Total Bookings</th>
                         </tr>
                       </thead>
                       <tbody>
                         {loading ? (
-                          <tr><td colSpan="5" className="text-center py-12 text-gray-500 font-mono">Loading user registry...</td></tr>
+                          <tr><td colSpan="5" className="text-center py-12 text-gray-500 font-mono">Loading customer registry...</td></tr>
                         ) : filteredUsers.length > 0 ? filteredUsers.map((user) => (
                           <tr key={user._id} className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
                             <td className="px-4 py-4">
@@ -936,26 +977,156 @@ export const AdminDashboard = () => {
                             </td>
                             <td className="px-4 py-4">
                               <div className="flex flex-col gap-1">
-                                <span className="text-xs flex items-center gap-1.5"><Mail className="h-3 w-3 text-gray-400" />{user.email}</span>
-                                <span className="text-xs flex items-center gap-1.5"><Phone className="h-3 w-3 text-gray-400" />{user.phone || 'N/A'}</span>
+                                <span className="text-xs flex items-center gap-1.5 text-white"><Mail className="h-3 w-3 text-gray-400" />{user.email}</span>
+                                {user.phone ? (
+                                  <span className="text-xs flex items-center gap-1.5 text-gray-400 font-mono"><Phone className="h-3 w-3 text-gray-400" />{user.phone}</span>
+                                ) : (
+                                  <span className="text-xs flex items-center gap-1.5 text-gray-500 italic"><Phone className="h-3 w-3 text-gray-600" />No phone</span>
+                                )}
                               </div>
                             </td>
                             <td className="px-4 py-4">
-                               <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                                (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? 'bg-secondary/15 text-secondary border border-secondary/30' : 
-                                'bg-gray-500/10 text-gray-400 border border-gray-500/20'
-                              }`}>
-                                {user.role}
+                              <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/15 text-green-400 border border-green-500/30">
+                                CUSTOMER
                               </span>
                             </td>
                             <td className="px-4 py-4"><span className="flex items-center gap-1.5 font-mono text-xs"><Navigation className="h-4 w-4 text-primary/70"/> {new Date(user.createdAt || user.joined).toLocaleDateString()}</span></td>
                             <td className="px-4 py-4 text-center font-mono font-bold text-white">
-                              {user.totalBookings !== undefined ? user.totalBookings : '-'}
+                              {user.totalBookings !== undefined ? user.totalBookings : 0}
                             </td>
                           </tr>
                         )) : (
                           <tr>
-                            <td colSpan="5" className="text-center py-12 text-gray-500">No users found</td>
+                            <td colSpan="5" className="text-center py-12 text-gray-500">No customers found</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'admins' && (
+              <motion.div 
+                key="admins"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.22 }}
+                className="w-full space-y-6"
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-2xl font-black text-white flex items-center gap-2.5">
+                      <Shield className="h-6 w-6 text-purple-400" /> Administrator Registry
+                    </h2>
+                    <p className="text-xs text-gray-400 mt-1">Platform administrators, security clearance levels and authorized staff</p>
+                  </div>
+
+                  {/* Switcher & Mobile Search */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex bg-dark/80 p-1 rounded-xl border border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => handleTabChange('users')}
+                        className="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-gray-400 hover:text-white"
+                      >
+                        <span>Customers</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 text-gray-300">
+                          {users.length}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTabChange('admins')}
+                        className="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-purple-600 text-white shadow-lg shadow-purple-600/25"
+                      >
+                        <span>Administrators</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20 text-white font-extrabold">
+                          {admins.length}
+                        </span>
+                      </button>
+                    </div>
+
+                    <div className="md:hidden w-full">
+                      <input 
+                        type="text" 
+                        placeholder="Search admins..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-dark/60 border border-white/10 rounded-xl py-2 px-3 text-xs text-white placeholder-gray-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="glass-card rounded-3xl p-4 md:p-6 border border-white/10 shadow-2xl relative overflow-visible">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+                      <thead className="text-xs text-gray-400 uppercase bg-dark/60 border-b border-white/10">
+                        <tr>
+                          <th className="px-4 py-3.5 font-bold">Administrator</th>
+                          <th className="px-4 py-3.5 font-bold">Contact</th>
+                          <th className="px-4 py-3.5 font-bold">Role</th>
+                          <th className="px-4 py-3.5 font-bold">Clearance</th>
+                          <th className="px-4 py-3.5 font-bold">Status</th>
+                          <th className="px-4 py-3.5 font-bold">Registered Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loading ? (
+                          <tr><td colSpan="6" className="text-center py-12 text-gray-500 font-mono">Loading administrator registry...</td></tr>
+                        ) : filteredAdmins.length > 0 ? filteredAdmins.map((admin) => (
+                          <tr key={admin._id} className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
+                            <td className="px-4 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-purple-500/20 to-blue-500/20 flex items-center justify-center text-purple-400 font-bold border border-purple-500/30">
+                                  {(admin.name || '?').charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <div className="font-semibold text-white flex items-center gap-2">
+                                    <span>{admin.name}</span>
+                                    {authUser?.email === admin.email && (
+                                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary border border-primary/30">YOU</span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-500 font-mono">ID: {admin._id.substring(admin._id.length - 6)}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="flex flex-col gap-1">
+                                <span className="text-xs flex items-center gap-1.5 text-white"><Mail className="h-3 w-3 text-gray-400" />{admin.email}</span>
+                                {admin.phone ? (
+                                  <span className="text-xs flex items-center gap-1.5 text-gray-400 font-mono"><Phone className="h-3 w-3 text-gray-400" />{admin.phone}</span>
+                                ) : (
+                                  <span className="text-xs flex items-center gap-1.5 text-gray-500 italic"><Phone className="h-3 w-3 text-gray-600" />No phone</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                                {admin.role || 'ADMIN'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className="px-2.5 py-1 rounded text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                FULL SYSTEM ACCESS
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                                admin.isActive !== false ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/15 text-red-400 border border-red-500/20'
+                              }`}>
+                                {admin.isActive !== false ? 'ACTIVE' : 'SUSPENDED'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4"><span className="flex items-center gap-1.5 font-mono text-xs"><Navigation className="h-4 w-4 text-purple-400/70"/> {new Date(admin.createdAt || admin.joined).toLocaleDateString()}</span></td>
+                          </tr>
+                        )) : (
+                          <tr>
+                            <td colSpan="6" className="text-center py-12 text-gray-500">No administrators found</td>
                           </tr>
                         )}
                       </tbody>

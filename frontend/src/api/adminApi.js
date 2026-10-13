@@ -64,6 +64,8 @@ export const uploadApi = {
 
 export const adminUserApi = {
   getAll: (search) => api.get('/admin/users' + (search ? '?search=' + search : '')),
+  getCustomers: (search) => api.get('/admin/users' + (search ? '?search=' + search : '')),
+  getAdmins: (search) => api.get('/admin/users/admins' + (search ? '?search=' + search : '')),
 };
 
 export const adminAuditLogApi = {

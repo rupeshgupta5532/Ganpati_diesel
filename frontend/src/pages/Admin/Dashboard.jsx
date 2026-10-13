@@ -5,9 +5,11 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 export const AdminDashboardOverview = () => {
   const [stats, setStats] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('ALL');
+  const [directoryTab, setDirectoryTab] = useState('customers'); // 'customers' | 'admins'
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     dashboardApi.getAggregations()
@@ -18,34 +20,55 @@ export const AdminDashboardOverview = () => {
           pendingBookings: payload.bookings?.pending || 0,
           totalEnquiries: payload.enquiries?.total || 0,
           pendingReviews: payload.reviews?.pending || 0,
-          totalUsers: payload.users?.total || 0
+          totalUsers: payload.users?.total || 0,
+          totalAdmins: payload.admins?.total || 0,
         });
       })
       .catch(console.error);
   }, []);
   
   useEffect(() => {
-    fetchUsers();
+    fetchAllDirectoryData();
   }, []);
 
-  const fetchUsers = (searchQuery = '') => {
-    adminUserApi.getAll(searchQuery)
-      .then(res => setUsers(res.data?.data || res.data || []))
-      .catch(err => toast.error('Failed to load users'));
+  const fetchAllDirectoryData = (searchQuery = '') => {
+    setLoading(true);
+    Promise.all([
+      adminUserApi.getCustomers(searchQuery),
+      adminUserApi.getAdmins(searchQuery),
+    ])
+      .then(([customersRes, adminsRes]) => {
+        setCustomers(customersRes.data?.data || customersRes.data || []);
+        setAdmins(adminsRes.data?.data || adminsRes.data || []);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error('Failed to load directory data');
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleSearch = (e) => {
-    setSearch(e.target.value);
-    fetchUsers(e.target.value);
+    const val = e.target.value;
+    setSearch(val);
+    fetchAllDirectoryData(val);
   };
 
-  const filteredUsers = users.filter(u => roleFilter === 'ALL' || u.role === roleFilter);
+  const filteredCustomers = customers.filter(c => 
+    (c.name || '').toLowerCase().includes(search.toLowerCase()) || 
+    (c.email || '').toLowerCase().includes(search.toLowerCase())
+  );
+
+  const filteredAdmins = admins.filter(a => 
+    (a.name || '').toLowerCase().includes(search.toLowerCase()) || 
+    (a.email || '').toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-white">Operations Overview</h2>
-        <p className="text-gray-400 text-sm mt-1">Real-time business performance metrics and active registrations</p>
+        <p className="text-gray-400 text-sm mt-1">Real-time business performance metrics, customer bookings and administrator registry</p>
       </div>
 
       {/* Metrics Cards Grid */}
@@ -59,12 +82,12 @@ export const AdminDashboardOverview = () => {
           <p className="text-4xl font-extrabold text-yellow-400 tracking-tight">{stats?.pendingBookings || 0}</p>
         </div>
         <div className="glass-card p-6 rounded-2xl border border-white/10 border-l-4 border-l-blue-500 bg-dark/40 shadow-xl backdrop-blur-md">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Total Enquiries</h3>
-          <p className="text-4xl font-extrabold text-blue-400 tracking-tight">{stats?.totalEnquiries || 0}</p>
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Registered Customers</h3>
+          <p className="text-4xl font-extrabold text-blue-400 tracking-tight">{stats?.totalUsers || 0}</p>
         </div>
-        <div className="glass-card p-6 rounded-2xl border border-white/10 border-l-4 border-l-green-500 bg-dark/40 shadow-xl backdrop-blur-md">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Pending Reviews</h3>
-          <p className="text-4xl font-extrabold text-green-400 tracking-tight">{stats?.pendingReviews || 0}</p>
+        <div className="glass-card p-6 rounded-2xl border border-white/10 border-l-4 border-l-purple-500 bg-dark/40 shadow-xl backdrop-blur-md">
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Platform Admins</h3>
+          <p className="text-4xl font-extrabold text-purple-400 tracking-tight">{stats?.totalAdmins || 0}</p>
         </div>
       </div>
 
@@ -76,11 +99,11 @@ export const AdminDashboardOverview = () => {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={[
-                  { name: 'Total Users', count: stats.totalUsers },
+                  { name: 'Customers', count: stats.totalUsers },
+                  { name: 'Admins', count: stats.totalAdmins },
                   { name: 'Total Bookings', count: stats.totalBookings },
                   { name: 'Pending Bookings', count: stats.pendingBookings },
                   { name: 'Total Enquiries', count: stats.totalEnquiries },
-                  { name: 'Pending Reviews', count: stats.pendingReviews },
                 ]}
                 margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
               >
@@ -110,71 +133,186 @@ export const AdminDashboardOverview = () => {
         </div>
       </div>
       
-      {/* Customer Directory Section */}
+      {/* Separated Directory Section */}
       <div className="glass-card rounded-2xl border border-white/10 p-6 bg-dark/40 shadow-xl backdrop-blur-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
-            <h3 className="text-lg font-bold text-white">Customer Directory</h3>
-            <p className="text-xs text-gray-400 mt-0.5">Manage and search registered platform users</p>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-lg font-bold text-white">
+                {directoryTab === 'customers' ? 'Customer Directory' : 'Administrator Directory'}
+              </h3>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                directoryTab === 'customers' 
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                  : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+              }`}>
+                {directoryTab === 'customers' ? `${filteredCustomers.length} Users` : `${filteredAdmins.length} Admins`}
+              </span>
+            </div>
+            <p className="text-xs text-gray-400">
+              {directoryTab === 'customers' 
+                ? 'Registered client accounts, contact details and service orders' 
+                : 'Platform administrators, management clearance and authorized staff'}
+            </p>
           </div>
+
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            {/* Dedicated Tabs for Separation */}
+            <div className="flex bg-dark/80 p-1 rounded-xl border border-white/10">
+              <button
+                type="button"
+                onClick={() => setDirectoryTab('customers')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                  directoryTab === 'customers'
+                    ? 'bg-primary text-black shadow-lg shadow-primary/25'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <span>Customers</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  directoryTab === 'customers' ? 'bg-black/20 text-black font-extrabold' : 'bg-white/10 text-gray-300'
+                }`}>
+                  {customers.length}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setDirectoryTab('admins')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                  directoryTab === 'admins'
+                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <span>Administrators</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  directoryTab === 'admins' ? 'bg-white/20 text-white font-extrabold' : 'bg-white/10 text-gray-300'
+                }`}>
+                  {admins.length}
+                </span>
+              </button>
+            </div>
+
             <input 
               type="text" 
-              placeholder="Search by name or email..." 
+              placeholder={directoryTab === 'customers' ? "Search customers..." : "Search admins..."} 
               value={search}
               onChange={handleSearch}
-              className="px-4 py-2 bg-dark/50 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-all w-full md:w-64"
+              className="px-4 py-2 bg-dark/50 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-all w-full md:w-56"
             />
-            <select 
-              value={roleFilter} 
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-4 py-2 bg-dark/50 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary transition-all"
-            >
-              <option value="ALL" className="bg-dark text-white">All Roles</option>
-              <option value="USER" className="bg-dark text-white">Customers</option>
-              <option value="ADMIN" className="bg-dark text-white">Admins</option>
-            </select>
           </div>
         </div>
         
         <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
-            <thead className="text-xs text-gray-400 uppercase bg-dark/50 border-b border-white/10">
-              <tr>
-                <th className="px-4 py-3 font-bold">Name</th>
-                <th className="px-4 py-3 font-bold">Email / Phone</th>
-                <th className="px-4 py-3 font-bold">Role</th>
-                <th className="px-4 py-3 font-bold">Total Bookings</th>
-                <th className="px-4 py-3 font-bold">Services Taken</th>
-                <th className="px-4 py-3 font-bold">Joined</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.length > 0 ? filteredUsers.map(user => (
-                <tr key={user._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                  <td className="px-4 py-4 font-bold text-white">{user.name}</td>
-                  <td className="px-4 py-4">
-                    <div className="text-xs text-white">{user.email}</div>
-                    <div className="text-[11px] text-gray-500">{user.phone || 'N/A'}</div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                      user.role === 'ADMIN' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'bg-green-500/20 text-green-400 border border-green-500/30'
-                    }`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 font-semibold text-primary">{user.totalBookings || 0}</td>
-                  <td className="px-4 py-4 font-semibold text-blue-400">{user.servicesTaken || 0}</td>
-                  <td className="px-4 py-4 text-xs text-gray-400">{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</td>
-                </tr>
-              )) : (
+          {directoryTab === 'customers' ? (
+            /* Customers Table */
+            <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+              <thead className="text-xs text-gray-400 uppercase bg-dark/50 border-b border-white/10">
                 <tr>
-                  <td colSpan="6" className="p-8 text-center text-gray-500">No customers found.</td>
+                  <th className="px-4 py-3 font-bold">Customer</th>
+                  <th className="px-4 py-3 font-bold">Email / Phone</th>
+                  <th className="px-4 py-3 font-bold">Account Role</th>
+                  <th className="px-4 py-3 font-bold">Total Bookings</th>
+                  <th className="px-4 py-3 font-bold">Services Taken</th>
+                  <th className="px-4 py-3 font-bold">Joined</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="p-8 text-center text-gray-500 font-mono">Loading customers...</td>
+                  </tr>
+                ) : filteredCustomers.length > 0 ? filteredCustomers.map(user => (
+                  <tr key={user._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-4">
+                      <div className="font-bold text-white">{user.name}</div>
+                      <div className="text-[11px] text-gray-500 font-mono">ID: {user._id.substring(user._id.length - 6)}</div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-xs font-medium text-white">{user.email}</div>
+                      {user.phone ? (
+                        <div className="text-[11px] text-gray-400 font-mono mt-0.5">📞 {user.phone}</div>
+                      ) : (
+                        <div className="text-[11px] text-gray-500 italic mt-0.5">No phone number</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/30">
+                        CUSTOMER
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 font-semibold text-primary">{user.totalBookings || 0}</td>
+                    <td className="px-4 py-4 font-semibold text-blue-400">{user.servicesTaken || 0}</td>
+                    <td className="px-4 py-4 text-xs text-gray-400">{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="6" className="p-8 text-center text-gray-500">No customers found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          ) : (
+            /* Administrators Table */
+            <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+              <thead className="text-xs text-gray-400 uppercase bg-dark/50 border-b border-white/10">
+                <tr>
+                  <th className="px-4 py-3 font-bold">Administrator</th>
+                  <th className="px-4 py-3 font-bold">Email / Phone</th>
+                  <th className="px-4 py-3 font-bold">Access Role</th>
+                  <th className="px-4 py-3 font-bold">Clearance</th>
+                  <th className="px-4 py-3 font-bold">Status</th>
+                  <th className="px-4 py-3 font-bold">Registered</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="p-8 text-center text-gray-500 font-mono">Loading administrators...</td>
+                  </tr>
+                ) : filteredAdmins.length > 0 ? filteredAdmins.map(admin => (
+                  <tr key={admin._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-4">
+                      <div className="font-bold text-white flex items-center gap-2">
+                        <span>{admin.name}</span>
+                      </div>
+                      <div className="text-[11px] text-gray-500 font-mono">ID: {admin._id.substring(admin._id.length - 6)}</div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-xs font-medium text-white">{admin.email}</div>
+                      {admin.phone ? (
+                        <div className="text-[11px] text-gray-400 font-mono mt-0.5">📞 {admin.phone}</div>
+                      ) : (
+                        <div className="text-[11px] text-gray-500 italic mt-0.5">No phone number</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        {admin.role || 'ADMIN'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        FULL ACCESS
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                        admin.isActive !== false ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                      }`}>
+                        {admin.isActive !== false ? 'ACTIVE' : 'SUSPENDED'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-xs text-gray-400">{admin.createdAt ? new Date(admin.createdAt).toLocaleDateString() : 'N/A'}</td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="6" className="p-8 text-center text-gray-500">No administrators found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

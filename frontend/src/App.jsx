@@ -44,6 +44,8 @@ function App() {
         <Route path="/admin/reviews" element={<AdminDashboard />} />
         <Route path="/admin/enquiries" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<AdminDashboard />} />
+        <Route path="/admin/customers" element={<AdminDashboard />} />
+        <Route path="/admin/admins" element={<AdminDashboard />} />
         <Route path="/admin/content" element={<AdminDashboard />} />
         <Route path="/admin/contact" element={<AdminDashboard />} />
         <Route path="/admin/audit-logs" element={<AdminDashboard />} />
