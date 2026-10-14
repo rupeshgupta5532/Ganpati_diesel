@@ -62,6 +62,7 @@ export class AuthService {
       newUser._id.toString(),
       newUser.email,
       newUser.role,
+      newUser.name,
     );
   }
 
@@ -74,7 +75,7 @@ export class AuthService {
 
     if (!user.isActive) throw new UnauthorizedException('User is deactivated');
 
-    return this.generateTokens(user._id.toString(), user.email, user.role);
+    return this.generateTokens(user._id.toString(), user.email, user.role, user.name);
   }
 
   async adminSignup(adminSignupDto: AdminSignupDto) {
@@ -101,6 +102,7 @@ export class AuthService {
       newAdmin._id.toString(),
       newAdmin.email,
       newAdmin.role,
+      newAdmin.name,
     );
   }
 
@@ -114,7 +116,7 @@ export class AuthService {
     if (!admin.isActive)
       throw new UnauthorizedException('Admin is deactivated');
 
-    return this.generateTokens(admin._id.toString(), admin.email, admin.role);
+    return this.generateTokens(admin._id.toString(), admin.email, admin.role, admin.name);
   }
 
   async login(loginDto: LoginDto) {
@@ -127,7 +129,7 @@ export class AuthService {
       const isMatch = await bcrypt.compare(loginDto.password, admin.passwordHash);
       if (isMatch) {
         if (!admin.isActive) throw new UnauthorizedException('Admin is deactivated');
-        return this.generateTokens(admin._id.toString(), admin.email, admin.role);
+        return this.generateTokens(admin._id.toString(), admin.email, admin.role, admin.name);
       }
     }
 
@@ -140,7 +142,7 @@ export class AuthService {
       const isMatch = await bcrypt.compare(loginDto.password, user.passwordHash);
       if (isMatch) {
         if (!user.isActive) throw new UnauthorizedException('User is deactivated');
-        return this.generateTokens(user._id.toString(), user.email, user.role);
+        return this.generateTokens(user._id.toString(), user.email, user.role, user.name);
       }
     }
 
@@ -186,7 +188,14 @@ export class AuthService {
     const email = userInfo.email;
     const name = userInfo.name || email.split('@')[0];
 
-    // 3. Check if user exists
+    // 3. Check if admin exists first
+    const admin = await this.adminModel.findOne({ email });
+    if (admin) {
+      if (!admin.isActive) throw new UnauthorizedException('Admin is deactivated');
+      return this.generateTokens(admin._id.toString(), admin.email, admin.role, admin.name);
+    }
+
+    // 4. Check if user exists
     let user = await this.userModel.findOne({ email });
 
     if (!user) {
@@ -202,9 +211,11 @@ export class AuthService {
         isActive: true,
       });
       await user.save();
+    } else {
+      if (!user.isActive) throw new UnauthorizedException('User is deactivated');
     }
 
-    return this.generateTokens(user._id.toString(), user.email, user.role);
+    return this.generateTokens(user._id.toString(), user.email, user.role, user.name);
   }
 
   async processGithubLogin(code: string) {
@@ -266,7 +277,14 @@ export class AuthService {
     const email = primaryEmailObj.email;
     const name = userInfo.name || userInfo.login || email.split('@')[0];
 
-    // 4. Find or Create User
+    // 4. Check if admin exists first
+    const admin = await this.adminModel.findOne({ email });
+    if (admin) {
+      if (!admin.isActive) throw new UnauthorizedException('Admin is deactivated');
+      return this.generateTokens(admin._id.toString(), admin.email, admin.role, admin.name);
+    }
+
+    // 5. Find or Create User
     let user = await this.userModel.findOne({ email });
 
     if (!user) {
@@ -281,9 +299,11 @@ export class AuthService {
         isActive: true,
       });
       await user.save();
+    } else {
+      if (!user.isActive) throw new UnauthorizedException('User is deactivated');
     }
 
-    return this.generateTokens(user._id.toString(), user.email, user.role);
+    return this.generateTokens(user._id.toString(), user.email, user.role, user.name);
   }
 
   
@@ -377,8 +397,8 @@ export class AuthService {
     }
   }
 
-  private async generateTokens(userId: string, email: string, role: string) {
-    const payload = { sub: userId, email, role };
+  private async generateTokens(userId: string, email: string, role: string, name?: string) {
+    const payload = { sub: userId, email, role, name };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, { expiresIn: '1d' }),
@@ -396,6 +416,6 @@ export class AuthService {
       await this.adminModel.findByIdAndUpdate(userId, { refreshTokenHash });
     }
 
-    return { accessToken, refreshToken, user: { id: userId, email, role } };
+    return { accessToken, refreshToken, user: { id: userId, email, role, name } };
   }
 }

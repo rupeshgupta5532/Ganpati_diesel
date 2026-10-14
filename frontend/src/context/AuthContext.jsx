@@ -1,11 +1,35 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import api from '../api/axios';
 
 const AuthContext = createContext(undefined);
 
-export const AuthProvider= ({ children }) => {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const isFetchingProfileRef = useRef(false);
+
+  const fetchProfile = useCallback(async () => {
+    if (isFetchingProfileRef.current) return;
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    isFetchingProfileRef.current = true;
+    try {
+      const profile = await api.get('/auth/profile');
+      const userData = profile.data || profile;
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+        setUser(null);
+      }
+    } finally {
+      isFetchingProfileRef.current = false;
+    }
+  }, []);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -17,49 +41,32 @@ export const AuthProvider= ({ children }) => {
         } catch (e) {}
       }
       if (token) {
-        try {
-          const profile = await api.get('/auth/profile');
-          const userData = profile.data || profile;
-          setUser(userData);
-          localStorage.setItem('user', JSON.stringify(userData));
-        } catch (error) {
-          if (error.response?.status === 401) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('user');
-            setUser(null);
-          }
-        }
+        await fetchProfile();
       }
       setIsLoading(false);
     };
     initAuth();
-  }, []);
+  }, [fetchProfile]);
 
-  const login = async (token, userData) => {
+  const login = useCallback(async (token, userData) => {
     localStorage.setItem('accessToken', token);
     if (userData) {
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
+    } else {
+      await fetchProfile();
     }
-    try {
-      const profile = await api.get('/auth/profile');
-      const data = profile.data || profile;
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
-    } catch (e) {
-      if (userData) setUser(userData);
-    }
-  };
+  }, [fetchProfile]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
     localStorage.removeItem('adminActiveTab');
     setUser(null);
-  };
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout, refreshProfile: fetchProfile }}>
       {children}
     </AuthContext.Provider>
   );
