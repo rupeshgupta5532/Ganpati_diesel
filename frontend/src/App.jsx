@@ -19,6 +19,7 @@ import { ProjectForm } from './pages/Admin/ProjectForm';
 import { AuthProvider } from './context/AuthContext';
 import { VerifyOtp } from './pages/VerifyOtp';
 import { Profile } from './pages/Profile';
+import { CyberChatbot } from './components/CyberChatbot';
 
 function App() {
   return (
@@ -58,6 +59,9 @@ function App() {
         <Route path="/admin/projects/create" element={<ProjectForm />} />
         <Route path="/admin/projects/:id/edit" element={<ProjectForm />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/dashboard" element={<Profile />} />
+        <Route path="/my-profile" element={<Profile />} />
+        <Route path="/bookings" element={<Profile />} />
         
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -67,6 +71,7 @@ function App() {
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <CyberChatbot />
     </BrowserRouter>
     </AuthProvider>
   );

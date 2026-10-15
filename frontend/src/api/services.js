@@ -31,6 +31,9 @@ export const reviewApi = {
 export const userApi = {
   getProfile: () => api.get('/auth/profile'),
   updateProfile: (data) => api.patch('/auth/profile', data),
+  uploadAvatar: (formData) => api.post('/uploads', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
 };
 
 export const enquiryApi = {

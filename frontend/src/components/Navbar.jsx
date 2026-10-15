@@ -26,7 +26,7 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     let interval;
@@ -199,8 +199,14 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
 
-              <Link to="/profile" className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all" title="My Profile">
-                <User className="h-5 w-5" />
+              <Link to="/profile" className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all overflow-hidden" title="My Profile">
+                {user?.profileImage ? (
+                  <img src={user.profileImage} alt={user.name || "Profile"} className="w-full h-full object-cover" />
+                ) : (typeof user?.name === 'string' && user.name.trim().length > 0) ? (
+                  <span className="font-bold text-sm text-primary">{user.name.trim().charAt(0).toUpperCase()}</span>
+                ) : (
+                  <User className="h-5 w-5" />
+                )}
               </Link>
             </div>
           ) : (
@@ -297,7 +303,12 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                     className="w-full flex items-center justify-center gap-2 bg-primary text-black px-4 py-3 rounded-xl font-semibold text-sm shadow-md"
                   >
-                    <User className="h-4 w-4" /> My Profile
+                    {user?.profileImage ? (
+                      <img src={user.profileImage} alt="Avatar" className="w-5 h-5 rounded-full object-cover" />
+                    ) : (
+                      <User className="h-4 w-4" />
+                    )}
+                    My Profile
                   </Link>
                 )}
               </div>

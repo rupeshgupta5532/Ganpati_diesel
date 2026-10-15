@@ -19,6 +19,7 @@ import { ContactModule } from './contact/contact.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { AuditLogInterceptor } from './audit-logs/audit-log.interceptor';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AuditLogInterceptor } from './audit-logs/audit-log.interceptor';
     ContactModule,
     UploadsModule,
     AuditLogsModule,
+    ChatbotModule,
   ],
   providers: [
     {
